@@ -1,0 +1,208 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 400,
+  "data": {
+    "url": "data/australian_radio_combined_long.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"year": "number", "value": "number"}
+    }
+  },
+  "params": [
+    {
+      "name": "Area_selection",
+      "value": "Australia",
+      "bind": {
+        "input": "select",
+        "options": ["Australia", "Regional Australia"],
+        "labels": ["Australia overall", "Regional Australia only"],
+        "name": "Show audience: "
+      }
+    }
+  ],
+  "transform": [
+    {"filter": "datum.geography == Area_selection"},
+    {"filter": "datum.subgroup_type == 'Overall'"},
+    {
+      "filter": {
+        "field": "metric",
+        "oneOf": [
+          "Weekly streaming audio listening",
+          "Total radio weekly reach",
+          "Commercial radio weekly reach",
+          "Weekly podcast consumption",
+          "DAB+ weekly reach"
+        ]
+      }
+    },
+    {
+      "calculate": "datum.metric == 'Weekly streaming audio listening' ? 'Streaming audio' : datum.metric == 'Total radio weekly reach' ? 'Any radio' : datum.metric == 'Commercial radio weekly reach' ? 'Commercial radio' : datum.metric == 'Weekly podcast consumption' ? 'Podcasts' : 'DAB+ digital radio'",
+      "as": "series"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "quantitative",
+      "title": null,
+      "scale": {"domain": [2017, 2026.6]},
+      "axis": {
+        "format": "d",
+        "values": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+      }
+    },
+    "y": {
+      "field": "value",
+      "type": "quantitative",
+      "title": "Listened in the past week (%)",
+      "scale": {"domain": [0, 100]}
+    },
+    "color": {
+      "field": "series",
+      "type": "nominal",
+      "title": "Click to highlight",
+      "scale": {
+        "domain": [
+          "Streaming audio",
+          "Any radio",
+          "Commercial radio",
+          "Podcasts",
+          "DAB+ digital radio"
+        ],
+        "range": ["#E47B5C", "#2F5D8A", "#7FA3C7", "#7753AC", "#087F79"]
+      },
+      "legend": {"orient": "top", "direction": "horizontal", "symbolStrokeWidth": 4}
+    }
+  },
+  "layer": [
+    {
+      "params": [
+        {
+          "name": "Series_pick",
+          "select": {"type": "point", "fields": ["series"]},
+          "bind": "legend"
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "strokeWidth": 3,
+        "point": {"filled": true, "size": 45}
+      },
+      "encoding": {
+        "opacity": {
+          "condition": {"param": "Series_pick", "value": 1},
+          "value": 0.12
+        }
+      }
+    },
+    {
+      "transform": [
+        {"filter": "datum.year == 2026"},
+        {
+          "calculate": "(datum.series == 'DAB+ digital radio' ? 'DAB+' : datum.series == 'Streaming audio' ? 'Streaming' : datum.series) + ' ' + datum.value + '%'",
+          "as": "end_label"
+        },
+        {
+          "calculate": "datum.series == 'Streaming audio' || datum.series == 'Podcasts' ? datum.value + 2.5 : datum.series == 'Commercial radio' ? datum.value : datum.value - 2.5",
+          "as": "label_y"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 9,
+        "fontSize": 13,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "text": {"field": "end_label"},
+        "y": {"field": "label_y", "type": "quantitative"},
+        "opacity": {
+          "condition": {"param": "Series_pick", "value": 1, "empty": true},
+          "value": 0.12
+        }
+      }
+    },
+    {
+      "transform": [
+        {"pivot": "series", "value": "value", "groupby": ["year"]}
+      ],
+      "params": [
+        {
+          "name": "Year_hover",
+          "select": {
+            "type": "point",
+            "fields": ["year"],
+            "nearest": true,
+            "on": "pointerover",
+            "clear": "pointerout"
+          }
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#8796A3",
+        "strokeWidth": 1.5,
+        "strokeDash": [4, 3]
+      },
+      "encoding": {
+        "color": {"value": "#8796A3"},
+        "y": {"value": 0},
+        "y2": {"value": 400},
+        "opacity": {
+          "condition": {"param": "Year_hover", "value": 0.9, "empty": false},
+          "value": 0
+        },
+        "tooltip": [
+          {"field": "year", "type": "quantitative", "title": "Year", "format": "d"},
+          {
+            "field": "Streaming audio",
+            "type": "quantitative",
+            "title": "Streaming audio (%)"
+          },
+          {"field": "Any radio", "type": "quantitative", "title": "Any radio (%)"},
+          {
+            "field": "Commercial radio",
+            "type": "quantitative",
+            "title": "Commercial radio (%)"
+          },
+          {"field": "Podcasts", "type": "quantitative", "title": "Podcasts (%)"},
+          {
+            "field": "DAB+ digital radio",
+            "type": "quantitative",
+            "title": "DAB+ digital radio (%)"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "year": 2025,
+            "value": 96,
+            "note": "2025: streaming (79%) overtakes radio (78%) for the first time"
+          }
+        ]
+      },
+      "transform": [
+        {"filter": "Area_selection == 'Australia'"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": 4,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "color": "#5C7182"
+      },
+      "encoding": {
+        "x": {"field": "year", "type": "quantitative"},
+        "y": {"field": "value", "type": "quantitative"},
+        "text": {"field": "note"},
+        "color": {"value": "#5C7182"}
+      }
+    }
+  ]
+}

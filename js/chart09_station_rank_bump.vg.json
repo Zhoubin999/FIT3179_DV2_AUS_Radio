@@ -1,0 +1,108 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 320,
+  "data": {
+    "url": "data/metro_station_share_2026.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "survey": "number",
+        "share": "number",
+        "rank": "number",
+        "latest_rank": "number"
+      }
+    }
+  },
+  "params": [
+    {"name": "SelectedMarket", "value": "Melbourne"}
+  ],
+  "transform": [
+    {"filter": "datum.market == SelectedMarket"},
+    {"filter": "datum.latest_rank <= 5"},
+    {"calculate": "'Survey ' + datum.survey", "as": "survey_name"}
+  ],
+  "encoding": {
+    "x": {
+      "field": "survey",
+      "type": "ordinal",
+      "title": null,
+      "scale": {"padding": 0.3},
+      "axis": {
+        "labelExpr": "'Survey ' + datum.label",
+        "labelAngle": 0,
+        "labelFontSize": 14,
+        "orient": "top"
+      }
+    },
+    "y": {
+      "field": "rank",
+      "type": "quantitative",
+      "title": "Rank in the city (1 = most listened)",
+      "scale": {"domain": [7.3, 0.7]},
+      "axis": {"values": [1, 2, 3, 4, 5, 6, 7], "grid": true}
+    },
+    "color": {
+      "field": "program_format",
+      "type": "nominal",
+      "title": "Program type",
+      "scale": {
+        "domain": [
+          "Commercial music",
+          "ABC music",
+          "Commercial talk & news",
+          "ABC talk & news",
+          "Sport"
+        ],
+        "range": ["#E47B5C", "#F2B8A0", "#2F5D8A", "#7FA3C7", "#E2B33C"]
+      },
+      "legend": null
+    },
+    "detail": {"field": "station", "type": "nominal"}
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "strokeWidth": 4,
+        "point": {"filled": true, "size": 160}
+      },
+      "encoding": {
+        "tooltip": [
+          {"field": "station", "title": "Station"},
+          {"field": "survey_name", "title": "Survey"},
+          {"field": "rank", "title": "Rank"},
+          {"field": "share", "title": "Share (%)"},
+          {"field": "program_format", "title": "Program type"}
+        ]
+      }
+    },
+    {
+      "transform": [
+        {"filter": "datum.survey == 5"},
+        {"calculate": "datum.station + ' (' + datum.share + '%)'", "as": "end_label"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 14,
+        "fontSize": 13,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "text": {"field": "end_label"},
+        "color": {"value": "#1F3545"}
+      }
+    },
+    {
+      "transform": [
+        {"filter": "datum.survey == 3"}
+      ],
+      "mark": {"type": "text", "align": "right", "dx": -14, "fontSize": 12},
+      "encoding": {
+        "text": {"field": "share", "type": "quantitative", "format": ".1f"},
+        "color": {"value": "#5C7182"}
+      }
+    }
+  ]
+}

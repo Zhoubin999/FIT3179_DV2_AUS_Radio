@@ -1,0 +1,9 @@
+state,state_name,fm_issued_unique_records,fm_retransmission_records,fm_s212_retransmission_records,fm_retransmission_total,fm_retransmission_share_pct,fm_commercial_records,fm_community_records,fm_national_records,fm_hpon_records,original_issued_fm_rows,identical_duplicates_removed,data_extracted_date,original_source
+NSW,New South Wales,585,86,3,89,15.214,153,136,150,57,636,51,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)
+VIC,Victoria,274,9,1,10,3.65,82,88,73,21,310,36,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)
+QLD,Queensland,685,218,4,222,32.409,145,70,185,63,735,50,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)
+SA,South Australia,171,22,0,22,12.865,66,41,37,5,185,14,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)
+WA,Western Australia,713,458,4,462,64.797,94,33,92,32,759,46,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)
+TAS,Tasmania,101,10,0,10,9.901,32,21,35,3,103,2,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)
+ACT,Australian Capital Territory,19,0,0,0,0.0,4,7,7,1,27,8,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)
+NT,Northern Territory,154,43,0,43,27.922,9,55,33,14,165,11,2026-07-13,ACMA BroadcastTransmitterExcel.xlsx (FM worksheet)

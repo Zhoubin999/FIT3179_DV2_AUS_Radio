@@ -1,0 +1,146 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "data/c03_podcast_overlap_2026.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"share_pct": "number"}
+    }
+  },
+  "transform": [
+    {"filter": "datum.mode == 'Listen'"},
+    {"calculate": "datum.combination == 'Both' ? datum.share_pct : 0", "as": "both_piece"},
+    {
+      "calculate": "datum.combination == 'Listened only' ? datum.share_pct : 0",
+      "as": "listen_piece"
+    },
+    {
+      "calculate": "datum.combination == 'Watched only' ? datum.share_pct : 0",
+      "as": "watch_piece"
+    },
+    {
+      "joinaggregate": [
+        {"op": "sum", "field": "both_piece", "as": "both_total"},
+        {"op": "sum", "field": "listen_piece", "as": "listen_only_total"},
+        {"op": "sum", "field": "watch_piece", "as": "watch_only_total"}
+      ],
+      "groupby": ["audience"]
+    },
+    {"calculate": "datum.both_total + datum.listen_only_total", "as": "listen_total"},
+    {"calculate": "100 * datum.both_total / datum.listen_total", "as": "both_split"},
+    {
+      "calculate": "100 * datum.watch_only_total / (100 - datum.listen_total)",
+      "as": "watch_split"
+    },
+    {
+      "calculate": "datum.combination == 'Both' || datum.combination == 'Listened only' ? 0 : datum.listen_total",
+      "as": "x0"
+    },
+    {
+      "calculate": "datum.combination == 'Both' || datum.combination == 'Listened only' ? datum.listen_total : 100",
+      "as": "x1"
+    },
+    {
+      "calculate": "datum.combination == 'Listened only' ? datum.both_split : datum.combination == 'Neither' ? datum.watch_split : 0",
+      "as": "y0"
+    },
+    {
+      "calculate": "datum.combination == 'Both' ? datum.both_split : datum.combination == 'Watched only' ? datum.watch_split : 100",
+      "as": "y1"
+    },
+    {"calculate": "(datum.x0+datum.x1)/2", "as": "xc"},
+    {"calculate": "(datum.y0+datum.y1)/2", "as": "yc"},
+    {"calculate": "format(datum.share_pct,'.0f')+'%'", "as": "pct_label"}
+  ],
+  "facet": {
+    "column": {
+      "field": "audience",
+      "type": "nominal",
+      "sort": ["Australia overall", "Regional Australia"],
+      "title": null,
+      "header": {
+        "labelFontSize": 14,
+        "labelFontWeight": "bold",
+        "labelPadding": 8,
+        "labelExpr": "datum.label == 'Australia overall' ? 'Australia overall · 35% both' : 'Regional Australia · 28% both'"
+      }
+    }
+  },
+  "spec": {
+    "width": 245,
+    "height": 245,
+    "layer": [
+      {
+        "mark": {"type": "rect", "stroke": "#FFFFFF", "strokeWidth": 2},
+        "encoding": {
+          "x": {
+            "field": "x0",
+            "type": "quantitative",
+            "scale": {"domain": [0, 100]},
+            "axis": null
+          },
+          "x2": {"field": "x1"},
+          "y": {
+            "field": "y0",
+            "type": "quantitative",
+            "scale": {"domain": [0, 100], "reverse": true},
+            "axis": null
+          },
+          "y2": {"field": "y1"},
+          "color": {
+            "field": "combination",
+            "type": "nominal",
+            "title": "Podcast behaviour",
+            "scale": {
+              "domain": ["Both", "Listened only", "Watched only", "Neither"],
+              "range": ["#7251A8", "#0E877F", "#E89269", "#D8E0E6"]
+            },
+            "legend": {"orient": "bottom", "columns": 2}
+          },
+          "tooltip": [
+            {"field": "audience", "title": "Population"},
+            {"field": "combination", "title": "Behaviour"},
+            {
+              "field": "share_pct",
+              "type": "quantitative",
+              "title": "Share (%)",
+              "format": ".0f"
+            }
+          ]
+        }
+      },
+      {
+        "mark": {"type": "text", "fontWeight": "bold", "fontSize": 16},
+        "encoding": {
+          "x": {
+            "field": "xc",
+            "type": "quantitative",
+            "scale": {"domain": [0, 100]},
+            "axis": null
+          },
+          "y": {
+            "field": "yc",
+            "type": "quantitative",
+            "scale": {"domain": [0, 100], "reverse": true},
+            "axis": null
+          },
+          "text": {"field": "pct_label"},
+          "color": {
+            "condition": {
+              "test": "datum.combination == 'Both' || datum.combination == 'Listened only'",
+              "value": "#FFFFFF"
+            },
+            "value": "#24394A"
+          }
+        }
+      }
+    ]
+  },
+  "resolve": {
+    "scale": {"x": "independent", "y": "independent"}
+  },
+  "config": {
+    "view": {"stroke": null},
+    "facet": {"spacing": 22}
+  }
+}

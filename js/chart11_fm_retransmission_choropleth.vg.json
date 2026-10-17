@@ -1,0 +1,139 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 520,
+  "params": [
+    {
+      "name": "Measure_selection",
+      "value": "per100k",
+      "bind": {
+        "input": "select",
+        "options": ["per100k", "retrans", "dab"],
+        "labels": [
+          "Radio transmitter sites per 100,000 people",
+          "Share of FM transmitters that relay another station (%)",
+          "Share of radio sites that broadcast DAB+ (%)"
+        ],
+        "name": "Colour the map by: "
+      }
+    }
+  ],
+  "projection": {"type": "mercator", "center": [134, -28.5]},
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson",
+        "format": {"type": "topojson", "feature": "collection"}
+      },
+      "transform": [
+        {
+          "calculate": "datum.properties.STATE == '1' ? 'ACT' : datum.properties.STATE == '3' ? 'NSW' : datum.properties.STATE == '4' ? 'NT' : datum.properties.STATE == '5' ? 'QLD' : datum.properties.STATE == '6' ? 'SA' : datum.properties.STATE == '7' ? 'TAS' : datum.properties.STATE == '8' ? 'VIC' : datum.properties.STATE == '9' ? 'WA' : 'Other'",
+          "as": "state"
+        },
+        {
+          "lookup": "state",
+          "from": {
+            "data": {"url": "data/state_radio_infrastructure_2026.csv"},
+            "key": "state",
+            "fields": [
+              "state_name",
+              "population",
+              "all_radio_sites",
+              "dab_sites",
+              "radio_sites_per_100k",
+              "fm_records",
+              "fm_retransmission_records",
+              "fm_retransmission_pct",
+              "dab_share_of_sites_pct"
+            ]
+          }
+        },
+        {
+          "calculate": "Measure_selection == 'per100k' ? toNumber(datum.radio_sites_per_100k) : Measure_selection == 'retrans' ? toNumber(datum.fm_retransmission_pct) : toNumber(datum.dab_share_of_sites_pct)",
+          "as": "shown_value"
+        }
+      ],
+      "mark": {"type": "geoshape", "stroke": "#FFFFFF", "strokeWidth": 1},
+      "encoding": {
+        "color": {
+          "field": "shown_value",
+          "type": "quantitative",
+          "title": "Value of the selected measure",
+          "scale": {"type": "sqrt", "range": ["#EAF4F1", "#0A6B66"], "zero": true},
+          "legend": {
+            "orient": "bottom-left",
+            "direction": "horizontal",
+            "gradientLength": 240,
+            "titleLimit": 300
+          }
+        },
+        "tooltip": [
+          {"field": "state_name", "title": "State / territory"},
+          {
+            "field": "population",
+            "type": "quantitative",
+            "title": "Population (Mar 2026)",
+            "format": ","
+          },
+          {
+            "field": "all_radio_sites",
+            "type": "quantitative",
+            "title": "Radio transmitter sites"
+          },
+          {
+            "field": "radio_sites_per_100k",
+            "type": "quantitative",
+            "title": "Sites per 100,000 people"
+          },
+          {
+            "field": "fm_retransmission_records",
+            "type": "quantitative",
+            "title": "FM relay transmitters"
+          },
+          {"field": "fm_records", "type": "quantitative", "title": "All FM transmitters"},
+          {"field": "dab_sites", "type": "quantitative", "title": "DAB+ sites"}
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/state_radio_infrastructure_2026.csv",
+        "format": {
+          "type": "csv",
+          "parse": {"label_lon": "number", "label_lat": "number"}
+        }
+      },
+      "transform": [
+        {
+          "calculate": "Measure_selection == 'per100k' ? toNumber(datum.radio_sites_per_100k) : Measure_selection == 'retrans' ? toNumber(datum.fm_retransmission_pct) : toNumber(datum.dab_share_of_sites_pct)",
+          "as": "shown_value"
+        },
+        {
+          "calculate": "datum.state + ': ' + format(datum.shown_value, '.1f') + (Measure_selection == 'per100k' ? '' : '%')",
+          "as": "state_label"
+        },
+        {
+          "joinaggregate": [
+            {"op": "max", "field": "shown_value", "as": "max_value"}
+          ]
+        }
+      ],
+      "mark": {"type": "text", "fontSize": 15, "fontWeight": "bold", "align": "center"},
+      "encoding": {
+        "longitude": {"field": "label_lon", "type": "quantitative"},
+        "latitude": {"field": "label_lat", "type": "quantitative"},
+        "text": {"field": "state_label"},
+        "color": {
+          "condition": {
+            "test": "datum.shown_value > datum.max_value * 0.45",
+            "value": "#FFFFFF"
+          },
+          "value": "#17374A"
+        }
+      }
+    }
+  ],
+  "config": {
+    "view": {"stroke": null}
+  }
+}

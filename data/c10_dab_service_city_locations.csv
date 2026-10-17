@@ -1,0 +1,12 @@
+city,state,latitude,longitude,licence_entries_in_named_area,frequency_blocks_in_named_area
+Sydney,NSW,-33.805556,151.180833,3,"9A, 9B, 9C"
+Melbourne,VIC,-37.8375,145.346667,3,"9A, 9B, 9C"
+Brisbane,QLD,-27.463056,152.948056,3,"9A, 9B, 9C"
+Adelaide,SA,-34.981111,138.708056,2,"9B, 9C"
+Perth,WA,-32.012778,116.061667,2,"9B, 9C"
+Canberra,ACT,-35.275556,149.097778,2,"8D, 9C"
+Hobart,TAS,-42.8975,147.236389,2,"9A, 9C"
+Darwin,NT,-12.414444,130.969167,2,"9A, 9C"
+Gold Coast,QLD,-28.033611,153.242222,2,"8B, 9D"
+Launceston,TAS,-41.440556,147.146667,1,DAB8B
+Mandurah,WA,-32.650278,115.989722,1,8C

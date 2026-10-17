@@ -1,0 +1,83 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": 260,
+  "data": {
+    "url": "data/australian_radio_combined_long.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"year": "number", "value": "number"}
+    }
+  },
+  "transform": [
+    {"filter": "datum.metric == 'Weekly online audio service usage'"},
+    {
+      "window": [
+        {"op": "lag", "field": "value", "as": "last_year"}
+      ],
+      "groupby": ["subgroup"],
+      "sort": [
+        {"field": "year", "order": "ascending"}
+      ]
+    },
+    {
+      "calculate": "isValid(datum.last_year) ? (datum.value - datum.last_year >= 0 ? '+' : '') + (datum.value - datum.last_year) + ' points' : 'First year measured'",
+      "as": "change_note"
+    },
+    {"calculate": "datum.value + '%'", "as": "pct_label"}
+  ],
+  "encoding": {
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": null,
+      "axis": {
+        "labelAngle": 0,
+        "orient": "top",
+        "labelFontSize": 14,
+        "labelFontWeight": "bold"
+      }
+    },
+    "y": {
+      "field": "subgroup",
+      "type": "nominal",
+      "title": null,
+      "sort": ["Spotify", "YouTube Music", "Apple Music", "Amazon Music", "SoundCloud"],
+      "axis": {"labelFontSize": 14}
+    }
+  },
+  "layer": [
+    {
+      "mark": {"type": "rect", "cornerRadius": 4, "stroke": "#FFFFFF", "strokeWidth": 3},
+      "encoding": {
+        "color": {
+          "field": "value",
+          "type": "quantitative",
+          "title": "Used weekly (%)",
+          "scale": {"domain": [0, 50], "range": ["#E9F6F1", "#087F79"]},
+          "legend": {
+            "orient": "bottom",
+            "gradientLength": 220,
+            "values": [0, 10, 20, 30, 40, 50]
+          }
+        },
+        "tooltip": [
+          {"field": "subgroup", "title": "Service"},
+          {"field": "year", "title": "Year"},
+          {"field": "value", "title": "Used weekly (%)"},
+          {"field": "change_note", "title": "Change from last year"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "text", "fontSize": 15, "fontWeight": "bold"},
+      "encoding": {
+        "text": {"field": "pct_label"},
+        "color": {
+          "condition": {"test": "datum.value >= 25", "value": "#FFFFFF"},
+          "value": "#26384B"
+        }
+      }
+    }
+  ]
+}

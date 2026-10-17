@@ -1,0 +1,220 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "data/dab_transmitter_sites_2026.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"latitude": "number", "longitude": "number", "power_kw": "number"}
+    }
+  },
+  "transform": [
+    {"calculate": "datum.region + ' ' + datum.power_kw + ' kW'", "as": "map_label"},
+    {
+      "joinaggregate": [
+        {"op": "count", "as": "region_sites"}
+      ],
+      "groupby": ["region"]
+    }
+  ],
+  "hconcat": [
+    {
+      "width": 640,
+      "height": 480,
+      "projection": {"type": "mercator", "center": [136.5, -28], "scale": 650, "translate": [320, 240]},
+      "encoding": {
+        "longitude": {"field": "longitude", "type": "quantitative"},
+        "latitude": {"field": "latitude", "type": "quantitative"}
+      },
+      "layer": [
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson",
+            "format": {"type": "topojson", "feature": "collection"}
+          },
+          "mark": {
+            "type": "geoshape",
+            "fill": "#EEF1F3",
+            "stroke": "#C5D0D8",
+            "strokeWidth": 0.6
+          },
+          "encoding": {"longitude": null, "latitude": null}
+        },
+        {
+          "mark": {"type": "circle", "stroke": "#FFFFFF", "strokeWidth": 1},
+          "encoding": {
+            "size": {
+              "field": "power_kw",
+              "type": "quantitative",
+              "title": "Transmitter power (kW)",
+              "scale": {"type": "sqrt", "domain": [0, 50], "range": [12, 900]},
+              "legend": {
+                "values": [1, 10, 25, 50],
+                "orient": "bottom",
+                "direction": "horizontal",
+                "symbolFillColor": "#B9A5D6",
+                "symbolStrokeColor": "#7753AC"
+              }
+            },
+            "color": {
+              "field": "site_type",
+              "type": "nominal",
+              "title": "Site type",
+              "scale": {
+                "domain": ["Main high-power site", "Low-power infill site"],
+                "range": ["#7753AC", "#E47B5C"]
+              },
+              "legend": {"orient": "bottom", "direction": "horizontal", "symbolSize": 180}
+            },
+            "opacity": {
+              "condition": {"param": "Region_pick", "value": 0.9},
+              "value": 0.12
+            },
+            "order": {"field": "power_kw", "sort": "descending"},
+            "tooltip": [
+              {"field": "area_served", "title": "Licensed area"},
+              {"field": "site_name", "title": "Transmitter site"},
+              {"field": "power_kw", "title": "Power (kW)"},
+              {"field": "frequency_blocks", "title": "Frequency blocks"},
+              {"field": "site_type", "title": "Site type"}
+            ]
+          }
+        },
+        {
+          "transform": [
+            {"filter": "datum.label_side == 'right'"}
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "dx": 14,
+            "fontSize": 13,
+            "fontWeight": "bold",
+            "color": "#2B3F52"
+          },
+          "encoding": {
+            "text": {"field": "map_label"}
+          }
+        },
+        {
+          "transform": [
+            {"filter": "datum.label_side == 'left'"}
+          ],
+          "mark": {
+            "type": "text",
+            "align": "right",
+            "dx": -14,
+            "fontSize": 13,
+            "fontWeight": "bold",
+            "color": "#2B3F52"
+          },
+          "encoding": {
+            "text": {"field": "map_label"}
+          }
+        },
+        {
+          "transform": [
+            {"filter": "datum.label_side == 'below'"}
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "dx": 10,
+            "dy": 16,
+            "fontSize": 13,
+            "fontWeight": "bold",
+            "color": "#2B3F52"
+          },
+          "encoding": {
+            "text": {"field": "map_label"}
+          }
+        }
+      ]
+    },
+    {
+      "width": 220,
+      "height": 380,
+      "title": {
+        "text": "Transmitter sites in each region",
+        "fontSize": 14,
+        "anchor": "start"
+      },
+      "encoding": {
+        "y": {
+          "field": "region",
+          "type": "nominal",
+          "title": null,
+          "sort": {"field": "region_sites", "op": "max", "order": "descending"},
+          "axis": {"labelFontSize": 13}
+        }
+      },
+      "layer": [
+        {
+          "params": [
+            {
+              "name": "Region_pick",
+              "select": {
+                "type": "point",
+                "fields": ["region"],
+                "on": "pointerover",
+                "clear": "pointerout"
+              }
+            }
+          ],
+          "mark": {
+            "type": "bar",
+            "height": {"band": 0.7},
+            "cursor": "pointer"
+          },
+          "encoding": {
+            "x": {
+              "aggregate": "count",
+              "type": "quantitative",
+              "title": "Number of sites",
+              "axis": {"tickMinStep": 1}
+            },
+            "color": {
+              "field": "site_type",
+              "type": "nominal",
+              "scale": {
+                "domain": ["Main high-power site", "Low-power infill site"],
+                "range": ["#7753AC", "#E47B5C"]
+              },
+              "legend": null
+            },
+            "opacity": {
+              "condition": {"param": "Region_pick", "value": 1},
+              "value": 0.3
+            },
+            "tooltip": [
+              {"field": "region", "title": "Region"},
+              {"field": "site_type", "title": "Site type"},
+              {
+                "aggregate": "count",
+                "type": "quantitative",
+                "title": "Sites of this type"
+              }
+            ]
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "dx": 5,
+            "fontSize": 13,
+            "fontWeight": "bold",
+            "color": "#2B3F52"
+          },
+          "encoding": {
+            "x": {"field": "region_sites", "type": "quantitative", "aggregate": "max"},
+            "text": {"field": "region_sites", "type": "quantitative", "aggregate": "max"}
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "view": {"stroke": null},
+    "concat": {"spacing": 40}
+  }
+}

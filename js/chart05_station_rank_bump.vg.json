@@ -1,0 +1,133 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 760,
+  "height": 405,
+  "title": {
+    "text": "How Have Radio Station Rankings Shifted Across Surveys?",
+    "subtitle": "Top 5 stations in Survey 5, GfK total radio share, 2026 Surveys 3–5 (ages 10+)"
+  },
+  "data": {
+    "url": "data/c05_station_rank_history_2026.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "survey": "number",
+        "share": "number",
+        "rank": "number",
+        "latest_rank": "number",
+        "rank_gain": "number"
+      }
+    }
+  },
+  "params": [
+    {
+      "name": "Market_selection",
+      "value": "Melbourne",
+      "bind": {
+        "input": "select",
+        "options": ["Melbourne", "Sydney", "Brisbane", "Adelaide", "Perth"],
+        "name": "Select market: "
+      }
+    }
+  ],
+  "transform": [
+    {"filter": "datum.market == Market_selection"},
+    {"filter": "datum.latest_rank <= 5"},
+    {"calculate": "'Survey ' + datum.survey", "as": "survey_name"},
+    {
+      "calculate": "'Biggest rise: ' + datum.station + ' (+' + datum.rank_gain + ' ranks)'",
+      "as": "rise_note"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "survey",
+      "type": "ordinal",
+      "title": "GfK 2026 survey",
+      "sort": [3, 4, 5],
+      "axis": {
+        "labelExpr": "'Survey ' + datum.label",
+        "labelAngle": 0,
+        "labelFontSize": 12
+      }
+    },
+    "y": {
+      "field": "rank",
+      "type": "quantitative",
+      "title": "Station rank (1 = highest share)",
+      "scale": {"domain": [7, 1]},
+      "axis": {"values": [1, 2, 3, 4, 5, 6, 7], "labelFontSize": 12}
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "point": {"filled": true, "size": 110},
+        "strokeWidth": 3
+      },
+      "encoding": {
+        "color": {
+          "field": "station",
+          "type": "nominal",
+          "title": "Station",
+          "scale": {
+            "range": ["#8D4474", "#C47C2B", "#7649A3", "#A95642", "#647146", "#A95F8B"]
+          },
+          "legend": {"orient": "bottom", "columns": 3}
+        },
+        "tooltip": [
+          {"field": "market", "type": "nominal", "title": "Market"},
+          {"field": "station", "type": "nominal", "title": "Station"},
+          {"field": "survey_name", "type": "nominal", "title": "Survey"},
+          {
+            "field": "rank",
+            "type": "quantitative",
+            "title": "Share-based rank",
+            "format": ".0f"
+          },
+          {
+            "field": "share",
+            "type": "quantitative",
+            "title": "Total radio share (%)",
+            "format": ".1f"
+          },
+          {
+            "field": "rank_gain",
+            "type": "quantitative",
+            "title": "Rank change, S3 to S5",
+            "format": "+.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {"filter": "datum.survey == 5 && datum.rank_gain > 0"},
+        {
+          "window": [
+            {"op": "row_number", "as": "rise_order"}
+          ],
+          "sort": [
+            {"field": "rank_gain", "order": "descending"},
+            {"field": "station", "order": "ascending"}
+          ]
+        },
+        {"filter": "datum.rise_order == 1"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "bottom",
+        "dx": -12,
+        "dy": -19,
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#4A2A63"
+      },
+      "encoding": {
+        "text": {"field": "rise_note", "type": "nominal"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "data/c07_spotify_account_waffle_2026.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"x": "number", "y": "number"}
+    }
+  },
+  "transform": [
+    {
+      "joinaggregate": [
+        {"op": "count", "as": "share_pct"}
+      ],
+      "groupby": ["audience", "account_type"]
+    }
+  ],
+  "facet": {
+    "column": {
+      "field": "audience",
+      "type": "nominal",
+      "sort": ["Australia overall", "Regional Australia"],
+      "title": null,
+      "header": {"labelFontWeight": "bold", "labelFontSize": 14, "labelPadding": 9}
+    }
+  },
+  "spec": {
+    "width": 225,
+    "height": 245,
+    "mark": {"type": "rect", "stroke": "white", "strokeWidth": 1.5, "cornerRadius": 2},
+    "encoding": {
+      "x": {
+        "field": "x",
+        "type": "ordinal",
+        "axis": null,
+        "sort": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      },
+      "y": {
+        "field": "y",
+        "type": "ordinal",
+        "axis": null,
+        "sort": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      },
+      "color": {
+        "field": "account_type",
+        "type": "nominal",
+        "title": "Spotify account type",
+        "scale": {
+          "domain": [
+            "Paid subscription",
+            "Free service only",
+            "Someone else's account",
+            "Free trial"
+          ],
+          "range": ["#087F79", "#7C8FA6", "#E47B5C", "#D4C8E2"]
+        },
+        "legend": {"orient": "bottom", "columns": 2}
+      },
+      "tooltip": [
+        {"field": "audience", "title": "Listeners"},
+        {"field": "account_type", "title": "Account type"},
+        {"field": "share_pct", "title": "Share of weekly Spotify listeners (%)"}
+      ]
+    }
+  },
+  "config": {
+    "view": {"stroke": null},
+    "transform": [
+      {
+        "joinaggregate": [
+          {"op": "count", "as": "share_pct"}
+        ],
+        "groupby": ["audience", "account_type"]
+      }
+    ],
+    "facet": {"spacing": 20}
+  }
+}

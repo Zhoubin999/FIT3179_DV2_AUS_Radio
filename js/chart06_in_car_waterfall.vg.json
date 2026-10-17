@@ -1,0 +1,111 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "data/australian_radio_combined_long.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"year": "number", "value": "number"}
+    }
+  },
+  "transform": [
+    {
+      "filter": "datum.dataset_section == 'In-car audio' && datum.metric == 'Apple CarPlay or Android Auto ownership' && datum.subgroup_type == 'Overall'"
+    },
+    {
+      "filter": "datum.geography == 'Australia' || datum.geography == 'Regional Australia'"
+    },
+    {
+      "calculate": "datum.geography == 'Australia' ? 'Australia overall' : 'Regional Australia'",
+      "as": "area"
+    },
+    {
+      "window": [
+        {"op": "lag", "field": "value", "as": "previous"}
+      ],
+      "groupby": ["area"],
+      "sort": [
+        {"field": "year", "order": "ascending"}
+      ]
+    },
+    {"calculate": "isValid(datum.previous) ? datum.previous : 0", "as": "previous_clean"},
+    {"calculate": "min(datum.value, datum.previous_clean)", "as": "bar_bottom"},
+    {"calculate": "max(datum.value, datum.previous_clean)", "as": "bar_top"},
+    {"calculate": "datum.value - datum.previous_clean", "as": "change_pp"},
+    {
+      "calculate": "datum.year == 2019 ? 'Starting level' : (datum.change_pp > 0 ? '+' : '') + format(datum.change_pp,'.0f') + ' pp'",
+      "as": "change_note"
+    },
+    {"calculate": "format(datum.value,'.0f') + '%'", "as": "end_label"}
+  ],
+  "facet": {
+    "column": {
+      "field": "area",
+      "type": "nominal",
+      "sort": ["Australia overall", "Regional Australia"],
+      "title": null,
+      "header": {"labelFontSize": 14, "labelFontWeight": "bold", "labelPadding": 12}
+    }
+  },
+  "spec": {
+    "width": 215,
+    "height": 278,
+    "encoding": {
+      "x": {
+        "field": "year",
+        "type": "ordinal",
+        "title": "Year",
+        "sort": "ascending",
+        "axis": {"labelAngle": -40, "labelFontSize": 12}
+      },
+      "y": {
+        "field": "bar_top",
+        "type": "quantitative",
+        "title": "Ownership (%)",
+        "scale": {"domain": [0, 60]},
+        "axis": {"values": [0, 10, 20, 30, 40, 50, 60]}
+      }
+    },
+    "layer": [
+      {
+        "mark": {"type": "bar", "size": 24, "cornerRadiusEnd": 2},
+        "encoding": {
+          "y2": {"field": "bar_bottom"},
+          "color": {
+            "condition": [
+              {"test": "datum.year == 2019", "value": "#7A8EA4"},
+              {"test": "datum.change_pp < 0", "value": "#DF6A51"},
+              {"test": "datum.change_pp == 0", "value": "#BAC7D0"}
+            ],
+            "value": "#0C827E"
+          },
+          "tooltip": [
+            {"field": "area", "title": "Area"},
+            {"field": "year", "title": "Year"},
+            {"field": "value", "title": "Ownership (%)", "format": ".0f"},
+            {"field": "change_note", "title": "Year-on-year change"}
+          ]
+        }
+      },
+      {
+        "transform": [
+          {"filter": "datum.year == 2026"}
+        ],
+        "mark": {
+          "type": "text",
+          "fontSize": 13,
+          "fontWeight": "bold",
+          "dy": -12,
+          "color": "#1E3445"
+        },
+        "encoding": {
+          "y": {"field": "bar_top", "type": "quantitative"},
+          "text": {"field": "end_label", "type": "nominal"}
+        }
+      }
+    ]
+  },
+  "config": {
+    "view": {"stroke": null},
+    "facet": {"spacing": 20}
+  }
+}

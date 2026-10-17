@@ -1,0 +1,64 @@
+area_served,state,frequency_block,purpose,frequency_mhz,polarisation,pattern,power_w,lat_deg,lat_min,lat_sec,lon_deg,lon_min,lon_sec,latitude,longitude,licence_number,site_name,technology
+Adelaide,SA,9B,Category 1,204.64,V,OD,50000.0,-34,58,52,138,42,29,-34.98111111111111,138.70805555555555,1901330,TXA Crafers Site Tower 115 Mount Lofty Summit Road CRAFERS,DAB+ / digital radio
+Adelaide,SA,9C,Category 3,206.352,V,OD,50000.0,-34,58,52,138,42,29,-34.98111111111111,138.70805555555555,1911857,TXA Crafers Site Tower 115 Mount Lofty Summit Road CRAFERS,DAB+ / digital radio
+Bacchus Marsh/Melton,VIC,9A,Category 1,202.928,V,DA,500.0,-37,38,39,144,24,37,-37.64416666666666,144.4102777777778,1901421,Crown Castle Site Bald Hill off Swans Rd DARLEY,DAB+ / digital radio
+Bacchus Marsh/Melton,VIC,9B,Category 1,204.64,V,DA,500.0,-37,38,39,144,24,37,-37.64416666666666,144.4102777777778,1901422,Crown Castle Site Bald Hill off Swans Rd DARLEY,DAB+ / digital radio
+Bacchus Marsh/Melton,VIC,9C,Category 3,206.352,V,DA,500.0,-37,38,39,144,24,37,-37.64416666666666,144.4102777777778,1911854,Crown Castle Site Bald Hill off Swans Rd DARLEY,DAB+ / digital radio
+Brisbane,QLD,9A,Category 1,202.928,V,OD,50000.0,-27,27,47,152,56,53,-27.463055555555556,152.94805555555556,1901423,TXA T-Site Tower 445 Sir Samuel Griffith Drive MOUNT COOT-THA,DAB+ / digital radio
+Brisbane,QLD,9B,Category 1,204.64,V,OD,50000.0,-27,27,47,152,56,53,-27.463055555555556,152.94805555555556,1901424,TXA T-Site Tower 445 Sir Samuel Griffith Drive MOUNT COOT-THA,DAB+ / digital radio
+Brisbane,QLD,9C,Category 3,206.352,V,OD,50000.0,-27,27,47,152,56,53,-27.463055555555556,152.94805555555556,1911853,TXA T-Site Tower 445 Sir Samuel Griffith Drive MOUNT COOT-THA,DAB+ / digital radio
+Caboolture,QLD,9A,Category 1,202.928,V,DA,500.0,-27,3,56,152,46,50,-27.065555555555555,152.78055555555557,1901423,Broadcast/Comms Tower Digital Distribution Australia Site Mount Mee Rd MOUNT MEE,DAB+ / digital radio
+Caboolture,QLD,9B,Category 1,204.64,V,DA,500.0,-27,3,56,152,46,50,-27.065555555555555,152.78055555555557,1901424,Broadcast/Comms Tower Digital Distribution Australia Site Mount Mee Rd MOUNT MEE,DAB+ / digital radio
+Caboolture,QLD,9C,Category 3,206.352,V,DA,500.0,-27,3,56,152,46,50,-27.065555555555555,152.78055555555557,1911853,Broadcast/Comms Tower Digital Distribution Australia Site Mount Mee Rd MOUNT MEE,DAB+ / digital radio
+Campbelltown,NSW,9A,Category 1,202.928,V,DA,500.0,-34,2,33,150,47,3,-34.0425,150.78416666666666,1901419,Crown Castle Site Badgelly Hill off Badgally Rd GREGORY HILLS,DAB+ / digital radio
+Campbelltown,NSW,9B,Category 1,204.64,V,DA,500.0,-34,2,33,150,47,3,-34.0425,150.78416666666666,1901420,Crown Castle Site Badgelly Hill off Badgally Rd GREGORY HILLS,DAB+ / digital radio
+Campbelltown,NSW,9C,Category 3,206.352,V,DA,500.0,-34,2,33,150,47,3,-34.0425,150.78416666666666,1911855,Crown Castle Site Badgelly Hill off Badgally Rd GREGORY HILLS,DAB+ / digital radio
+Canberra,ACT,8D,Category 1,201.072,V,OD,20000.0,-35,16,32,149,5,52,-35.275555555555556,149.0977777777778,10503410,Telecom Tower BLACK MOUNTAIN,DAB+ / digital radio
+Canberra,ACT,9C,Category 3,206.352,V,OD,20000.0,-35,16,32,149,5,52,-35.275555555555556,149.0977777777778,10224957,Telecom Tower BLACK MOUNTAIN,DAB+ / digital radio
+Collaroy Plateau,NSW,9A,Category 1,202.928,V,DA,300.0,-33,43,46,151,17,32,-33.72944444444445,151.29222222222222,1901419,Broadcast/Comms Monopole Crown Castle Site Plateau Park off Blandford St COLLAROY PLATEAU,DAB+ / digital radio
+Collaroy Plateau,NSW,9B,Category 1,204.64,V,DA,300.0,-33,43,46,151,17,32,-33.72944444444445,151.29222222222222,1901420,Broadcast/Comms Monopole Crown Castle Site Plateau Park off Blandford St COLLAROY PLATEAU,DAB+ / digital radio
+Collaroy Plateau,NSW,9C,Category 3,206.352,V,DA,300.0,-33,43,46,151,17,32,-33.72944444444445,151.29222222222222,1911855,Broadcast/Comms Monopole Crown Castle Site Plateau Park off Blandford St COLLAROY PLATEAU,DAB+ / digital radio
+Darwin,NT,9A,Category 1,202.928,V,OD,20000.0,-12,24,52,130,58,9,-12.414444444444445,130.96916666666667,10503674,Broadcast Australia Site 100 Deloraine Rd SHOAL BAY,DAB+ / digital radio
+Darwin,NT,9C,Category 3,206.352,V,OD,20000.0,-12,24,52,130,58,9,-12.414444444444445,130.96916666666667,10224729,Broadcast Australia Site 100 Deloraine Rd SHOAL BAY,DAB+ / digital radio
+Darwin City,NT,9C,Category 3,206.352,V,DA,500.0,-12,27,32,130,50,13,-12.458888888888888,130.83694444444444,10224729,Marrakai Building Lot 5440 (93) Smith Street DARWIN,DAB+ / digital radio
+Gold Coast,QLD,8B,Category 3,197.648,V,DA,25000.0,-28,2,1,153,14,32,-28.033611111111114,153.2422222222222,12295932,NTL Broadcast Site cnr North & Freemans Rds LOWER BEECHMONT,DAB+ / digital radio
+Gold Coast,QLD,9D,Category 1,208.064,V,DA,25000.0,-27,58,11,153,12,48,-27.96972222222222,153.2133333333333,11331530,GCT Mt Tamborine Site 103m Tower Golf Course Road MOUNT TAMBORINE,DAB+ / digital radio
+Hobart,TAS,9A,Category 1,202.928,V,OD,20000.0,-42,53,51,147,14,11,-42.8975,147.23638888888888,10501814,Broadcast Australia Site Pinnacle Rd MT WELLINGTON,DAB+ / digital radio
+Hobart,TAS,9C,Category 3,206.352,V,OD,20000.0,-42,53,51,147,14,11,-42.8975,147.23638888888888,10224884,Broadcast Australia Site Pinnacle Rd MT WELLINGTON,DAB+ / digital radio
+Launceston,TAS,DAB8B,Category 3,197.648,V,DA,700.0,-41,26,26,147,8,48,-41.440555555555555,147.14666666666665,12643483,ABC Studios 45 Ann St LAUNCESTON,DAB+ / digital radio
+Mandurah,WA,8C,Category 1,199.36,V,DA,10000.0,-32,39,1,115,59,23,-32.650277777777774,115.98972222222223,10675046,Broadcast Site off Scarp Road Near Turner Hill PINJARRA,DAB+ / digital radio
+Melbourne,VIC,9A,Category 1,202.928,V,DA,50000.0,-37,50,15,145,20,48,-37.837500000000006,145.34666666666666,1901421,TXA Ornata Road Site Tower 12 Ornata Road MOUNT DANDENONG,DAB+ / digital radio
+Melbourne,VIC,9B,Category 1,204.64,V,DA,50000.0,-37,50,15,145,20,48,-37.837500000000006,145.34666666666666,1901422,TXA Ornata Road Site Tower 12 Ornata Road MOUNT DANDENONG,DAB+ / digital radio
+Melbourne,VIC,9C,Category 3,206.352,V,DA,50000.0,-37,50,6,145,20,55,-37.835,145.34861111111113,1911854,BAI Comms Site 116-118 Ridge Rd MOUNT DANDENONG,DAB+ / digital radio
+Melbourne City,VIC,9A,Category 1,202.928,V,OD,400.0,-37,48,54,144,58,14,-37.815,144.97055555555556,1901421,Broadcast/Comms Tower Roof 101 Collins Street MELBOURNE,DAB+ / digital radio
+Melbourne City,VIC,9B,Category 1,204.64,V,OD,400.0,-37,48,54,144,58,14,-37.815,144.97055555555556,1901422,Broadcast/Comms Tower Roof 101 Collins Street MELBOURNE,DAB+ / digital radio
+Melbourne City,VIC,9C,Category 3,206.352,V,OD,400.0,-37,48,54,144,58,14,-37.815,144.97055555555556,1911854,Broadcast/Comms Tower Roof 101 Collins Street MELBOURNE,DAB+ / digital radio
+Penrith,NSW,9A,Category 1,202.928,V,DA,300.0,-33,40,3,150,38,23,-33.6675,150.63972222222222,1901419,Broadcast Monopole Aust Radio Network Site 754-768 Hawkesbury Rd HAWKESBURY HEIGHTS,DAB+ / digital radio
+Penrith,NSW,9B,Category 1,204.64,V,DA,300.0,-33,40,3,150,38,23,-33.6675,150.63972222222222,1901420,Broadcast Monopole Aust Radio Network Site 754-768 Hawkesbury Rd HAWKESBURY HEIGHTS,DAB+ / digital radio
+Penrith,NSW,9C,Category 3,206.352,V,DA,300.0,-33,40,3,150,38,23,-33.6675,150.63972222222222,1911855,Broadcast Monopole Aust Radio Network Site 754-768 Hawkesbury Rd HAWKESBURY HEIGHTS,DAB+ / digital radio
+Perth,WA,9B,Category 1,204.64,V,DA,50000.0,-32,0,46,116,3,42,-32.01277777777778,116.06166666666667,1901331,TXA Carmel Site 255 Welshpool Road East CARMEL,DAB+ / digital radio
+Perth,WA,9C,Category 3,206.352,V,DA,50000.0,-32,0,46,116,3,42,-32.01277777777778,116.06166666666667,1911856,TXA Carmel Site 255 Welshpool Road East CARMEL,DAB+ / digital radio
+Perth City,WA,9B,Category 1,204.64,V,DA,300.0,-31,57,14,115,51,20,-31.953888888888887,115.85555555555555,1901331,Central Park 152 to 158 St Georges Terrace PERTH,DAB+ / digital radio
+Perth City,WA,9C,Category 3,206.352,V,DA,300.0,-31,57,14,115,51,20,-31.953888888888887,115.85555555555555,1911856,Central Park 152 to 158 St Georges Terrace PERTH,DAB+ / digital radio
+Perth Northern Beaches,WA,9B,Category 1,204.64,V,OD,300.0,-31,40,41,115,42,40,-31.678055555555556,115.71111111111111,1901331,Crown Castle Site Cnr Mulgrave Loop and Bergen Way MINDARIE,DAB+ / digital radio
+Perth Northern Beaches,WA,9C,Category 3,206.352,V,OD,300.0,-31,40,41,115,42,40,-31.678055555555556,115.71111111111111,1911856,Crown Castle Site Cnr Mulgrave Loop and Bergen Way MINDARIE,DAB+ / digital radio
+Port Melbourne,VIC,9A,Category 1,202.928,V,DA,300.0,-37,49,29,144,56,19,-37.82472222222223,144.93861111111113,1901421,Broadcast/Comms Monopole Pioneer Concrete Site 213 Boundary St PORT MELBOURNE,DAB+ / digital radio
+Port Melbourne,VIC,9B,Category 1,204.64,V,DA,300.0,-37,49,29,144,56,19,-37.82472222222223,144.93861111111113,1901422,Broadcast/Comms Monopole Pioneer Concrete Site 213 Boundary St PORT MELBOURNE,DAB+ / digital radio
+Port Melbourne,VIC,9C,Category 3,206.352,V,DA,300.0,-37,49,29,144,56,19,-37.82472222222223,144.93861111111113,1911854,Broadcast/Comms Monopole Pioneer Concrete Site 213 Boundary St PORT MELBOURNE,DAB+ / digital radio
+Sutherland,NSW,9A,Category 1,202.928,V,DA,500.0,-34,1,6,151,3,16,-34.01833333333333,151.05444444444444,1901419,Vodafone-Optus-Telstra Site Jannali Reserve off Coolgardi Place BONNET BAY,DAB+ / digital radio
+Sutherland,NSW,9B,Category 1,204.64,V,DA,500.0,-34,1,6,151,3,16,-34.01833333333333,151.05444444444444,1901420,Vodafone-Optus-Telstra Site Jannali Reserve off Coolgardi Place BONNET BAY,DAB+ / digital radio
+Sutherland,NSW,9C,Category 3,206.352,V,DA,300.0,-34,1,6,151,3,16,-34.01833333333333,151.05444444444444,1911855,Vodafone-Optus-Telstra Site Jannali Reserve off Coolgardi Place BONNET BAY,DAB+ / digital radio
+Sydney,NSW,9A,Category 1,202.928,V,OD,50000.0,-33,48,20,151,10,51,-33.80555555555555,151.1808333333333,1901419,TXA Artarmon Site Tower 192-196 Hampden Road ARTARMON,DAB+ / digital radio
+Sydney,NSW,9B,Category 1,204.64,V,OD,50000.0,-33,48,20,151,10,51,-33.80555555555555,151.1808333333333,1901420,TXA Artarmon Site Tower 192-196 Hampden Road ARTARMON,DAB+ / digital radio
+Sydney,NSW,9C,Category 3,206.352,V,OD,50000.0,-33,48,20,151,10,51,-33.80555555555555,151.1808333333333,1911855,TXA Artarmon Site Tower 192-196 Hampden Road ARTARMON,DAB+ / digital radio
+Sydney City,NSW,9A,Category 1,202.928,V,OD,300.0,-33,52,14,151,12,32,-33.870555555555555,151.20888888888888,1901419,Broadcast/Comms Tower Sydney Tower Westfield Centrepoint 100 Market Street SYDNEY,DAB+ / digital radio
+Sydney City,NSW,9B,Category 1,204.64,V,OD,300.0,-33,52,14,151,12,32,-33.870555555555555,151.20888888888888,1901420,Broadcast/Comms Tower Sydney Tower Westfield Centrepoint 100 Market Street SYDNEY,DAB+ / digital radio
+Sydney City,NSW,9C,Category 3,206.352,V,OD,300.0,-33,52,14,151,12,32,-33.870555555555555,151.20888888888888,1911855,Broadcast/Comms Tower Sydney Tower Westfield Centrepoint 100 Market Street SYDNEY,DAB+ / digital radio
+Sydney Northern Beaches,NSW,9A,Category 1,202.928,V,DA,300.0,-33,38,36,151,18,52,-33.64333333333333,151.31444444444446,1901419,Broadcast/Comms (Optus) Tower Sydney Water Board Site off Plateau Rd BILGOLA PLATEAU,DAB+ / digital radio
+Sydney Northern Beaches,NSW,9B,Category 1,204.64,V,DA,300.0,-33,38,36,151,18,52,-33.64333333333333,151.31444444444446,1901420,Broadcast/Comms (Optus) Tower Sydney Water Board Site off Plateau Rd BILGOLA PLATEAU,DAB+ / digital radio
+Sydney Northern Beaches,NSW,9C,Category 3,206.352,V,DA,300.0,-33,38,36,151,18,52,-33.64333333333333,151.31444444444446,1911855,Broadcast/Comms (Optus) Tower Sydney Water Board Site off Plateau Rd BILGOLA PLATEAU,DAB+ / digital radio
+Taroona,TAS,9C,Category 3,206.352,V,DA,1000.0,-42,58,34,147,23,35,-42.976111111111116,147.39305555555555,10224884,Broadcast Australia Site White Rock Point OPOSSUM BAY,DAB+ / digital radio
+Tuggeranong,ACT,9C,Category 3,206.352,V,OD,1000.0,-35,27,12,149,6,28,-35.45333333333333,149.10777777777778,10224957,FM Monopole Broadcast Australia Site Tuggeranong Hill off Callister Cres THEODORE,DAB+ / digital radio
+Werribee,VIC,9A,Category 1,202.928,V,DA,500.0,-37,53,11,144,42,16,-37.88638888888889,144.70444444444442,1901421,East Mast 3CR Site Old Sneydes Road WERRIBEE,DAB+ / digital radio
+Werribee,VIC,9B,Category 1,204.64,V,DA,500.0,-37,53,11,144,42,16,-37.88638888888889,144.70444444444442,1901422,East Mast 3CR Site Old Sneydes Road WERRIBEE,DAB+ / digital radio
+Werribee,VIC,9C,Category 3,206.352,V,DA,500.0,-37,53,11,144,42,16,-37.88638888888889,144.70444444444442,1911854,East Mast 3CR Site Old Sneydes Road WERRIBEE,DAB+ / digital radio

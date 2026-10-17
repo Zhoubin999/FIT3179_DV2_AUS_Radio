@@ -1,0 +1,6 @@
+audio_type,metro_pct,regional_pct,gap_pp,advantage,order
+FM radio,50.0,58.0,8.0,Regional higher,0
+DAB+ radio,14.0,4.0,-10.0,Metro higher,1
+Internet/app radio,7.0,10.0,3.0,Regional higher,2
+Music streaming,74.0,70.0,-4.0,Metro higher,3
+Podcasts,54.0,48.0,-6.0,Metro higher,4
