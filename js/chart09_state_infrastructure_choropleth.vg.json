@@ -299,7 +299,7 @@
             "type": "text",
             "align": "left",
             "dx": 4,
-            "fontSize": 11,
+            "fontSize": 13,
             "color": "#3E5263"
           },
           "encoding": {

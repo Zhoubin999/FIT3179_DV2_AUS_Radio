@@ -387,7 +387,7 @@
           "size": {"signal": "20 + (scale('power_size', datum.power_kw) - 20) * zoom_t"},
           "fill": {"scale": "site_colour", "field": "site_type"},
           "stroke": {
-            "signal": "datum.site_name == selected_site || datum.site_name == highlight_site ? '#1F3545' : '#FFFFFF'"
+            "signal": "datum.site_name == selected_site || datum.site_name == highlight_site ? '#1F3545' : datum.site_type == 'Low-power infill site' ? '#2F5D8A' : '#FFFFFF'"
           },
           "strokeWidth": {
             "signal": "datum.site_name == selected_site || datum.site_name == highlight_site ? 3 : 1"

@@ -93,7 +93,7 @@
           "Podcasts",
           "DAB+ digital radio"
         ],
-        "range": ["#E3672B", "#2F5D8A", "#8FB3D6", "#6C5BB5", "#2F5D8A"]
+        "range": ["#E3672B", "#2F5D8A", "#5E8EC0", "#6C5BB5", "#2F5D8A"]
       },
       "legend": {
         "orient": "top-left",
@@ -188,6 +188,12 @@
         "opacity": {
           "condition": {"param": "Series_pick", "value": 1, "empty": true},
           "value": 0.12
+        },
+        "color": {
+          "condition": {"test": "datum.series == 'Commercial radio'", "value": "#4A78A8"},
+          "field": "series",
+          "type": "nominal",
+          "legend": null
         }
       }
     },

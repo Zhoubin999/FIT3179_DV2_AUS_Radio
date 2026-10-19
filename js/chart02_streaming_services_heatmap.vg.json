@@ -32,7 +32,12 @@
       "calculate": "isValid(datum.last_year) ? (datum.value - datum.last_year >= 0 ? '+' : '') + (datum.value - datum.last_year) + ' points' : 'First year measured'",
       "as": "change_note"
     },
-    {"calculate": "datum.value + '%'", "as": "pct_label"}
+    {"calculate": "datum.value + '%'", "as": "pct_label"},
+    {
+      "description": "Short change label for the cell (blank in the first year).",
+      "calculate": "isValid(datum.last_year) ? (datum.value - datum.last_year > 0 ? '▲' + (datum.value - datum.last_year) : datum.value - datum.last_year < 0 ? '▼' + abs(datum.value - datum.last_year) : 'no change') : ''",
+      "as": "change_short"
+    }
   ],
   "encoding": {
     "x": {
@@ -63,7 +68,7 @@
           "field": "value",
           "type": "quantitative",
           "title": "Used weekly (%)",
-          "scale": {"domain": [0, 50], "range": ["#FCE9DC", "#C4501A"]},
+          "scale": {"domain": [0, 50], "range": ["#FCE9DC", "#A8400F"]},
           "legend": {
             "orient": "bottom",
             "gradientLength": 220,
@@ -79,13 +84,24 @@
       }
     },
     {
-      "description": "Percentage printed in each cell; white text on cells of 25% or more, dark text otherwise.",
-      "mark": {"type": "text", "fontSize": 15, "fontWeight": "bold"},
+      "description": "Percentage printed in each cell; white text only on the darkest cells (Spotify), near-black otherwise.",
+      "mark": {"type": "text", "fontSize": 15, "fontWeight": "bold", "dy": -8},
       "encoding": {
         "text": {"field": "pct_label"},
         "color": {
-          "condition": {"test": "datum.value >= 25", "value": "#FFFFFF"},
-          "value": "#26384B"
+          "condition": {"test": "datum.value >= 42", "value": "#FFFFFF"},
+          "value": "#14212D"
+        }
+      }
+    },
+    {
+      "description": "Annotation: change from the year before, under each value (e.g. Apple Music ▲6 in 2025).",
+      "mark": {"type": "text", "fontSize": 12, "dy": 11},
+      "encoding": {
+        "text": {"field": "change_short"},
+        "color": {
+          "condition": {"test": "datum.value >= 42", "value": "#FFFFFF"},
+          "value": "#14212D"
         }
       }
     }

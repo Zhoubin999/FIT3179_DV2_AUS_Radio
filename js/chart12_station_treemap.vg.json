@@ -140,7 +140,7 @@
         "ABC talk & news",
         "Sport"
       ],
-      "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552"]
+      "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#7A6552"]
     }
   ],
   "marks": [
@@ -209,11 +209,11 @@
             "signal": "datum.box_w > 62 && datum.box_h > 34 ? [datum.station, datum.share + '%'] : ''"
           },
           "limit": {"signal": "datum.box_w - 8"},
-          "fontSize": {"value": 12},
+          "fontSize": {"value": 13},
           "fontWeight": {"value": "bold"},
-          "lineHeight": {"value": 15},
+          "lineHeight": {"value": 16},
           "fill": {
-            "signal": "datum.program_format == 'Commercial music' || datum.program_format == 'Sport' ? '#FFFFFF' : '#1F3545'"
+            "signal": "datum.program_format == 'Commercial music' || datum.program_format == 'Commercial talk & news' || datum.program_format == 'Sport' ? '#FFFFFF' : '#14212D'"
           }
         }
       }

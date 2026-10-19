@@ -170,15 +170,15 @@
         "Sport",
         "Other / unrated stations"
       ],
-      "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552", "#D5DDE2"]
+      "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#7A6552", "#D5DDE2"]
     }
   ],
   "legends": [
     {
-      "description": "Program-type legend in the bottom-left corner.",
+      "description": "Program-type legend in the bottom-left corner (one column on phones).",
       "fill": "color",
       "orient": "bottom-left",
-      "columns": 2,
+      "columns": {"signal": "width < 420 ? 1 : 2"},
       "symbolType": "square",
       "labelFontSize": 13,
       "title": "Program type",

@@ -140,12 +140,43 @@
           },
           "text": {"field": "pct_label"},
           "color": {
-            "condition": {
-              "test": "datum.combination == 'Both' || datum.combination == 'Listened only'",
-              "value": "#FFFFFF"
-            },
-            "value": "#24394A"
+            "condition": {"test": "datum.combination == 'Both'", "value": "#FFFFFF"},
+            "value": "#14212D"
           }
+        }
+      },
+      {
+        "description": "Annotation under each column: the column width is the share who listened (left) or did not (right).",
+        "transform": [
+          {"filter": "datum.combination == 'Both' || datum.combination == 'Neither'"},
+          {
+            "calculate": "datum.combination == 'Both' ? ['Listened', format(datum.listen_total, '.0f') + '%'] : ['Did not listen', format(100 - datum.listen_total, '.0f') + '%']",
+            "as": "column_label"
+          },
+          {"calculate": "(datum.x0 + datum.x1) / 2", "as": "column_middle"}
+        ],
+        "mark": {
+          "type": "text",
+          "baseline": "top",
+          "dy": 6,
+          "fontSize": 13,
+          "color": "#3E5263",
+          "lineHeight": 15
+        },
+        "encoding": {
+          "x": {
+            "field": "column_middle",
+            "type": "quantitative",
+            "scale": {"domain": [0, 100]},
+            "axis": null
+          },
+          "y": {
+            "datum": 100,
+            "type": "quantitative",
+            "scale": {"domain": [0, 100], "reverse": true},
+            "axis": null
+          },
+          "text": {"field": "column_label"}
         }
       }
     ]

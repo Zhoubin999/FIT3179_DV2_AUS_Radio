@@ -89,6 +89,17 @@
       "description": "Change since the previous survey, for the tooltip.",
       "calculate": "isValid(datum.previous_share) ? (datum.type_share >= datum.previous_share ? '+' : '') + format(datum.type_share - datum.previous_share, '.1f') + ' points' : 'First survey shown'",
       "as": "change_note"
+    },
+    {
+      "description": "Share in Survey 3 for each program type, to work out the change by Survey 6.",
+      "window": [
+        {"op": "first_value", "field": "type_share", "as": "first_share"}
+      ],
+      "groupby": ["program_format"],
+      "sort": [
+        {"field": "survey"}
+      ],
+      "frame": [null, null]
     }
   ],
   "encoding": {
@@ -111,7 +122,7 @@
           "Sport",
           "Other / unrated stations"
         ],
-        "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552", "#D5DDE2"]
+        "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#7A6552", "#D5DDE2"]
       },
       "legend": null
     }
@@ -169,10 +180,10 @@
         "text": {"field": "type_share", "type": "quantitative", "format": ".1f"},
         "color": {
           "condition": {
-            "test": "datum.program_format == 'Commercial music' || datum.program_format == 'Sport'",
+            "test": "datum.program_format == 'Commercial music' || datum.program_format == 'Commercial talk & news' || datum.program_format == 'Sport'",
             "value": "#FFFFFF"
           },
-          "value": "#1F3545"
+          "value": "#14212D"
         }
       }
     },
@@ -212,6 +223,44 @@
         "x": {"datum": 3.16},
         "y": {"field": "band_middle"},
         "text": {"field": "program_format"},
+        "color": {"value": "#1F3545"}
+      }
+    },
+    {
+      "description": "Annotation under the chart: the program type that changed most between Survey 3 and Survey 6 (updates with the city).",
+      "transform": [
+        {
+          "filter": "datum.survey == 6 && datum.program_format != 'Other / unrated stations'"
+        },
+        {"calculate": "datum.type_share - datum.first_share", "as": "change"},
+        {"calculate": "abs(datum.change)", "as": "size_of_change"},
+        {
+          "window": [
+            {"op": "row_number", "as": "change_order"}
+          ],
+          "sort": [
+            {"field": "size_of_change", "order": "descending"}
+          ]
+        },
+        {"filter": "datum.change_order == 1"},
+        {
+          "calculate": "'Biggest change since Survey 3: ' + lower(datum.program_format) + ', ' + (datum.change > 0 ? '+' : '−') + format(abs(datum.change), '.1f') + ' points (' + format(datum.first_share, '.1f') + '% → ' + format(datum.type_share, '.1f') + '%)'",
+          "as": "change_note"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "dy": 32,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {"datum": -0.3},
+        "y": {"datum": 0},
+        "text": {"field": "change_note"},
         "color": {"value": "#1F3545"}
       }
     }

@@ -64,7 +64,7 @@
           "ABC talk & news",
           "Sport"
         ],
-        "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552"]
+        "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#7A6552"]
       },
       "legend": null
     },
@@ -127,10 +127,10 @@
         {"filter": "datum.latest_rank <= 5"},
         {"filter": "datum.survey == 3"}
       ],
-      "mark": {"type": "text", "align": "right", "dx": -14, "fontSize": 12},
+      "mark": {"type": "text", "align": "right", "dx": -14, "fontSize": 13},
       "encoding": {
         "text": {"field": "share", "type": "quantitative", "format": ".1f"},
-        "color": {"value": "#5C7182"}
+        "color": {"value": "#3E5263"}
       }
     },
     {

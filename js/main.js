@@ -163,6 +163,73 @@ function embedMapWithBars(elementId, specUrl) {
 }
 
 
+// Narrow cards (tablets and phones): small spec adjustments so legends and labels are not cut off.
+// Wide screens use the specs exactly as written.
+function embedResponsive(elementId, specUrl, adapt) {
+  return fetch(specUrl).then(function (response) { return response.json(); }).then(function (spec) {
+    if (adapt) adapt(spec, document.querySelector(elementId).clientWidth);
+    return vegaEmbed(elementId, spec, embedOptions);
+  });
+}
+
+function adaptChart01(spec, width) {
+  if (width < 900) {                                   // legend above the plot, wrapped onto two rows
+    var legend = {"orient": "top", "direction": "horizontal", "columns": width < 500 ? 2 : 3,
+                  "symbolStrokeWidth": 3, "symbolType": "stroke", "symbolSize": 300};
+    spec.encoding.color.legend = legend;
+    spec.encoding.strokeDash.legend = legend;
+  }
+  if (width < 600) {                                   // end labels show just the value; shorter note
+    spec.layer[1].transform[1].calculate = "datum.value + '%'";
+    spec.layer[3].data.values[0].note = "Streaming passes radio \u2191";
+    spec.layer[3].mark.fontSize = 11;
+  }
+}
+
+function adaptChart02(spec, width) {
+  if (width < 600) spec.layer[0].encoding.color.legend.gradientLength = 140;
+}
+
+function adaptChart05(spec, width) {
+  if (width < 600) {                                   // drop the optional raw-value notes; shorter titles
+    spec.layer = spec.layer.filter(function (layer) {
+      return (layer.description || "").indexOf("Both percentages") !== 0;
+    });
+    spec.layer[0].encoding.x.title = "Difference (points)";
+    spec.layer[0].encoding.color.legend = {"orient": "top", "direction": "vertical", "symbolSize": 180,
+      "labelExpr": "datum.label == 'More popular in capital cities' ? 'Capitals ahead' : 'Regional ahead'"};
+    spec.transform.forEach(function (step) {
+      if (step.as === "gap_label") step.calculate = "(datum.gap > 0 ? '+' : '−') + abs(datum.gap)";
+    });
+  }
+}
+
+function adaptChart10(spec, width) {
+  if (width < 900) {                                   // shorter names beside the last column, a little more room
+    spec.layer[0].encoding.x.scale.domain = [-0.3, 4.35];
+    var names = spec.layer[4];
+    names.transform.push({
+      "calculate": "replace(replace(datum.program_format, 'Commercial', 'Comm.'), ' stations', '')",
+      "as": "short_name"
+    });
+    names.encoding.text = {"field": "short_name"};
+  }
+  if (width < 600) {                                   // the change note on three short lines
+    spec.layer[0].encoding.x.scale.domain = [-0.3, 4.75];
+    spec.layer[4].mark.fontSize = 12;
+    spec.layer[4].transform[spec.layer[4].transform.length - 1].calculate =
+      "replace(replace(replace(replace(datum.program_format, 'Commercial', 'Comm.'), ' stations', ''), ' & news', ''), ' / unrated', '')";
+    var note = spec.layer[spec.layer.length - 1];
+    var last = note.transform[note.transform.length - 1];
+    last.calculate = "['Biggest change since Survey 3:', lower(datum.program_format) + ', ' + " +
+      "(datum.change > 0 ? '+' : '\u2212') + format(abs(datum.change), '.1f') + ' points', " +
+      "'(' + format(datum.first_share, '.1f') + '% \u2192 ' + format(datum.type_share, '.1f') + '%)']";
+    note.mark.fontSize = 12;
+    note.mark.lineHeight = 15;
+  }
+}
+
+
 // Play button: steps one signal through a list of values (e.g. years or surveys) so the chart
 // animates frame by frame. The button sits next to the chart's own drop-down or slider.
 function addPlayButton(elementId, view, options) {
@@ -204,19 +271,19 @@ function addPlayButton(elementId, view, options) {
 
 
 // ---------- Chapter 1: the big shift ----------
-vegaEmbed('#c01', "js/chart01_listening_trend.vg.json", embedOptions).then(function (result) {
+embedResponsive('#c01', "js/chart01_listening_trend.vg.json", adaptChart01).then(function (result) {
   // replay the trend year by year (Year_shown filters the data; Replaying shows the big year)
   addPlayButton('#c01', result.view, {
     label: "\u25B6 Play 2017 \u2192 2026", signal: "Year_shown", flag: "Replaying", delay: 650,
     steps: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
   });
 }).catch(console.error);
-vegaEmbed('#c02', "js/chart02_streaming_services_heatmap.vg.json", embedOptions).catch(console.error);
+embedResponsive('#c02', "js/chart02_streaming_services_heatmap.vg.json", adaptChart02).catch(console.error);
 
 // ---------- Chapter 2: who listens ----------
 vegaEmbed('#c03', "js/chart03_radio_age_dumbbell.vg.json", embedOptions).catch(console.error);
 embedTwoPanelChart('#c04', "js/chart04_podcast_mosaic.vg.json", 1.2);
-vegaEmbed('#c05', "js/chart05_city_regional_diverging_bar.vg.json", embedOptions).catch(console.error);
+embedResponsive('#c05', "js/chart05_city_regional_diverging_bar.vg.json", adaptChart05).catch(console.error);
 
 // ---------- Chapter 3: how Australians reach radio, and where digital radio can operate ----------
 vegaEmbed('#c06', "js/chart06_listening_places_radar.vg.json", embedOptions).catch(console.error);
@@ -496,6 +563,12 @@ if (useZoomMap) {
   vegaEmbed('#c08', "js/chart08_dab_sites_zoom_map.vg.json", embedOptions).then(function (result) {
     zoomView = result.view;
     zoomSites = zoomView.data('sites').slice();
+    if (document.querySelector('#c08').clientWidth < 500) {
+      AUSTRALIA_BOX = [112.9211, -43.6585, 166, -9.2239];
+      var start = boxToView(AUSTRALIA_BOX);
+      zoomView.signal('view_lon', start.lon).signal('view_y', start.y)
+        .signal('view_dx', start.dx).signal('view_dy', start.dy).runAsync();
+    }
     updateZoomPanel();
 
     // clicking a state, a ring or a site zooms in
@@ -541,8 +614,8 @@ function showMarket(market) {
   });
 }
 
-function embedMarketChart(elementId, specUrl) {
-  return vegaEmbed(elementId, specUrl, embedOptions).then(function (result) {
+function embedMarketChart(elementId, specUrl, adapt) {
+  return embedResponsive(elementId, specUrl, adapt).then(function (result) {
     // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
     marketViews.push(result.view);
     result.view.signal('SelectedMarket', selectedMarket).runAsync();
@@ -557,7 +630,7 @@ function embedMarketChart(elementId, specUrl) {
   }).catch(console.error);
 }
 
-embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json");
+embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json", adaptChart10);
 embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json").then(function (view) {
   // step the survey slider from Survey 3 to Survey 6
   // the badge says which survey the donuts show, so it is clear Charts 12-13 stay on their own surveys
