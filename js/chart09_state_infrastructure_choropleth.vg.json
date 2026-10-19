@@ -20,7 +20,12 @@
     {
       "description": "One hover selection shared by the map and the bars (views lists both).",
       "name": "State_pick",
-      "select": {"type": "point", "fields": ["state"], "on": "pointerover", "clear": "pointerout"},
+      "select": {
+        "type": "point",
+        "fields": ["state"],
+        "on": "pointerover",
+        "clear": "pointerout"
+      },
       "views": ["state_shapes", "state_bars"]
     }
   ],
@@ -111,7 +116,11 @@
                 "type": "quantitative",
                 "title": "FM relay transmitters"
               },
-              {"field": "fm_records", "type": "quantitative", "title": "All FM transmitters"},
+              {
+                "field": "fm_records",
+                "type": "quantitative",
+                "title": "All FM transmitters"
+              },
               {"field": "dab_sites", "type": "quantitative", "title": "DAB+ sites"}
             ]
           }
@@ -141,7 +150,12 @@
               ]
             }
           ],
-          "mark": {"type": "text", "fontSize": 15, "fontWeight": "bold", "align": "center"},
+          "mark": {
+            "type": "text",
+            "fontSize": 15,
+            "fontWeight": "bold",
+            "align": "center"
+          },
           "encoding": {
             "longitude": {"field": "label_lon", "type": "quantitative"},
             "latitude": {"field": "label_lat", "type": "quantitative"},
@@ -188,7 +202,15 @@
       "description": "Right view: states ranked by the chosen measure (re-sorts when the dropdown changes).",
       "width": 260,
       "height": 330,
-      "title": {"text": "States ranked", "anchor": "start", "fontSize": 15, "offset": 10},
+      "title": {
+        "text": "States ranked",
+        "subtitle": "Hover a bar or a state to highlight it in both views",
+        "anchor": "start",
+        "fontSize": 15,
+        "subtitleFontSize": 13,
+        "subtitleColor": "#5C7182",
+        "offset": 10
+      },
       "data": {"url": "data/australian_radio_data.csv"},
       "transform": [
         {
@@ -210,20 +232,25 @@
           "type": "nominal",
           "title": null,
           "sort": "-x",
-          "axis": {"labelFontSize": 14, "labelFontWeight": "bold", "domain": false, "ticks": false}
+          "axis": {
+            "labelFontSize": 14,
+            "labelFontWeight": "bold",
+            "domain": false,
+            "ticks": false
+          }
         },
-        "x": {
-          "field": "shown_value",
-          "type": "quantitative",
-          "title": null,
-          "axis": null
-        }
+        "x": {"field": "shown_value", "type": "quantitative", "title": null, "axis": null}
       },
       "layer": [
         {
           "description": "Bars in the same colours as the map; hovering one highlights its state.",
           "name": "state_bars",
-          "mark": {"type": "bar", "height": {"band": 0.7}, "cornerRadiusEnd": 3, "cursor": "pointer"},
+          "mark": {
+            "type": "bar",
+            "height": {"band": 0.7},
+            "cornerRadiusEnd": 3,
+            "cursor": "pointer"
+          },
           "encoding": {
             "color": {"field": "shown_value", "type": "quantitative", "legend": null},
             "stroke": {
@@ -239,7 +266,14 @@
         },
         {
           "description": "Value at the end of each bar.",
-          "mark": {"type": "text", "align": "left", "dx": 5, "fontSize": 13, "fontWeight": "bold", "color": "#1F3545"},
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "dx": 5,
+            "fontSize": 13,
+            "fontWeight": "bold",
+            "color": "#1F3545"
+          },
           "encoding": {
             "text": {"field": "value_label"}
           }
@@ -247,7 +281,9 @@
       ]
     }
   ],
-  "resolve": {"scale": {"color": "shared"}},
+  "resolve": {
+    "scale": {"color": "shared"}
+  },
   "config": {
     "view": {"stroke": null},
     "concat": {"spacing": 40}

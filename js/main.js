@@ -38,6 +38,13 @@ var embedOptions = {"actions": false, "renderer": "svg", "config": chartConfig};
 function embedTwoPanelChart(elementId, specUrl, heightRatio, maxPanelWidth, legendWidth) {
   fetch(specUrl).then(function (response) { return response.json(); }).then(function (spec) {
     var cardWidth = document.querySelector(elementId).clientWidth;
+    // not enough room for a legend on the right: move it under the panels
+    if (legendWidth && (cardWidth - 60 - legendWidth) / 2 < 140) {
+      var legend = (spec.spec.layer ? spec.spec.layer[0] : spec.spec).encoding.color.legend;
+      legend.orient = "bottom";
+      legend.direction = "horizontal";
+      legendWidth = 0;
+    }
     var panelWidth = Math.min(maxPanelWidth || 255, Math.floor((cardWidth - 60 - (legendWidth || 0)) / 2));
     spec.spec.width = panelWidth;
     spec.spec.height = Math.round(panelWidth * heightRatio);
@@ -80,9 +87,17 @@ function embedMapWithBars(elementId, specUrl) {
       // stacked: map, then bars, then the legend at the bottom
       spec.vconcat = spec.hconcat;
       delete spec.hconcat;
-      map.width = cardWidth - 60;
-      bars.width = cardWidth - 140;
+      map.width = cardWidth - 70;
+      bars.width = cardWidth - 160;
       legend.orient = "bottom";
+      // phones: shorter legend and a two-line "Showing" title so nothing is wider than the card
+      legend.title = "Darker = higher value";
+      legend.gradientLength = Math.min(240, cardWidth - 100);
+      var showing = map.layer[2];
+      showing.transform[0].calculate = "Measure_selection == 'per100k' ? 'Showing: radio sites|per 100,000 people' : " +
+        "Measure_selection == 'retrans' ? 'Showing: FM relays|(% of FM transmitters)' : 'Showing: DAB+ sites|(% of radio sites)'";
+      showing.mark.lineBreak = "|";
+      bars.title.subtitle = ["Hover a bar or a state to", "highlight it in both views"];
     }
     map.height = Math.round(map.width * 0.72);
     return vegaEmbed(elementId, spec, embedOptions);

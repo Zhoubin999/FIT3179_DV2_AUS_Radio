@@ -178,21 +178,21 @@ a {
 .hero-stats {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 22px;
   padding-left: 26px;
   border-left: 1px solid rgba(255, 255, 255, .25);
 }
 
-/* big number on the left, its meaning on the right */
+/* big number with its meaning right beside it */
 .stat {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
+  grid-template-columns: 125px minmax(0, 1fr);
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .stat strong {
-  font: 700 40px/1 var(--font-head);
+  font: 700 58px/1 var(--font-head);
 }
 
 /* light versions of the data colours, readable on the dark hero */
@@ -209,8 +209,9 @@ a {
 }
 
 .stat p {
+  max-width: 30ch;
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
   color: #CBDCE1;
   line-height: 1.4;
 }
@@ -377,12 +378,10 @@ a {
   margin: 0 0 10px;
 }
 
-/* a whole-row card has room for the text in two columns */
+/* a whole-row card allows longer lines (still one column, so it reads top to bottom) */
 .chart-card.wide .interpretation,
 .chart-card.full .interpretation {
-  max-width: none;
-  columns: 2;
-  column-gap: 44px;
+  max-width: 96ch;
 }
 
 /* the box each chart is drawn into (id c01 ... c13) */
@@ -402,17 +401,24 @@ a {
   height: auto;
 }
 
-/* in a two-column row, a shorter chart sits in the middle of its card */
+/* in a two-column row, a shorter chart sits in the middle of its card;
+   a column keeps any slider or drop-down under its chart */
 .chart-card:not(.wide):not(.full) .chart-wrap {
   flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+}
+
+/* ...but its slider or drop-down starts at the left, like the others on the page */
+.chart-card:not(.wide):not(.full) .chart-wrap .vega-bindings {
+  align-self: flex-start;
 }
 
 
 /* ---------- 8. Vega drop-down menus, notes and mini legends ---------- */
-/* drop-down menus created by Vega-Lite "bind" parameters (Charts 1 and 9) */
+/* drop-down menus and the slider created by "bind" parameters (Charts 1, 9 and 11) */
 .vega-bindings {
   margin-top: 8px;
   font-size: 15px;
@@ -421,6 +427,14 @@ a {
 .vega-bind-name {
   font-weight: 700;
   color: #1F3F5E;
+}
+
+/* survey slider under Chart 11 */
+.vega-bindings input[type="range"] {
+  width: 180px;
+  vertical-align: middle;
+  accent-color: var(--accent);
+  cursor: pointer;
 }
 
 .vega-bindings select {
@@ -813,16 +827,11 @@ a {
 
 /* ---------- 13. Smaller screens (all media queries) ---------- */
 /* tablets and small laptops: one chart per row */
-@media (max-width: 1020px) {
+@media (max-width: 1100px) {
   .chart-grid,
   .guide-grid,
   .hero-inner {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .chart-card.wide .interpretation,
-  .chart-card.full .interpretation {
-    columns: 1;
   }
 
   /* hero numbers go back to one row under the text */

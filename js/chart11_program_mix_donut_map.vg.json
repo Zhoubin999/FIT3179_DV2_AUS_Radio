@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
-  "description": "Chapter 4 - donut-glyph map (Vega, linked to the city buttons). Each donut splits one capital city's radio listening by program type in GfK Survey 6. Donuts sit offshore with a leader line to the city; the selected city gets a dark ring.",
+  "description": "Chapter 4 - donut-glyph map (Vega, linked to the city buttons). Each donut splits one capital city's radio listening by program type in the GfK survey chosen with the slider (Surveys 3-6). Donuts sit offshore with a leader line to the city; the selected city gets a dark ring, and clicking a donut selects that city in all four linked charts.",
   "height": 470,
   "padding": 10,
   "autosize": "none",
@@ -20,6 +20,12 @@
       "description": "Selected city; main.js sets it when a city button is clicked.",
       "name": "SelectedMarket",
       "value": "Melbourne"
+    },
+    {
+      "description": "Time slider: which GfK survey the donuts show (3 to 6).",
+      "name": "Survey_pick",
+      "value": 6,
+      "bind": {"input": "range", "min": 3, "max": 6, "step": 1, "name": "Survey shown: "}
     }
   ],
   "projections": [
@@ -39,7 +45,7 @@
       "format": {"type": "topojson", "feature": "collection"}
     },
     {
-      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep Survey 6 station ratings.",
+      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep the station ratings for the survey chosen with the slider.",
       "name": "stations",
       "url": "data/australian_radio_data.csv",
       "format": {
@@ -54,7 +60,7 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "datum.dataset == 'Station ratings' && datum.survey == 6"
+          "expr": "datum.dataset == 'Station ratings' && datum.survey == Survey_pick"
         }
       ]
     },
@@ -249,7 +255,7 @@
         }
       },
       "encode": {
-        "enter": {
+        "update": {
           "x": {"field": "cx"},
           "y": {"field": "cy"}
         }
@@ -273,19 +279,22 @@
           "from": {"data": "city_pie"},
           "encode": {
             "enter": {
-              "startAngle": {"field": "startAngle"},
-              "endAngle": {"field": "endAngle"},
               "innerRadius": {"value": 13},
               "outerRadius": {"value": 27},
-              "fill": {"scale": "color", "field": "program_format"},
               "stroke": {"value": "#FFFFFF"},
               "strokeWidth": {"value": 1},
-              "cursor": {"value": "pointer"},
+              "cursor": {"value": "pointer"}
+            },
+            "update": {
+              "startAngle": {"field": "startAngle"},
+              "endAngle": {"field": "endAngle"},
+              "fill": {"scale": "color", "field": "program_format"},
               "tooltip": {
                 "signal": "{'City': datum.market, 'Program type': datum.program_format, 'Share of listening (%)': datum.type_share}"
               }
             }
-          }
+          },
+          "description": "Donut slices; angles and colours are in 'update' so they redraw when the slider moves."
         }
       ]
     },
@@ -303,6 +312,21 @@
           "fontSize": {"value": 13},
           "fontWeight": {"signal": "datum.market == SelectedMarket ? 'bold' : 'normal'"},
           "lineHeight": {"value": 16},
+          "fill": {"value": "#1F3545"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "Which survey is shown (follows the slider).",
+      "encode": {
+        "update": {
+          "x": {"value": 0},
+          "y": {"value": 0},
+          "baseline": {"value": "top"},
+          "text": {"signal": "'Showing GfK Survey ' + Survey_pick + ', 2026'"},
+          "fontSize": {"value": 15},
+          "fontWeight": {"value": "bold"},
           "fill": {"value": "#1F3545"}
         }
       }
