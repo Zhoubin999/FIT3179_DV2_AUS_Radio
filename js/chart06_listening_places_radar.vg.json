@@ -1,0 +1,269 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Chapter 3 - radar chart (Vega). Where people listened to radio in the past week, Australia overall vs regional Australia (Infinite Dial 2026). Distance from the centre = % of people; places are ordered from most to least common.",
+  "height": 430,
+  "padding": 10,
+  "autosize": "none",
+  "signals": [
+    {
+      "description": "Chart width follows its card (updates on window resize).",
+      "name": "width",
+      "init": "containerSize()[0] > 100 ? containerSize()[0] - 20 : 540",
+      "on": [
+        {
+          "events": "window:resize",
+          "update": "containerSize()[0] > 100 ? containerSize()[0] - 20 : 540"
+        }
+      ]
+    },
+    {
+      "description": "Radius of the outer ring, limited so labels fit.",
+      "name": "radius",
+      "update": "min(height / 2 - 62, width / 2 - 120)"
+    }
+  ],
+  "data": [
+    {
+      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep weekly radio listening by place and name the audiences.",
+      "name": "table",
+      "url": "data/australian_radio_data.csv",
+      "format": {
+        "type": "csv",
+        "parse": {"value": "number"}
+      },
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.dataset == 'Audience survey' && datum.metric == 'Radio weekly listening by location'"
+        },
+        {
+          "type": "formula",
+          "as": "area",
+          "expr": "datum.geography == 'Australia' ? 'Australia overall' : 'Regional Australia'"
+        },
+        {
+          "type": "formula",
+          "as": "place",
+          "expr": "datum.subgroup == 'In a car/vehicle' ? 'In the car' : datum.subgroup == 'Through smart speaker' ? 'Smart speaker' : datum.subgroup == 'While walking/on foot' ? 'Walking' : datum.subgroup == 'While exercising/at gym' ? 'Exercising' : datum.subgroup == 'While riding public transport' ? 'Public transport' : datum.subgroup"
+        }
+      ]
+    },
+    {
+      "description": "One row per place with both audiences, ordered by the Australia-wide value.",
+      "name": "places",
+      "source": "table",
+      "transform": [
+        {"type": "pivot", "field": "area", "value": "value", "groupby": ["place"]},
+        {
+          "type": "window",
+          "sort": {
+            "field": ["Australia overall", "place"],
+            "order": ["descending", "ascending"]
+          },
+          "ops": ["row_number"],
+          "as": ["place_order"]
+        },
+        {
+          "type": "formula",
+          "as": "label",
+          "expr": "[datum.place, datum['Australia overall'] + '% / ' + datum['Regional Australia'] + '%']"
+        }
+      ]
+    },
+    {
+      "description": "Each audience's value at each place, plus the place order (lookup) so both polygons use the same order.",
+      "name": "points",
+      "source": "table",
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "places",
+          "key": "place",
+          "fields": ["place"],
+          "values": ["place_order"],
+          "as": ["place_order"]
+        }
+      ]
+    },
+    {
+      "description": "Values for the circular grid (20%, 40%, 60%, 80%).",
+      "name": "rings",
+      "values": [
+        {"pct": 20},
+        {"pct": 40},
+        {"pct": 60},
+        {"pct": 80}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "description": "Place -> angle around the circle.",
+      "name": "angular",
+      "type": "point",
+      "range": {"signal": "[-PI / 2, 3 * PI / 2]"},
+      "padding": 0.5,
+      "domain": {
+        "data": "places",
+        "field": "place",
+        "sort": {"field": "place_order", "op": "min", "order": "ascending"}
+      }
+    },
+    {
+      "description": "Percentage -> distance from the centre.",
+      "name": "radial",
+      "type": "linear",
+      "domain": [0, 80],
+      "range": {"signal": "[0, radius]"},
+      "zero": true
+    },
+    {
+      "description": "Audience colours: dark grey = Australia overall, teal = regional.",
+      "name": "color",
+      "type": "ordinal",
+      "domain": ["Australia overall", "Regional Australia"],
+      "range": ["#44515C", "#14857A"]
+    }
+  ],
+  "legends": [
+    {
+      "description": "Audience legend above the radar.",
+      "fill": "color",
+      "orient": "top-left",
+      "direction": "horizontal",
+      "symbolType": "circle",
+      "symbolSize": 160,
+      "labelFontSize": 13
+    }
+  ],
+  "marks": [
+    {
+      "description": "Everything is drawn inside one group centred in the chart.",
+      "type": "group",
+      "name": "radar",
+      "encode": {
+        "enter": {
+          "x": {"signal": "width / 2"},
+          "y": {"signal": "height / 2 + 22"}
+        }
+      },
+      "marks": [
+        {
+          "type": "arc",
+          "description": "grid rings at 20, 40, 60 and 80 per cent",
+          "from": {"data": "rings"},
+          "encode": {
+            "enter": {
+              "startAngle": {"value": 0},
+              "endAngle": {"signal": "2 * PI"},
+              "innerRadius": {"scale": "radial", "field": "pct"},
+              "outerRadius": {"scale": "radial", "field": "pct"},
+              "stroke": {"value": "#D5DEE3"},
+              "strokeWidth": {"value": 1}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "description": "ring labels",
+          "from": {"data": "rings"},
+          "encode": {
+            "enter": {
+              "x": {"value": 4},
+              "y": {"signal": "-scale('radial', datum.pct)"},
+              "text": {"signal": "datum.pct + '%'"},
+              "fill": {"value": "#7A8992"},
+              "fontSize": {"value": 11},
+              "baseline": {"value": "bottom"}
+            }
+          }
+        },
+        {
+          "type": "rule",
+          "description": "one spoke for each place",
+          "from": {"data": "places"},
+          "encode": {
+            "enter": {
+              "x": {"value": 0},
+              "y": {"value": 0},
+              "x2": {"signal": "radius * cos(scale('angular', datum.place))"},
+              "y2": {"signal": "radius * sin(scale('angular', datum.place))"},
+              "stroke": {"value": "#D5DEE3"}
+            }
+          }
+        },
+        {
+          "type": "group",
+          "description": "one filled shape for each area",
+          "from": {
+            "facet": {"data": "points", "name": "area_points", "groupby": "area"}
+          },
+          "marks": [
+            {
+              "type": "line",
+              "from": {"data": "area_points"},
+              "sort": {"field": "datum.place_order", "order": "ascending"},
+              "encode": {
+                "enter": {
+                  "interpolate": {"value": "linear-closed"},
+                  "x": {
+                    "signal": "scale('radial', datum.value) * cos(scale('angular', datum.place))"
+                  },
+                  "y": {
+                    "signal": "scale('radial', datum.value) * sin(scale('angular', datum.place))"
+                  },
+                  "stroke": {"scale": "color", "field": "area"},
+                  "strokeWidth": {"value": 2.5},
+                  "fill": {"scale": "color", "field": "area"},
+                  "fillOpacity": {"value": 0.12}
+                }
+              }
+            },
+            {
+              "type": "symbol",
+              "from": {"data": "area_points"},
+              "encode": {
+                "enter": {
+                  "x": {
+                    "signal": "scale('radial', datum.value) * cos(scale('angular', datum.place))"
+                  },
+                  "y": {
+                    "signal": "scale('radial', datum.value) * sin(scale('angular', datum.place))"
+                  },
+                  "size": {"value": 70},
+                  "fill": {"scale": "color", "field": "area"},
+                  "stroke": {"value": "#FFFFFF"},
+                  "tooltip": {
+                    "signal": "{'Place': datum.place, 'Audience': datum.area, 'Listened to radio here (%)': datum.value}"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "description": "place labels: national / regional per cent",
+          "from": {"data": "places"},
+          "encode": {
+            "enter": {
+              "x": {"signal": "(radius + 14) * cos(scale('angular', datum.place))"},
+              "y": {"signal": "(radius + 14) * sin(scale('angular', datum.place))"},
+              "text": {"field": "label"},
+              "align": {
+                "signal": "abs(cos(scale('angular', datum.place))) < 0.2 ? 'center' : cos(scale('angular', datum.place)) > 0 ? 'left' : 'right'"
+              },
+              "baseline": {
+                "signal": "sin(scale('angular', datum.place)) < -0.8 ? 'bottom' : sin(scale('angular', datum.place)) > 0.8 ? 'top' : 'middle'"
+              },
+              "fontSize": {"value": 13},
+              "fontWeight": {"value": "bold"},
+              "lineHeight": {"value": 16},
+              "fill": {"value": "#1F3545"}
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

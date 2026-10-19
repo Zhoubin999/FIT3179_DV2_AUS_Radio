@@ -1,0 +1,507 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Chapter 3 - zoomable proportional-symbol map (Vega) of DAB+ transmitter sites (ACMA, July 2026). Australia view: rings count the sites in each state. State view: every site, sized by licensed power and coloured by site type. main.js animates the view signals and fills the side panel.",
+  "padding": 0,
+  "autosize": "none",
+  "signals": [
+    {
+      "description": "Map width follows its container (updates on window resize).",
+      "name": "width",
+      "init": "containerSize()[0] > 100 ? containerSize()[0] : 820",
+      "on": [
+        {
+          "events": "window:resize",
+          "update": "containerSize()[0] > 100 ? containerSize()[0] : 820"
+        }
+      ]
+    },
+    {
+      "description": "Map height from its width, kept between 340 and 560 px.",
+      "name": "height",
+      "update": "clamp(round(width * 0.68), 340, 560)"
+    },
+    {
+      "name": "view_lon",
+      "value": 133.4,
+      "description": "longitude at the centre of the map (set by main.js)"
+    },
+    {
+      "name": "view_y",
+      "init": "(log(tan(PI / 4 + (-10.2) * PI / 360)) + log(tan(PI / 4 + (-44.2) * PI / 360))) / 2",
+      "description": "Mercator y at the centre of the map (set by main.js)"
+    },
+    {
+      "name": "view_dx",
+      "init": "(155 - 111.8) * PI / 180",
+      "description": "width of the area to show, in radians of longitude"
+    },
+    {
+      "name": "view_dy",
+      "init": "log(tan(PI / 4 + (-10.2) * PI / 360)) - log(tan(PI / 4 + (-44.2) * PI / 360))",
+      "description": "height of the area to show, in Mercator units"
+    },
+    {
+      "name": "zoom_t",
+      "value": 0,
+      "description": "0 = Australia view, 1 = state view; in between while zooming"
+    },
+    {
+      "description": "State being shown ('' = Australia view); set by main.js.",
+      "name": "selected_state",
+      "value": ""
+    },
+    {
+      "description": "Site chosen in the map or side panel; drawn with a dark outline.",
+      "name": "selected_site",
+      "value": ""
+    },
+    {
+      "description": "Site hovered in the side panel; also outlined.",
+      "name": "highlight_site",
+      "value": ""
+    },
+    {
+      "description": "Projection scale that fits the current view box into the map.",
+      "name": "map_scale",
+      "update": "min(width / view_dx, height / view_dy)"
+    },
+    {
+      "description": "Centre latitude, converted back from the Mercator y value.",
+      "name": "view_lat",
+      "update": "(2 * atan(exp(view_y)) - PI / 2) * 180 / PI"
+    },
+    {
+      "description": "Fades the Australia-view rings and legend out while zooming in.",
+      "name": "national_opacity",
+      "update": "clamp(1 - zoom_t * 1.6, 0, 1)"
+    },
+    {
+      "description": "Fades the state-view labels and legends in while zooming in.",
+      "name": "state_opacity",
+      "update": "clamp(zoom_t * 1.6 - 0.6, 0, 1)"
+    }
+  ],
+  "projections": [
+    {
+      "description": "Mercator projection driven by the view signals, so it can zoom smoothly.",
+      "name": "projection",
+      "type": "mercator",
+      "scale": {"signal": "map_scale"},
+      "center": {"signal": "[view_lon, view_lat]"},
+      "translate": {"signal": "[width / 2, height / 2]"}
+    }
+  ],
+  "data": [
+    {
+      "description": "Australian state boundaries (TopoJSON, cartdeco/Australia-json-data). Add each shape's state code and name.",
+      "name": "states",
+      "url": "https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson",
+      "format": {"type": "topojson", "feature": "collection"},
+      "transform": [
+        {
+          "type": "formula",
+          "as": "state",
+          "expr": "{'1': 'ACT', '3': 'NSW', '4': 'NT', '5': 'QLD', '6': 'SA', '7': 'TAS', '8': 'VIC', '9': 'WA'}[datum.properties.STATE] || 'Other'"
+        },
+        {
+          "type": "formula",
+          "as": "state_name",
+          "expr": "{'ACT': 'Australian Capital Territory', 'NSW': 'New South Wales', 'NT': 'Northern Territory', 'QLD': 'Queensland', 'SA': 'South Australia', 'TAS': 'Tasmania', 'VIC': 'Victoria', 'WA': 'Western Australia'}[datum.state] || ''"
+        }
+      ]
+    },
+    {
+      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep DAB+ sites, project them, and fan out sites less than 1 km apart.",
+      "name": "sites",
+      "url": "data/australian_radio_data.csv",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "latitude": "number",
+          "longitude": "number",
+          "power_kw": "number",
+          "nearby_sites": "number",
+          "nearby_index": "number"
+        }
+      },
+      "transform": [
+        {"type": "filter", "expr": "datum.dataset == 'DAB+ transmitter'"},
+        {
+          "type": "formula",
+          "as": "is_main",
+          "expr": "datum.site_type == 'Main high-power site' ? 1 : 0"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": ["longitude", "latitude"],
+          "as": ["true_x", "true_y"]
+        },
+        {
+          "description": "sites less than 1 km apart fan out around their true position when zoomed in",
+          "type": "formula",
+          "as": "fan_angle",
+          "expr": "2 * PI * datum.nearby_index / datum.nearby_sites - PI"
+        },
+        {
+          "type": "formula",
+          "as": "x",
+          "expr": "datum.true_x + (datum.nearby_sites > 1 ? 20 * zoom_t * cos(datum.fan_angle) : 0)"
+        },
+        {
+          "type": "formula",
+          "as": "y",
+          "expr": "datum.true_y + (datum.nearby_sites > 1 ? 20 * zoom_t * sin(datum.fan_angle) : 0)"
+        }
+      ]
+    },
+    {
+      "description": "Only the sites in the selected state (these get labels).",
+      "name": "focus_sites",
+      "source": "sites",
+      "transform": [
+        {"type": "filter", "expr": "datum.site_state == selected_state"}
+      ]
+    },
+    {
+      "description": "One row per state: number of sites, main sites, and the position of its strongest site.",
+      "name": "state_rings",
+      "source": "sites",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": ["site_state"],
+          "fields": ["power_kw", "is_main", "power_kw"],
+          "ops": ["argmax", "sum", "count"],
+          "as": ["top_site", "main_sites", "sites"]
+        },
+        {"type": "formula", "as": "longitude", "expr": "datum.top_site.longitude"},
+        {"type": "formula", "as": "latitude", "expr": "datum.top_site.latitude"},
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": ["longitude", "latitude"]
+        },
+        {
+          "type": "formula",
+          "as": "label_left",
+          "expr": "indexof(['ACT', 'SA'], datum.site_state) >= 0"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "description": "Number of sites -> ring area (Australia view).",
+      "name": "ring_size",
+      "type": "linear",
+      "domain": [0, 7],
+      "range": [0, 1000]
+    },
+    {
+      "description": "Licensed power (kW) -> circle area (state view).",
+      "name": "power_size",
+      "type": "sqrt",
+      "domain": [0, 50],
+      "range": [16, 1000],
+      "zero": false
+    },
+    {
+      "description": "Site type: navy = main high-power, light blue = low-power infill.",
+      "name": "site_colour",
+      "type": "ordinal",
+      "domain": ["Main high-power site", "Low-power infill site"],
+      "range": ["#2F5D8A", "#8FB3D6"]
+    }
+  ],
+  "legends": [
+    {
+      "description": "Ring legend (Australia view).",
+      "size": "ring_size",
+      "orient": "none",
+      "legendX": 12,
+      "legendY": {"signal": "height - 74"},
+      "title": "DAB+ sites in the state",
+      "values": [1, 4, 7],
+      "direction": "horizontal",
+      "symbolType": "circle",
+      "symbolFillColor": "#FFFFFF",
+      "symbolStrokeColor": "#2F5D8A",
+      "symbolStrokeWidth": 2,
+      "encode": {
+        "title": {
+          "update": {
+            "opacity": {"signal": "national_opacity"}
+          }
+        },
+        "symbols": {
+          "update": {
+            "opacity": {"signal": "national_opacity"}
+          }
+        },
+        "labels": {
+          "update": {
+            "opacity": {"signal": "national_opacity"}
+          }
+        }
+      }
+    },
+    {
+      "description": "Power legend (state view).",
+      "size": "power_size",
+      "orient": "none",
+      "legendX": 12,
+      "legendY": {"signal": "height - 128"},
+      "title": "Licensed power (kW)",
+      "values": [1, 10, 25, 50],
+      "direction": "horizontal",
+      "symbolType": "circle",
+      "symbolFillColor": "#8FB3D6",
+      "symbolStrokeColor": "#2F5D8A",
+      "encode": {
+        "title": {
+          "update": {
+            "opacity": {"signal": "state_opacity"}
+          }
+        },
+        "symbols": {
+          "update": {
+            "opacity": {"signal": "state_opacity"}
+          }
+        },
+        "labels": {
+          "update": {
+            "opacity": {"signal": "state_opacity"}
+          }
+        }
+      }
+    },
+    {
+      "description": "Site-type legend (state view).",
+      "fill": "site_colour",
+      "orient": "none",
+      "legendX": 12,
+      "legendY": {"signal": "height - 52"},
+      "title": "Site type",
+      "direction": "horizontal",
+      "symbolType": "circle",
+      "symbolSize": 160,
+      "encode": {
+        "title": {
+          "update": {
+            "opacity": {"signal": "state_opacity"}
+          }
+        },
+        "symbols": {
+          "update": {
+            "opacity": {"signal": "state_opacity"}
+          }
+        },
+        "labels": {
+          "update": {
+            "opacity": {"signal": "state_opacity"}
+          }
+        }
+      }
+    }
+  ],
+  "marks": [
+    {
+      "description": "State outlines; the selected state is shaded and the others fade.",
+      "type": "shape",
+      "name": "state_shapes",
+      "from": {"data": "states"},
+      "clip": true,
+      "encode": {
+        "enter": {
+          "stroke": {"value": "#C5D0D8"},
+          "strokeWidth": {"value": 0.6}
+        },
+        "update": {
+          "fill": {
+            "signal": "selected_state == '' ? '#EEF1F3' : datum.state == selected_state ? '#E3E9EE' : '#F6F7F8'"
+          },
+          "cursor": {"signal": "datum.state_name ? 'pointer' : 'default'"},
+          "tooltip": {
+            "signal": "datum.state_name ? datum.state_name + ' (click to zoom in)' : null"
+          }
+        },
+        "hover": {
+          "fill": {"signal": "datum.state_name ? '#DCE4EA' : '#EEF1F3'"}
+        }
+      },
+      "transform": [
+        {"type": "geoshape", "projection": "projection"}
+      ]
+    },
+    {
+      "type": "rule",
+      "name": "fan_lines",
+      "description": "thin line from a fanned-out site back to its true position",
+      "from": {"data": "sites"},
+      "clip": true,
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {"field": "true_x"},
+          "y": {"field": "true_y"},
+          "x2": {"field": "x"},
+          "y2": {"field": "y"},
+          "stroke": {"value": "#1F3545"},
+          "strokeWidth": {"value": 1},
+          "opacity": {"signal": "datum.nearby_sites > 1 ? zoom_t : 0"}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "name": "true_spots",
+      "description": "small dot at the true position of fanned-out sites",
+      "from": {"data": "sites"},
+      "clip": true,
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {"field": "true_x"},
+          "y": {"field": "true_y"},
+          "size": {"value": 14},
+          "fill": {"value": "#1F3545"},
+          "opacity": {"signal": "datum.nearby_sites > 1 ? zoom_t : 0"}
+        }
+      }
+    },
+    {
+      "description": "One circle per site: small dots nationally, sized by power when zoomed in.",
+      "type": "symbol",
+      "name": "site_dots",
+      "from": {"data": "sites"},
+      "clip": true,
+      "encode": {
+        "enter": {
+          "shape": {"value": "circle"},
+          "cursor": {"value": "pointer"}
+        },
+        "update": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "size": {"signal": "20 + (scale('power_size', datum.power_kw) - 20) * zoom_t"},
+          "fill": {"scale": "site_colour", "field": "site_type"},
+          "stroke": {
+            "signal": "datum.site_name == selected_site || datum.site_name == highlight_site ? '#1F3545' : '#FFFFFF'"
+          },
+          "strokeWidth": {
+            "signal": "datum.site_name == selected_site || datum.site_name == highlight_site ? 3 : 1"
+          },
+          "opacity": {
+            "signal": "selected_state == '' || datum.site_state == selected_state ? 0.95 : 0.3"
+          },
+          "tooltip": {
+            "signal": "{'title': datum.site_place, 'Licensed area': datum.geography, 'Power (kW)': datum.power_kw, 'Frequency blocks': datum.frequency_blocks, 'Site type': datum.site_type}"
+          }
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "name": "focus_spots",
+      "description": "invisible copy of the sites in the chosen state, used to place their labels",
+      "from": {"data": "focus_sites"},
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "size": {"signal": "scale('power_size', datum.power_kw)"},
+          "opacity": {"value": 0}
+        }
+      }
+    },
+    {
+      "description": "Site name and power; the label transform moves labels to avoid overlaps.",
+      "type": "text",
+      "name": "site_labels",
+      "from": {"data": "focus_spots"},
+      "interactive": false,
+      "encode": {
+        "update": {
+          "text": {
+            "signal": "datum.datum.site_place + ' · ' + datum.datum.power_kw + ' kW'"
+          },
+          "fontSize": {"value": 12},
+          "fontWeight": {
+            "signal": "datum.datum.site_name == selected_site ? 'bold' : 'normal'"
+          },
+          "fill": {"value": "#1F3545"},
+          "opacity": {"signal": "state_opacity"}
+        }
+      },
+      "transform": [
+        {
+          "type": "label",
+          "size": {"signal": "[width, height]"},
+          "anchor": [
+            "right",
+            "left",
+            "top",
+            "bottom",
+            "top-right",
+            "bottom-right",
+            "top-left",
+            "bottom-left"
+          ],
+          "offset": [4, 4, 4, 4, 2, 2, 2, 2],
+          "avoidMarks": ["site_dots"]
+        }
+      ]
+    },
+    {
+      "description": "Australia view: one ring per state, area = number of sites.",
+      "type": "symbol",
+      "name": "rings",
+      "from": {"data": "state_rings"},
+      "encode": {
+        "enter": {
+          "shape": {"value": "circle"},
+          "fill": {"value": "#FFFFFF"},
+          "fillOpacity": {"value": 0.35},
+          "stroke": {"value": "#2F5D8A"},
+          "strokeWidth": {"value": 2},
+          "cursor": {"value": "pointer"}
+        },
+        "update": {
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "size": {"signal": "zoom_t >= 1 ? 0 : scale('ring_size', datum.sites)"},
+          "opacity": {"signal": "national_opacity"},
+          "tooltip": {
+            "signal": "{'title': datum.site_state + ' (click to zoom in)', 'DAB+ sites': datum.sites, 'High-power main sites': datum.main_sites, 'Low-power infill sites': datum.sites - datum.main_sites}"
+          }
+        }
+      }
+    },
+    {
+      "description": "State code and number of sites next to each ring.",
+      "type": "text",
+      "name": "ring_labels",
+      "from": {"data": "state_rings"},
+      "encode": {
+        "enter": {
+          "fontSize": {"value": 13},
+          "fontWeight": {"value": "bold"},
+          "fill": {"value": "#1F3545"},
+          "baseline": {"value": "middle"},
+          "cursor": {"value": "pointer"}
+        },
+        "update": {
+          "x": {
+            "signal": "datum.x + (datum.label_left ? -1 : 1) * (sqrt(scale('ring_size', datum.sites)) / 2 + 5)"
+          },
+          "y": {"field": "y"},
+          "align": {"signal": "datum.label_left ? 'right' : 'left'"},
+          "text": {"signal": "datum.site_state + ' · ' + datum.sites"},
+          "opacity": {"signal": "national_opacity"}
+        }
+      }
+    }
+  ]
+}

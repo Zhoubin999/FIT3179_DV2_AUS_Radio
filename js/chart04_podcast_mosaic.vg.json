@@ -1,36 +1,47 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 2 - mosaic (Marimekko) chart, one panel per audience. Splits 100 people into listened only, watched only, both and neither for podcasts (Infinite Dial 2026). Column width = listened or not; box height = watched or not, so box area = share of people.",
   "data": {
-    "url": "data/c03_podcast_overlap_2026.csv",
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
     "format": {
       "type": "csv",
-      "parse": {"share_pct": "number"}
+      "parse": {"value": "number"}
     }
   },
   "transform": [
-    {"filter": "datum.mode == 'Listen'"},
-    {"calculate": "datum.combination == 'Both' ? datum.share_pct : 0", "as": "both_piece"},
     {
-      "calculate": "datum.combination == 'Listened only' ? datum.share_pct : 0",
-      "as": "listen_piece"
+      "description": "Keep the monthly podcast rows and label the two audiences.",
+      "filter": "datum.dataset == 'Audience survey'"
+    },
+    {"filter": "datum.metric == 'Monthly podcast consumption 2026'"},
+    {
+      "calculate": "datum.geography == 'Australia' ? 'Australia overall' : 'Regional Australia'",
+      "as": "audience"
     },
     {
-      "calculate": "datum.combination == 'Watched only' ? datum.share_pct : 0",
-      "as": "watch_piece"
-    },
-    {
-      "joinaggregate": [
-        {"op": "sum", "field": "both_piece", "as": "both_total"},
-        {"op": "sum", "field": "listen_piece", "as": "listen_only_total"},
-        {"op": "sum", "field": "watch_piece", "as": "watch_only_total"}
-      ],
+      "description": "Pivot, then derive the four exclusive groups from Listened, Watched and 'Listened or watched'.",
+      "pivot": "subgroup",
+      "value": "value",
       "groupby": ["audience"]
     },
-    {"calculate": "datum.both_total + datum.listen_only_total", "as": "listen_total"},
-    {"calculate": "100 * datum.both_total / datum.listen_total", "as": "both_split"},
     {
-      "calculate": "100 * datum.watch_only_total / (100 - datum.listen_total)",
+      "calculate": "datum['Listened'] + datum['Watched'] - datum['Listened or watched']",
+      "as": "Both"
+    },
+    {"calculate": "datum['Listened'] - datum['Both']", "as": "Listened only"},
+    {"calculate": "datum['Watched'] - datum['Both']", "as": "Watched only"},
+    {"calculate": "100 - datum['Listened or watched']", "as": "Neither"},
+    {"calculate": "datum['Listened']", "as": "listen_total"},
+    {"calculate": "100 * datum['Both'] / datum.listen_total", "as": "both_split"},
+    {
+      "calculate": "100 * datum['Watched only'] / (100 - datum.listen_total)",
       "as": "watch_split"
+    },
+    {
+      "description": "Fold the four groups into rows and compute each box's corners (x0-x1, y0-y1) and centre.",
+      "fold": ["Both", "Listened only", "Watched only", "Neither"],
+      "as": ["combination", "share_pct"]
     },
     {
       "calculate": "datum.combination == 'Both' || datum.combination == 'Listened only' ? 0 : datum.listen_total",
@@ -67,10 +78,12 @@
     }
   },
   "spec": {
-    "width": 245,
-    "height": 245,
+    "description": "Facet: one panel for Australia overall and one for regional Australia (sized in main.js).",
+    "width": 255,
+    "height": 255,
     "layer": [
       {
+        "description": "The four boxes; violet shades = podcast groups.",
         "mark": {"type": "rect", "stroke": "#FFFFFF", "strokeWidth": 2},
         "encoding": {
           "x": {
@@ -93,7 +106,7 @@
             "title": "Podcast behaviour",
             "scale": {
               "domain": ["Both", "Listened only", "Watched only", "Neither"],
-              "range": ["#7251A8", "#0E877F", "#E89269", "#D8E0E6"]
+              "range": ["#6C5BB5", "#A194D6", "#D6D0F0", "#D8E0E6"]
             },
             "legend": {"orient": "bottom", "columns": 2}
           },
@@ -110,6 +123,7 @@
         }
       },
       {
+        "description": "Percentage label in the middle of each box.",
         "mark": {"type": "text", "fontWeight": "bold", "fontSize": 16},
         "encoding": {
           "x": {

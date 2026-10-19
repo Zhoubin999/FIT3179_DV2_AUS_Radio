@@ -1,13 +1,19 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "ROLLBACK VERSION (not shown by default; see useZoomMap in main.js). Proportional-symbol map of DAB+ sites with a linked bar chart of sites per region (ACMA, July 2026).",
   "data": {
-    "url": "data/dab_transmitter_sites_2026.csv",
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
     "format": {
       "type": "csv",
       "parse": {"latitude": "number", "longitude": "number", "power_kw": "number"}
     }
   },
   "transform": [
+    {
+      "description": "Keep the DAB+ transmitter rows, build the map labels and count sites per region.",
+      "filter": "datum.dataset == 'DAB+ transmitter'"
+    },
     {"calculate": "datum.region + ' ' + datum.power_kw + ' kW'", "as": "map_label"},
     {
       "joinaggregate": [
@@ -18,15 +24,22 @@
   ],
   "hconcat": [
     {
-      "width": 640,
-      "height": 480,
-      "projection": {"type": "mercator", "center": [136.5, -28], "scale": 650, "translate": [320, 240]},
+      "description": "Left view: the map.",
+      "width": 700,
+      "height": 525,
+      "projection": {
+        "type": "mercator",
+        "center": [136.5, -28],
+        "scale": 711,
+        "translate": [350, 262]
+      },
       "encoding": {
         "longitude": {"field": "longitude", "type": "quantitative"},
         "latitude": {"field": "latitude", "type": "quantitative"}
       },
       "layer": [
         {
+          "description": "Australian state boundaries (TopoJSON, cartdeco/Australia-json-data).",
           "data": {
             "url": "https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson",
             "format": {"type": "topojson", "feature": "collection"}
@@ -40,19 +53,20 @@
           "encoding": {"longitude": null, "latitude": null}
         },
         {
+          "description": "One circle per site: size = power (kW), colour = main or infill site.",
           "mark": {"type": "circle", "stroke": "#FFFFFF", "strokeWidth": 1},
           "encoding": {
             "size": {
               "field": "power_kw",
               "type": "quantitative",
               "title": "Transmitter power (kW)",
-              "scale": {"type": "sqrt", "domain": [0, 50], "range": [12, 900]},
+              "scale": {"type": "sqrt", "domain": [0, 50], "range": [16, 1200]},
               "legend": {
                 "values": [1, 10, 25, 50],
                 "orient": "bottom",
                 "direction": "horizontal",
-                "symbolFillColor": "#B9A5D6",
-                "symbolStrokeColor": "#7753AC"
+                "symbolFillColor": "#8FB3D6",
+                "symbolStrokeColor": "#2F5D8A"
               }
             },
             "color": {
@@ -61,7 +75,7 @@
               "title": "Site type",
               "scale": {
                 "domain": ["Main high-power site", "Low-power infill site"],
-                "range": ["#7753AC", "#E47B5C"]
+                "range": ["#2F5D8A", "#8FB3D6"]
               },
               "legend": {"orient": "bottom", "direction": "horizontal", "symbolSize": 180}
             },
@@ -71,7 +85,7 @@
             },
             "order": {"field": "power_kw", "sort": "descending"},
             "tooltip": [
-              {"field": "area_served", "title": "Licensed area"},
+              {"field": "geography", "title": "Licensed area"},
               {"field": "site_name", "title": "Transmitter site"},
               {"field": "power_kw", "title": "Power (kW)"},
               {"field": "frequency_blocks", "title": "Frequency blocks"},
@@ -80,6 +94,7 @@
           }
         },
         {
+          "description": "Labels for main sites placed to the right.",
           "transform": [
             {"filter": "datum.label_side == 'right'"}
           ],
@@ -96,6 +111,7 @@
           }
         },
         {
+          "description": "Labels for main sites placed to the left.",
           "transform": [
             {"filter": "datum.label_side == 'left'"}
           ],
@@ -112,6 +128,7 @@
           }
         },
         {
+          "description": "Labels for main sites placed below.",
           "transform": [
             {"filter": "datum.label_side == 'below'"}
           ],
@@ -131,8 +148,9 @@
       ]
     },
     {
-      "width": 220,
-      "height": 380,
+      "description": "Right view: number of sites in each region.",
+      "width": 230,
+      "height": 420,
       "title": {
         "text": "Transmitter sites in each region",
         "fontSize": 14,
@@ -149,6 +167,7 @@
       },
       "layer": [
         {
+          "description": "Stacked bars by site type; hovering a bar highlights that region on the map.",
           "params": [
             {
               "name": "Region_pick",
@@ -177,7 +196,7 @@
               "type": "nominal",
               "scale": {
                 "domain": ["Main high-power site", "Low-power infill site"],
-                "range": ["#7753AC", "#E47B5C"]
+                "range": ["#2F5D8A", "#8FB3D6"]
               },
               "legend": null
             },
@@ -197,6 +216,7 @@
           }
         },
         {
+          "description": "Total sites at the end of each bar.",
           "mark": {
             "type": "text",
             "align": "left",

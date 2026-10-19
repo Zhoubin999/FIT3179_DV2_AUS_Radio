@@ -1,0 +1,311 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Chapter 4 - donut-glyph map (Vega, linked to the city buttons). Each donut splits one capital city's radio listening by program type in GfK Survey 6. Donuts sit offshore with a leader line to the city; the selected city gets a dark ring.",
+  "height": 470,
+  "padding": 10,
+  "autosize": "none",
+  "signals": [
+    {
+      "description": "Chart width follows its card (updates on window resize).",
+      "name": "width",
+      "init": "containerSize()[0] > 100 ? containerSize()[0] - 20 : 540",
+      "on": [
+        {
+          "events": "window:resize",
+          "update": "containerSize()[0] > 100 ? containerSize()[0] - 20 : 540"
+        }
+      ]
+    },
+    {
+      "description": "Selected city; main.js sets it when a city button is clicked.",
+      "name": "SelectedMarket",
+      "value": "Melbourne"
+    }
+  ],
+  "projections": [
+    {
+      "description": "Mercator projection fitted to Australia.",
+      "name": "projection",
+      "type": "mercator",
+      "fit": {"signal": "data('states')"},
+      "extent": {"signal": "[[75, 10], [width - 150, height - 120]]"}
+    }
+  ],
+  "data": [
+    {
+      "description": "Australian state boundaries (TopoJSON, cartdeco/Australia-json-data).",
+      "name": "states",
+      "url": "https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson",
+      "format": {"type": "topojson", "feature": "collection"}
+    },
+    {
+      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep Survey 6 station ratings.",
+      "name": "stations",
+      "url": "data/australian_radio_data.csv",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "survey": "number",
+          "share": "number",
+          "latitude": "number",
+          "longitude": "number"
+        }
+      },
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.dataset == 'Station ratings' && datum.survey == 6"
+        }
+      ]
+    },
+    {
+      "description": "Add up rated stations' shares by city and program type.",
+      "name": "rated",
+      "source": "stations",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": ["market", "program_format", "latitude", "longitude"],
+          "fields": ["share"],
+          "ops": ["sum"],
+          "as": ["type_share"]
+        }
+      ]
+    },
+    {
+      "description": "The rest of each city's listening ('Other / unrated stations').",
+      "name": "other",
+      "source": "stations",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": ["market", "latitude", "longitude"],
+          "fields": ["share"],
+          "ops": ["sum"],
+          "as": ["rated_total"]
+        },
+        {"type": "formula", "as": "program_format", "expr": "'Other / unrated stations'"},
+        {"type": "formula", "as": "type_share", "expr": "100 - datum.rated_total"}
+      ]
+    },
+    {
+      "description": "All donut slices in a fixed order, with each city's map point and offshore donut position.",
+      "name": "slices",
+      "source": ["rated", "other"],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "type_share",
+          "expr": "round(datum.type_share * 10) / 10"
+        },
+        {
+          "type": "formula",
+          "as": "format_order",
+          "expr": "indexof(['Commercial music', 'ABC music', 'Commercial talk & news', 'ABC talk & news', 'Sport', 'Other / unrated stations'], datum.program_format)"
+        },
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": ["longitude", "latitude"],
+          "as": ["px", "py"]
+        },
+        {
+          "type": "formula",
+          "as": "cx",
+          "expr": "datum.px + (datum.market == 'Sydney' ? 80 : datum.market == 'Brisbane' ? 75 : datum.market == 'Adelaide' ? -55 : 0)"
+        },
+        {
+          "type": "formula",
+          "as": "cy",
+          "expr": "datum.py + (datum.market == 'Sydney' ? 25 : datum.market == 'Brisbane' ? -30 : datum.market == 'Adelaide' ? 60 : datum.market == 'Melbourne' ? 75 : 0)"
+        }
+      ]
+    },
+    {
+      "description": "One row per city: music and talk totals for the label, plus positions.",
+      "name": "cities",
+      "source": "slices",
+      "transform": [
+        {
+          "type": "formula",
+          "as": "music",
+          "expr": "indexof(datum.program_format, 'music') >= 0 ? datum.type_share : 0"
+        },
+        {
+          "type": "formula",
+          "as": "talk",
+          "expr": "indexof(datum.program_format, 'talk') >= 0 ? datum.type_share : 0"
+        },
+        {
+          "type": "aggregate",
+          "groupby": ["market", "px", "py", "cx", "cy"],
+          "fields": ["music", "talk"],
+          "ops": ["sum", "sum"],
+          "as": ["music", "talk"]
+        },
+        {
+          "type": "formula",
+          "as": "label",
+          "expr": "[datum.market, 'Music ' + round(datum.music) + '% · Talk ' + round(datum.talk) + '%']"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "description": "Program-type colours, shared with Charts 10, 12 and 13.",
+      "name": "color",
+      "type": "ordinal",
+      "domain": [
+        "Commercial music",
+        "ABC music",
+        "Commercial talk & news",
+        "ABC talk & news",
+        "Sport",
+        "Other / unrated stations"
+      ],
+      "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552", "#D5DDE2"]
+    }
+  ],
+  "legends": [
+    {
+      "description": "Program-type legend in the bottom-left corner.",
+      "fill": "color",
+      "orient": "bottom-left",
+      "columns": 2,
+      "symbolType": "square",
+      "labelFontSize": 13,
+      "title": "Program type",
+      "titleFontSize": 13
+    }
+  ],
+  "marks": [
+    {
+      "description": "State outlines (base map).",
+      "type": "shape",
+      "from": {"data": "states"},
+      "encode": {
+        "enter": {
+          "fill": {"value": "#EEF1F3"},
+          "stroke": {"value": "#C5D0D8"},
+          "strokeWidth": {"value": 0.6}
+        }
+      },
+      "transform": [
+        {"type": "geoshape", "projection": "projection"}
+      ]
+    },
+    {
+      "type": "rule",
+      "description": "leader line from the city to its donut",
+      "from": {"data": "cities"},
+      "encode": {
+        "update": {
+          "x": {"field": "px"},
+          "y": {"field": "py"},
+          "x2": {"field": "cx"},
+          "y2": {"field": "cy"},
+          "stroke": {"value": "#7A8992"},
+          "strokeWidth": {"value": 1}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "description": "the city's real location",
+      "from": {"data": "cities"},
+      "encode": {
+        "update": {
+          "x": {"field": "px"},
+          "y": {"field": "py"},
+          "size": {"value": 30},
+          "fill": {"value": "#132D43"}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "description": "dark ring around the selected city",
+      "from": {"data": "cities"},
+      "encode": {
+        "update": {
+          "x": {"field": "cx"},
+          "y": {"field": "cy"},
+          "size": {"value": 3600},
+          "fill": {"value": "transparent"},
+          "stroke": {"value": "#132D43"},
+          "strokeWidth": {"signal": "datum.market == SelectedMarket ? 3 : 0"}
+        }
+      }
+    },
+    {
+      "type": "group",
+      "description": "one donut for each city",
+      "from": {
+        "facet": {
+          "data": "slices",
+          "name": "city_slices",
+          "groupby": ["market", "cx", "cy"]
+        }
+      },
+      "encode": {
+        "enter": {
+          "x": {"field": "cx"},
+          "y": {"field": "cy"}
+        }
+      },
+      "data": [
+        {
+          "name": "city_pie",
+          "source": "city_slices",
+          "transform": [
+            {
+              "type": "collect",
+              "sort": {"field": "format_order"}
+            },
+            {"type": "pie", "field": "type_share"}
+          ]
+        }
+      ],
+      "marks": [
+        {
+          "type": "arc",
+          "from": {"data": "city_pie"},
+          "encode": {
+            "enter": {
+              "startAngle": {"field": "startAngle"},
+              "endAngle": {"field": "endAngle"},
+              "innerRadius": {"value": 13},
+              "outerRadius": {"value": 27},
+              "fill": {"scale": "color", "field": "program_format"},
+              "stroke": {"value": "#FFFFFF"},
+              "strokeWidth": {"value": 1},
+              "cursor": {"value": "pointer"},
+              "tooltip": {
+                "signal": "{'City': datum.market, 'Program type': datum.program_format, 'Share of listening (%)': datum.type_share}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "description": "city name, music share and talk share",
+      "from": {"data": "cities"},
+      "encode": {
+        "update": {
+          "x": {"field": "cx"},
+          "y": {"signal": "datum.cy + 32"},
+          "align": {"value": "center"},
+          "baseline": {"value": "top"},
+          "text": {"field": "label"},
+          "fontSize": {"value": 13},
+          "fontWeight": {"signal": "datum.market == SelectedMarket ? 'bold' : 'normal'"},
+          "lineHeight": {"value": 16},
+          "fill": {"value": "#1F3545"}
+        }
+      }
+    }
+  ]
+}

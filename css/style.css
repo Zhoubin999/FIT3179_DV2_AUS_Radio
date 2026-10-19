@@ -1,20 +1,54 @@
+/* =====================================================================
+   Australian Radio in the Digital Age - stylesheet
+   FIT3179 Data Visualisation 2 - Zhoubin Li
+
+   Contents
+     1. Fonts and colour variables
+     2. Base page styles
+     3. Top navigation
+     4. Hero (title, byline, headline numbers)
+     5. "How to use" and jargon buster boxes
+     6. Chapter headings
+     7. Chart cards (layout shared by every chart)
+     8. Vega drop-down menus, notes and mini legends
+     9. Chart 8: zoomable DAB+ map and side panel
+    10. Chapter 4: city picker and linked charts
+    11. Conclusion (takeaways)
+    12. Sources and footer
+    13. Smaller screens (all media queries)
+   ===================================================================== */
+
+
+/* ---------- 1. Fonts and colour variables ---------- */
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap");
 
-/* ---------- Colours ---------- */
 :root {
-  --ink: #182D42;
-  --muted: #4D6273;
-  --paper: #F5F7F7;
-  --card: #FFFFFF;
-  --edge: #DAE3E6;
-  --teal: #087F79;
-  --coral: #E47B5C;
-  --blue: #2F5D8A;
-  --purple: #7753AC;
+  /* fonts: DM Sans for text, Outfit for headings and big numbers */
+  --font-body: "DM Sans", Arial, sans-serif;
+  --font-head: Outfit, sans-serif;
+
+  /* page colours */
+  --ink: #182D42;        /* main text */
+  --muted: #4D6273;      /* secondary text */
+  --note: #5C7182;       /* small notes */
+  --paper: #F5F7F7;      /* page background */
+  --card: #FFFFFF;       /* chart cards */
+  --edge: #DAE3E6;       /* borders */
+  --tint: #EEF3F9;       /* light blue boxes and hover backgrounds */
+  --night: #132D43;      /* dark navy (hero, city picker, badges) */
+  --accent: #2F5D8A;     /* links, buttons, highlights */
   --shadow: 0 4px 24px rgba(29, 62, 77, .06);
+
+  /* data colours (same meaning in every chart) */
+  --radio: #2F5D8A;      /* radio */
+  --stream: #E3672B;     /* streaming */
+  --podcast: #6C5BB5;    /* podcasts */
+  --national: #44515C;   /* Australia overall */
+  --regional: #14857A;   /* regional Australia */
 }
 
-/* ---------- Base ---------- */
+
+/* ---------- 2. Base page styles ---------- */
 * {
   box-sizing: border-box;
 }
@@ -27,15 +61,16 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "DM Sans", Arial, sans-serif;
+  font-family: var(--font-body);
   font-size: 17px;
   line-height: 1.6;
 }
 
 a {
-  color: var(--teal);
+  color: var(--accent);
 }
 
+/* centred page column used by every section */
 .shell {
   width: min(1260px, calc(100% - 64px));
   margin-inline: auto;
@@ -48,7 +83,8 @@ a {
   text-transform: uppercase;
 }
 
-/* ---------- Top navigation ---------- */
+
+/* ---------- 3. Top navigation ---------- */
 .topnav {
   position: sticky;
   top: 0;
@@ -69,7 +105,7 @@ a {
 .brand {
   color: var(--ink);
   text-decoration: none;
-  font: 700 17px Outfit, sans-serif;
+  font: 700 17px var(--font-head);
 }
 
 .links {
@@ -86,12 +122,13 @@ a {
 }
 
 .links a:hover {
-  color: var(--teal);
+  color: var(--accent);
 }
 
-/* ---------- Hero ---------- */
+
+/* ---------- 4. Hero (title, byline, headline numbers) ---------- */
 .hero {
-  background: linear-gradient(113deg, #132D43 0%, #163D4C 58%, #0A5C5D 100%);
+  background: linear-gradient(113deg, var(--night) 0%, #163D4C 58%, #1F4E79 100%);
   color: #FFFFFF;
 }
 
@@ -100,19 +137,19 @@ a {
 }
 
 .hero .eyebrow {
-  color: #8EDAD1;
+  color: #9FC4EA;
   margin: 0;
 }
 
 .hero h1 {
-  font: 700 clamp(40px, 5vw, 66px)/1.08 Outfit, sans-serif;
+  font: 700 clamp(40px, 5vw, 66px)/1.08 var(--font-head);
   letter-spacing: -.03em;
   margin: 14px 0 18px;
 }
 
 .hero h1 em {
   font-style: normal;
-  color: #FFAA8B;
+  color: #F6B998;
 }
 
 .hero-desc {
@@ -145,15 +182,20 @@ a {
 }
 
 .stat strong {
-  font: 700 40px/1 Outfit, sans-serif;
+  font: 700 40px/1 var(--font-head);
 }
 
-.stat strong.blue {
+/* light versions of the data colours, readable on the dark hero */
+.stat strong.radio {
   color: #9FC4EA;
 }
 
-.stat strong.orange {
-  color: #FFB292;
+.stat strong.stream {
+  color: #F6B998;
+}
+
+.stat strong.podcast {
+  color: #C9C2F0;
 }
 
 .stat p {
@@ -163,7 +205,8 @@ a {
   line-height: 1.4;
 }
 
-/* ---------- How to use + jargon buster ---------- */
+
+/* ---------- 5. "How to use" and jargon buster boxes ---------- */
 .guide-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
@@ -172,14 +215,14 @@ a {
 }
 
 .guide-box {
-  background: #EAF4F2;
-  border: 1px solid #BCD7D5;
+  background: var(--tint);
+  border: 1px solid #C9D6E3;
   border-radius: 16px;
   padding: 22px 26px;
 }
 
 .guide-box h2 {
-  font: 700 22px Outfit, sans-serif;
+  font: 700 22px var(--font-head);
   margin: 0 0 12px;
 }
 
@@ -196,11 +239,12 @@ a {
   font-size: 16px;
 }
 
+/* round icon in front of each instruction */
 .how-icon {
   flex: 0 0 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--teal);
+  background: var(--accent);
   color: #FFFFFF;
   display: inline-flex;
   align-items: center;
@@ -213,6 +257,7 @@ a {
   border-color: var(--edge);
 }
 
+/* term on the left, meaning on the right */
 .glossary dl {
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
@@ -223,7 +268,7 @@ a {
 
 .glossary dt {
   font-weight: 700;
-  color: var(--teal);
+  color: var(--accent);
 }
 
 .glossary dd {
@@ -231,12 +276,14 @@ a {
   color: var(--muted);
 }
 
-/* ---------- Chapters ---------- */
+
+/* ---------- 6. Chapter headings ---------- */
 .chapter {
   padding: 60px 0 10px;
-  scroll-margin-top: 64px;
+  scroll-margin-top: 64px;   /* keeps the heading below the sticky navigation */
 }
 
+/* big chapter number on the left, title and summary on the right */
 .chapter-heading {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -245,13 +292,13 @@ a {
 }
 
 .chapter-no {
-  font: 800 52px/1 Outfit, sans-serif;
-  color: #B8CED1;
+  font: 800 52px/1 var(--font-head);
+  color: #B9C7D4;
 }
 
 .chapter-heading h2 {
   margin: 0 0 8px;
-  font: 700 clamp(26px, 3vw, 34px)/1.2 Outfit, sans-serif;
+  font: 700 clamp(26px, 3vw, 34px)/1.2 var(--font-head);
 }
 
 .chapter-heading p {
@@ -261,7 +308,9 @@ a {
   font-size: 18px;
 }
 
-/* ---------- Chart cards ---------- */
+
+/* ---------- 7. Chart cards (layout shared by every chart) ---------- */
+/* two columns of cards; .wide and .full cards take a whole row */
 .chart-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -285,7 +334,7 @@ a {
 }
 
 .card-heading {
-  font: 700 23px/1.25 Outfit, sans-serif;
+  font: 700 23px/1.25 var(--font-head);
   margin: 0 0 8px;
 }
 
@@ -296,26 +345,12 @@ a {
   margin: 0 0 10px;
 }
 
-/* the "Try:" hint that tells readers how to interact */
-.try {
-  font-size: 15px;
-  color: #33525E;
-  background: #F1F6F5;
-  border-left: 3px solid var(--teal);
-  padding: 6px 12px;
-  margin: 0 0 6px;
-  max-width: 70ch;
-}
-
+/* the box each chart is drawn into (id c01 ... c13) */
 .chart-wrap {
   width: 100%;
   padding: 10px 0 4px;
   min-height: 160px;
-  overflow-x: auto; /* wide fixed-size charts scroll inside the card on phones */
-}
-
-.chart-wrap.narrow {
-  max-width: 900px;
+  overflow-x: auto;   /* a wide chart scrolls inside its card instead of the page */
 }
 
 .chart-wrap .vega-embed {
@@ -327,7 +362,17 @@ a {
   height: auto;
 }
 
-/* drop-down menus created by Vega-Lite bindings */
+/* in a two-column row, a shorter chart sits in the middle of its card */
+.chart-card:not(.wide):not(.full) .chart-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ---------- 8. Vega drop-down menus, notes and mini legends ---------- */
+/* drop-down menus created by Vega-Lite "bind" parameters (Charts 1 and 9) */
 .vega-bindings {
   margin-top: 8px;
   font-size: 15px;
@@ -335,26 +380,28 @@ a {
 
 .vega-bind-name {
   font-weight: 700;
-  color: #174B54;
+  color: #1F3F5E;
 }
 
 .vega-bindings select {
-  font: 600 15px "DM Sans", Arial, sans-serif;
+  font: 600 15px var(--font-body);
   padding: 6px 10px;
-  border: 1px solid #9FC2BF;
+  border: 1px solid #B7C7D6;
   border-radius: 8px;
-  background: #EAF4F2;
+  background: var(--tint);
   color: #18384A;
   cursor: pointer;
   max-width: 100%;
 }
 
-.source-note {
+/* small print under a chart */
+.chart-note {
   font-size: 14px;
-  color: #5C7182;
+  color: var(--note);
   margin: 8px 0 0;
 }
 
+/* HTML legend under Chart 3 */
 .mini-legend {
   font-size: 14px;
   color: var(--muted);
@@ -371,12 +418,180 @@ a {
   margin-left: 8px;
 }
 
-.dot.grey { background: #64748B; }
-.dot.teal { background: #087F79; }
-.dot.slate { background: #7A8EA4; border-radius: 2px; }
-.dot.coral { background: #DF6A51; border-radius: 2px; }
+.dot.national { background: var(--national); }
+.dot.regional { background: var(--regional); }
 
-/* ---------- Chapter 4: city picker and linked charts ---------- */
+
+/* ---------- 9. Chart 8: zoomable DAB+ map and side panel ---------- */
+/* breadcrumb on the left, "Back to Australia" on the right */
+.zoom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.zoom-breadcrumb {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.zoom-breadcrumb button {
+  font: inherit;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.zoom-breadcrumb .current {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.zoom-back {
+  font: 600 14px var(--font-body);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
+.zoom-back:disabled {
+  background: transparent;
+  color: #8A9BA8;
+  border-color: var(--edge);
+  cursor: default;
+}
+
+/* map on the left, side panel on the right */
+.zoom-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* side panel: list of states (Australia view) or sites (state view) */
+.zoom-panel {
+  max-height: 560px;
+  overflow-y: auto;
+  padding-left: 16px;
+  border-left: 1px solid var(--edge);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.zoom-panel h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.zoom-panel h5 {
+  margin: 12px 0 4px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+
+.zoom-panel p {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
+.zoom-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* one button per state or site */
+.zoom-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  font: 14px var(--font-body);
+  color: var(--ink);
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.zoom-item:hover,
+.zoom-item:focus-visible {
+  background: var(--tint);
+}
+
+.zoom-item.selected {
+  border-color: var(--accent);
+  background: var(--tint);
+}
+
+.zoom-item .count {
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+/* small bar under each state name (number of sites) */
+.zoom-item .bar {
+  display: block;
+  height: 6px;
+  margin-top: 3px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+/* site-type dot in front of each site name */
+.zoom-item .dot {
+  width: 10px;
+  height: 10px;
+  margin: 0 6px 0 0;
+}
+
+/* details of the selected site */
+.site-detail {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--tint);
+}
+
+.site-detail dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  margin: 6px 0 0;
+}
+
+.site-detail dt {
+  color: var(--muted);
+}
+
+.site-detail dd {
+  margin: 0;
+}
+
+/* shown when a state has no sites in the records */
+.zoom-empty {
+  padding: 10px 12px;
+  border: 1px dashed var(--edge);
+  border-radius: 8px;
+}
+
+
+/* ---------- 10. Chapter 4: city picker and linked charts ---------- */
+/* dark bar that stays at the top while scrolling through Chapter 4 */
 .city-picker {
   position: sticky;
   top: 60px;
@@ -388,7 +603,7 @@ a {
   padding: 14px 20px;
   margin-bottom: 20px;
   border-radius: 14px;
-  background: #132D43;
+  background: var(--night);
   color: #FFFFFF;
   box-shadow: 0 6px 20px rgba(19, 45, 67, .25);
 }
@@ -405,7 +620,7 @@ a {
 }
 
 .city-button {
-  font: 600 15px "DM Sans", Arial, sans-serif;
+  font: 600 15px var(--font-body);
   padding: 7px 16px;
   border-radius: 999px;
   border: 1px solid #6F93A8;
@@ -418,14 +633,16 @@ a {
   background: rgba(255, 255, 255, .12);
 }
 
+/* the city currently shown */
 .city-button.active {
-  background: #FFAA8B;
-  border-color: #FFAA8B;
-  color: #132D43;
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: var(--night);
 }
 
+/* thicker border and a badge mark the four linked charts */
 .chart-card.linked {
-  border: 2px solid #9FC2BF;
+  border: 2px solid #B7C7D6;
 }
 
 .linked-badge {
@@ -433,18 +650,53 @@ a {
   margin: 0 0 8px;
   padding: 3px 10px;
   border-radius: 999px;
-  background: #132D43;
+  background: var(--night);
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 600;
 }
 
-.chapter-source {
-  margin-top: 16px;
-  max-width: 100ch;
+
+/* ---------- 11. Conclusion (takeaways) ---------- */
+.takeaway-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
 }
 
-/* ---------- Sources and footer ---------- */
+.takeaway {
+  background: var(--card);
+  border: 1px solid var(--edge);
+  border-top: 4px solid var(--accent);
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+}
+
+.takeaway strong {
+  font: 700 38px/1 var(--font-head);
+  color: var(--accent);
+}
+
+.takeaway p {
+  margin: 10px 0 0;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.takeaway p b {
+  color: var(--ink);
+}
+
+.closing {
+  max-width: 72ch;
+  margin: 26px 0 0;
+  font-size: 18px;
+  color: var(--ink);
+}
+
+
+/* ---------- 12. Sources and footer ---------- */
 .end {
   margin-top: 60px;
   background: #E9F0F0;
@@ -454,7 +706,7 @@ a {
 }
 
 .end h2 {
-  font: 700 28px Outfit, sans-serif;
+  font: 700 28px var(--font-head);
   margin: 0 0 14px;
 }
 
@@ -468,7 +720,7 @@ a {
   margin-bottom: 10px;
   font-size: 15px;
   color: #3F5768;
-  overflow-wrap: anywhere;
+  overflow-wrap: anywhere;   /* long URLs wrap instead of widening the page */
 }
 
 .source-list {
@@ -492,11 +744,17 @@ a {
   flex-wrap: wrap;
 }
 
-/* ---------- Smaller screens ---------- */
+
+/* ---------- 13. Smaller screens (all media queries) ---------- */
+/* tablets and small laptops: one chart per row */
 @media (max-width: 1020px) {
   .chart-grid,
   .guide-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .takeaway-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .links {
@@ -504,6 +762,21 @@ a {
   }
 }
 
+/* Chart 8: side panel moves under the map */
+@media (max-width: 900px) {
+  .zoom-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .zoom-panel {
+    max-height: none;
+    padding: 12px 0 0;
+    border-left: none;
+    border-top: 1px solid var(--edge);
+  }
+}
+
+/* phones */
 @media (max-width: 700px) {
   .shell {
     width: calc(100% - 32px);

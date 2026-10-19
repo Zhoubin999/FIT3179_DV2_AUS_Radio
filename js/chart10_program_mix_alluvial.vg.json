@@ -1,0 +1,219 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 4 - alluvial diagram (linked to the city buttons). Share of radio listening by program type in Surveys 3-6 for the selected city (GfK ratings). Each column = 100% of listening; ribbons join the same program type in neighbouring surveys. Shared encoding: colour = program type.",
+  "width": "container",
+  "height": 420,
+  "autosize": {"type": "fit-x", "contains": "padding"},
+  "data": {
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"survey": "number", "share": "number"}
+    }
+  },
+  "params": [
+    {
+      "description": "Selected city; main.js sets it when a city button is clicked.",
+      "name": "SelectedMarket",
+      "value": "Melbourne"
+    }
+  ],
+  "transform": [
+    {
+      "description": "Keep the selected city and add up station shares by program type in each survey.",
+      "filter": "datum.dataset == 'Station ratings' && datum.market == SelectedMarket"
+    },
+    {
+      "aggregate": [
+        {"op": "sum", "field": "share", "as": "type_share"}
+      ],
+      "groupby": ["market", "survey", "program_format"]
+    },
+    {
+      "description": "Add the 'Other / unrated stations' remainder so every survey totals 100%.",
+      "pivot": "program_format",
+      "value": "type_share",
+      "groupby": ["market", "survey"]
+    },
+    {
+      "calculate": "100 - (datum['Commercial music'] || 0) - (datum['ABC music'] || 0) - (datum['Commercial talk & news'] || 0) - (datum['ABC talk & news'] || 0) - (datum['Sport'] || 0)",
+      "as": "Other / unrated stations"
+    },
+    {
+      "fold": [
+        "Commercial music",
+        "ABC music",
+        "Commercial talk & news",
+        "ABC talk & news",
+        "Sport",
+        "Other / unrated stations"
+      ],
+      "as": ["program_format", "type_share"]
+    },
+    {
+      "description": "Drop empty groups and round the shares.",
+      "filter": "isValid(datum.type_share) && datum.type_share > 0"
+    },
+    {"calculate": "round(datum.type_share * 10) / 10", "as": "type_share"},
+    {
+      "description": "Stack the program types in each survey (largest at the bottom, 'Other' on top).",
+      "calculate": "datum.program_format == 'Other / unrated stations' ? -1 : datum.type_share",
+      "as": "stack_rank"
+    },
+    {
+      "stack": "type_share",
+      "groupby": ["survey"],
+      "sort": [
+        {"field": "stack_rank", "order": "descending"}
+      ],
+      "as": ["band_start", "band_end"]
+    },
+    {
+      "description": "Middle of each band (for labels), column position and survey name.",
+      "calculate": "(datum.band_start + datum.band_end) / 2",
+      "as": "band_middle"
+    },
+    {"calculate": "datum.survey - 3", "as": "column"},
+    {"calculate": "'Survey ' + datum.survey", "as": "survey_name"},
+    {
+      "window": [
+        {"op": "lag", "field": "type_share", "as": "previous_share"}
+      ],
+      "groupby": ["program_format"],
+      "sort": [
+        {"field": "survey"}
+      ]
+    },
+    {
+      "description": "Change since the previous survey, for the tooltip.",
+      "calculate": "isValid(datum.previous_share) ? (datum.type_share >= datum.previous_share ? '+' : '') + format(datum.type_share - datum.previous_share, '.1f') + ' points' : 'First survey shown'",
+      "as": "change_note"
+    }
+  ],
+  "encoding": {
+    "y": {
+      "type": "quantitative",
+      "title": "Share of all radio listening (%)",
+      "scale": {"domain": [0, 100]},
+      "axis": {"values": [0, 20, 40, 60, 80, 100], "grid": false}
+    },
+    "color": {
+      "field": "program_format",
+      "type": "nominal",
+      "title": "Program type",
+      "scale": {
+        "domain": [
+          "Commercial music",
+          "ABC music",
+          "Commercial talk & news",
+          "ABC talk & news",
+          "Sport",
+          "Other / unrated stations"
+        ],
+        "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552", "#D5DDE2"]
+      },
+      "legend": null
+    }
+  },
+  "layer": [
+    {
+      "description": "Ribbons between neighbouring columns (area marks).",
+      "transform": [
+        {"calculate": "[datum.column - 0.16, datum.column + 0.16]", "as": "edges"},
+        {"flatten": ["edges"], "as": ["edge_x"]}
+      ],
+      "mark": {"type": "area", "opacity": 0.35, "interpolate": "monotone"},
+      "encoding": {
+        "x": {
+          "field": "edge_x",
+          "type": "quantitative",
+          "title": null,
+          "scale": {"domain": [-0.3, 3.95]},
+          "axis": null
+        },
+        "y": {"field": "band_start"},
+        "y2": {"field": "band_end"},
+        "detail": {"field": "program_format", "type": "nominal"}
+      }
+    },
+    {
+      "description": "The stacked columns themselves (one rect per program type per survey).",
+      "transform": [
+        {"calculate": "datum.column - 0.16", "as": "column_left"},
+        {"calculate": "datum.column + 0.16", "as": "column_right"}
+      ],
+      "mark": {"type": "rect", "stroke": "#FFFFFF", "strokeWidth": 1.5},
+      "encoding": {
+        "x": {"field": "column_left", "type": "quantitative"},
+        "x2": {"field": "column_right"},
+        "y": {"field": "band_start"},
+        "y2": {"field": "band_end"},
+        "tooltip": [
+          {"field": "survey_name", "title": "Survey"},
+          {"field": "program_format", "title": "Program type"},
+          {"field": "type_share", "title": "Share of listening (%)"},
+          {"field": "change_note", "title": "Change from the survey before"}
+        ]
+      }
+    },
+    {
+      "description": "Share printed inside segments that are tall enough.",
+      "transform": [
+        {"filter": "datum.type_share >= 2.5"}
+      ],
+      "mark": {"type": "text", "fontSize": 12, "fontWeight": "bold"},
+      "encoding": {
+        "x": {"field": "column", "type": "quantitative"},
+        "y": {"field": "band_middle"},
+        "text": {"field": "type_share", "type": "quantitative", "format": ".1f"},
+        "color": {
+          "condition": {
+            "test": "datum.program_format == 'Commercial music' || datum.program_format == 'Sport'",
+            "value": "#FFFFFF"
+          },
+          "value": "#1F3545"
+        }
+      }
+    },
+    {
+      "description": "Survey names under each column.",
+      "transform": [
+        {"filter": "datum.program_format == 'Commercial music'"}
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "baseline": "top",
+        "dy": 8,
+        "color": "#3E5263"
+      },
+      "encoding": {
+        "x": {"field": "column", "type": "quantitative"},
+        "y": {"datum": 0},
+        "text": {"field": "survey_name"},
+        "color": {"value": "#3E5263"}
+      }
+    },
+    {
+      "description": "Program-type names beside the last column.",
+      "transform": [
+        {"filter": "datum.survey == 6"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 8,
+        "fontSize": 13,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {"datum": 3.16},
+        "y": {"field": "band_middle"},
+        "text": {"field": "program_format"},
+        "color": {"value": "#1F3545"}
+      }
+    }
+  ]
+}

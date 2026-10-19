@@ -1,0 +1,222 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Chapter 4 - treemap (Vega, linked to the city buttons). Every rated station in the selected city, grouped by program type and sized by its share of listening in Survey 6 (GfK). Tooltip shows the change since Survey 5.",
+  "height": 470,
+  "padding": 10,
+  "autosize": "none",
+  "signals": [
+    {
+      "description": "Chart width follows its card (updates on window resize).",
+      "name": "width",
+      "init": "containerSize()[0] > 100 ? containerSize()[0] - 20 : 540",
+      "on": [
+        {
+          "events": "window:resize",
+          "update": "containerSize()[0] > 100 ? containerSize()[0] - 20 : 540"
+        }
+      ]
+    },
+    {
+      "description": "Selected city; main.js sets it when a city button is clicked.",
+      "name": "SelectedMarket",
+      "value": "Melbourne"
+    }
+  ],
+  "data": [
+    {
+      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep the selected city's stations in Surveys 5 and 6 and compute the change.",
+      "name": "stations",
+      "url": "data/australian_radio_data.csv",
+      "format": {
+        "type": "csv",
+        "parse": {"survey": "number", "share": "number", "rank": "number"}
+      },
+      "transform": [
+        {"type": "filter", "expr": "datum.dataset == 'Station ratings'"},
+        {
+          "type": "filter",
+          "expr": "datum.market == SelectedMarket && (datum.survey == 5 || datum.survey == 6)"
+        },
+        {
+          "type": "pivot",
+          "field": "survey",
+          "value": "share",
+          "groupby": ["market", "station", "program_format"]
+        },
+        {"type": "formula", "as": "share", "expr": "datum['6']"},
+        {
+          "type": "formula",
+          "as": "change",
+          "expr": "round((datum['6'] - datum['5']) * 10) / 10"
+        },
+        {"type": "formula", "as": "id", "expr": "datum.station"},
+        {"type": "formula", "as": "parent", "expr": "datum.program_format"}
+      ]
+    },
+    {
+      "description": "One parent node per program type (total share).",
+      "name": "type_totals",
+      "source": "stations",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": ["program_format"],
+          "fields": ["share"],
+          "ops": ["sum"],
+          "as": ["type_share"]
+        },
+        {"type": "formula", "as": "id", "expr": "datum.program_format"},
+        {"type": "formula", "as": "parent", "expr": "'all stations'"}
+      ]
+    },
+    {
+      "description": "The single root of the hierarchy ('all stations').",
+      "name": "top_node",
+      "values": [
+        {"id": "all stations"}
+      ]
+    },
+    {
+      "description": "Join root, program types and stations into a hierarchy (stratify) and lay it out (treemap).",
+      "name": "tree",
+      "source": ["top_node", "type_totals", "stations"],
+      "transform": [
+        {"type": "stratify", "key": "id", "parentKey": "parent"},
+        {
+          "type": "treemap",
+          "field": "share",
+          "sort": {"field": "value", "order": "descending"},
+          "method": "squarify",
+          "paddingInner": 2,
+          "paddingOuter": 0,
+          "paddingTop": 22,
+          "round": true,
+          "size": [
+            {"signal": "width"},
+            {"signal": "height"}
+          ]
+        }
+      ]
+    },
+    {
+      "description": "Program-type boxes (depth 1) and their header labels.",
+      "name": "groups",
+      "source": "tree",
+      "transform": [
+        {"type": "filter", "expr": "datum.depth == 1"},
+        {
+          "type": "formula",
+          "as": "group_label",
+          "expr": "datum.program_format + ' ' + format(datum.type_share, '.1f') + '%'"
+        },
+        {
+          "type": "formula",
+          "as": "short_label",
+          "expr": "replace(replace(datum.program_format, 'Commercial', 'Comm.'), ' & news', '') + ' ' + format(datum.type_share, '.0f') + '%'"
+        },
+        {"type": "formula", "as": "group_w", "expr": "datum.x1 - datum.x0 - 10"}
+      ]
+    },
+    {
+      "description": "Station boxes (depth 2) and their width and height.",
+      "name": "leaves",
+      "source": "tree",
+      "transform": [
+        {"type": "filter", "expr": "datum.depth == 2"},
+        {"type": "formula", "as": "box_w", "expr": "datum.x1 - datum.x0"},
+        {"type": "formula", "as": "box_h", "expr": "datum.y1 - datum.y0"}
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "description": "Program-type colours, shared with Charts 10, 11 and 13.",
+      "name": "color",
+      "type": "ordinal",
+      "domain": [
+        "Commercial music",
+        "ABC music",
+        "Commercial talk & news",
+        "ABC talk & news",
+        "Sport"
+      ],
+      "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552"]
+    }
+  ],
+  "marks": [
+    {
+      "type": "rect",
+      "description": "program-type group boxes",
+      "from": {"data": "groups"},
+      "encode": {
+        "update": {
+          "x": {"field": "x0"},
+          "y": {"field": "y0"},
+          "x2": {"field": "x1"},
+          "y2": {"field": "y1"},
+          "fill": {"scale": "color", "field": "program_format"},
+          "fillOpacity": {"value": 0.18}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "program-type name and total share above each group",
+      "from": {"data": "groups"},
+      "encode": {
+        "update": {
+          "x": {"signal": "datum.x0 + 5"},
+          "y": {"signal": "datum.y0 + 15"},
+          "text": {
+            "signal": "length(datum.group_label) * 7.6 < datum.group_w ? datum.group_label : length(datum.short_label) * 7.6 < datum.group_w ? datum.short_label : datum.group_w > 34 ? format(datum.type_share, '.0f') + '%' : ''"
+          },
+          "limit": {"signal": "max(datum.group_w, 0)"},
+          "fontSize": {"value": 13},
+          "fontWeight": {"value": "bold"},
+          "fill": {"value": "#1F3545"}
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "description": "one box per station",
+      "from": {"data": "leaves"},
+      "encode": {
+        "update": {
+          "x": {"field": "x0"},
+          "y": {"field": "y0"},
+          "x2": {"field": "x1"},
+          "y2": {"field": "y1"},
+          "fill": {"scale": "color", "field": "program_format"},
+          "stroke": {"value": "#FFFFFF"},
+          "strokeWidth": {"value": 1},
+          "tooltip": {
+            "signal": "{'Station': datum.station, 'Program type': datum.program_format, 'Share in Survey 6 (%)': datum.share, 'Change since Survey 5 (points)': (datum.change > 0 ? '+' : '') + datum.change}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "station name and share inside boxes that are big enough",
+      "from": {"data": "leaves"},
+      "encode": {
+        "update": {
+          "x": {"signal": "datum.x0 + 5"},
+          "y": {"signal": "datum.y0 + 5"},
+          "baseline": {"value": "top"},
+          "text": {
+            "signal": "datum.box_w > 62 && datum.box_h > 34 ? [datum.station, datum.share + '%'] : ''"
+          },
+          "limit": {"signal": "datum.box_w - 8"},
+          "fontSize": {"value": 12},
+          "fontWeight": {"value": "bold"},
+          "lineHeight": {"value": 15},
+          "fill": {
+            "signal": "datum.program_format == 'Commercial music' || datum.program_format == 'Sport' ? '#FFFFFF' : '#1F3545'"
+          }
+        }
+      }
+    }
+  ]
+}

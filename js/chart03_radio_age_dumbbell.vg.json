@@ -1,16 +1,41 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 2 - dumbbell chart. Weekly radio reach by age group, Australia overall vs regional Australia (Infinite Dial 2026). Shared encoding: y = age group, x = reach (%).",
   "width": "container",
-  "height": 250,
+  "height": 315,
+  "autosize": {"type": "fit-x", "contains": "padding"},
   "data": {
-    "url": "data/c04_radio_age_comparison_2026.csv",
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
     "format": {
       "type": "csv",
-      "parse": {"share_pct": "number"}
+      "parse": {"value": "number"}
     }
   },
   "transform": [
-    {"pivot": "audience", "value": "share_pct", "groupby": ["age_group"], "op": "max"},
+    {
+      "description": "Keep radio weekly reach by age group and label the two audiences.",
+      "filter": "datum.dataset == 'Audience survey'"
+    },
+    {
+      "filter": "datum.metric == 'Total radio weekly reach' && datum.subgroup_type == 'Age group'"
+    },
+    {
+      "calculate": "datum.geography == 'Australia' ? 'Australia overall' : 'Regional Australia'",
+      "as": "audience"
+    },
+    {
+      "calculate": "datum.subgroup == 'Total' ? 'All ages' : datum.subgroup",
+      "as": "age_group"
+    },
+    {"calculate": "datum.value", "as": "share_pct"},
+    {
+      "description": "Pivot so each age group is one row with both audiences, then compute the gap.",
+      "pivot": "audience",
+      "value": "share_pct",
+      "groupby": ["age_group"],
+      "op": "max"
+    },
     {"calculate": "datum['Australia overall'] - datum['Regional Australia']", "as": "gap"},
     {
       "calculate": "datum.gap == 0 ? 'Same reach: 80%' : (format(datum.gap,'.0f') + ' percentage-point gap')",
@@ -32,12 +57,13 @@
       "field": "age_group",
       "type": "nominal",
       "title": "Age",
-      "sort": ["10–24", "25–54", "55+"],
+      "sort": ["10–24", "25–54", "55+", "All ages"],
       "axis": {"labelFontSize": 14}
     }
   },
   "layer": [
     {
+      "description": "Grey bar joining the two values (the size of the gap).",
       "mark": {
         "type": "rule",
         "stroke": "#A7B9C5",
@@ -56,11 +82,12 @@
       }
     },
     {
+      "description": "Dot for Australia overall (dark grey).",
       "mark": {
         "type": "circle",
         "filled": true,
         "size": 175,
-        "color": "#64748B",
+        "color": "#44515C",
         "stroke": "white",
         "strokeWidth": 1.5
       },
@@ -69,11 +96,12 @@
       }
     },
     {
+      "description": "Dot for regional Australia (teal).",
       "mark": {
         "type": "circle",
         "filled": true,
         "size": 175,
-        "color": "#087F79",
+        "color": "#14857A",
         "stroke": "white",
         "strokeWidth": 1.5
       },
@@ -82,17 +110,18 @@
       }
     },
     {
+      "description": "Australia overall value, to the right of its dot.",
       "transform": [
         {"filter": "datum.age_group != '55+'"}
       ],
       "mark": {
         "type": "text",
-        "dx": -12,
-        "dy": -12,
-        "align": "right",
+        "dx": 12,
+        "align": "left",
+        "baseline": "middle",
         "fontSize": 13,
         "fontWeight": "bold",
-        "color": "#53667A"
+        "color": "#44515C"
       },
       "encoding": {
         "x": {"field": "Australia overall", "type": "quantitative"},
@@ -100,17 +129,18 @@
       }
     },
     {
+      "description": "Regional value, to the left of its dot.",
       "transform": [
         {"filter": "datum.age_group != '55+'"}
       ],
       "mark": {
         "type": "text",
-        "dx": 10,
-        "dy": 11,
-        "align": "left",
+        "dx": -12,
+        "align": "right",
+        "baseline": "middle",
         "fontSize": 13,
         "fontWeight": "bold",
-        "color": "#087F79"
+        "color": "#14857A"
       },
       "encoding": {
         "x": {"field": "Regional Australia", "type": "quantitative"},
@@ -118,6 +148,7 @@
       }
     },
     {
+      "description": "For 55+ both values are equal, so one 'Same reach' label replaces the two numbers.",
       "transform": [
         {"filter": "datum.age_group == '55+'"}
       ],

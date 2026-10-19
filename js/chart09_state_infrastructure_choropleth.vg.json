@@ -1,9 +1,12 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 3 - choropleth map. Radio infrastructure by state: sites per 100,000 people, % of FM transmitters that are relays, or % of sites that are DAB+ (ACMA records + ABS population). Interaction: dropdown chooses the measure; darker blue = higher value.",
   "width": "container",
   "height": 520,
+  "autosize": {"type": "fit-x", "contains": "padding"},
   "params": [
     {
+      "description": "Dropdown that chooses which measure colours the map.",
       "name": "Measure_selection",
       "value": "per100k",
       "bind": {
@@ -21,6 +24,7 @@
   "projection": {"type": "mercator", "center": [134, -28.5]},
   "layer": [
     {
+      "description": "State shapes: join each state to its figures (lookup) and colour by the chosen measure.",
       "data": {
         "url": "https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson",
         "format": {"type": "topojson", "feature": "collection"}
@@ -33,7 +37,7 @@
         {
           "lookup": "state",
           "from": {
-            "data": {"url": "data/state_radio_infrastructure_2026.csv"},
+            "data": {"url": "data/australian_radio_data.csv"},
             "key": "state",
             "fields": [
               "state_name",
@@ -58,8 +62,8 @@
         "color": {
           "field": "shown_value",
           "type": "quantitative",
-          "title": "Value of the selected measure",
-          "scale": {"type": "sqrt", "range": ["#EAF4F1", "#0A6B66"], "zero": true},
+          "title": "Darker = higher value of the chosen measure",
+          "scale": {"type": "sqrt", "range": ["#EEF3F9", "#1F4E79"], "zero": true},
           "legend": {
             "orient": "bottom-left",
             "direction": "horizontal",
@@ -96,14 +100,16 @@
       }
     },
     {
+      "description": "State labels with the value of the chosen measure.",
       "data": {
-        "url": "data/state_radio_infrastructure_2026.csv",
+        "url": "data/australian_radio_data.csv",
         "format": {
           "type": "csv",
           "parse": {"label_lon": "number", "label_lat": "number"}
         }
       },
       "transform": [
+        {"filter": "datum.dataset == 'State infrastructure'"},
         {
           "calculate": "Measure_selection == 'per100k' ? toNumber(datum.radio_sites_per_100k) : Measure_selection == 'retrans' ? toNumber(datum.fm_retransmission_pct) : toNumber(datum.dab_share_of_sites_pct)",
           "as": "shown_value"
@@ -130,6 +136,33 @@
           },
           "value": "#17374A"
         }
+      }
+    },
+    {
+      "description": "Title inside the map naming the measure and its unit.",
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "transform": [
+        {
+          "calculate": "Measure_selection == 'per100k' ? 'Showing: radio transmitter sites per 100,000 people (number)' : Measure_selection == 'retrans' ? 'Showing: share of FM transmitters that relay another station (%)' : 'Showing: share of radio sites that broadcast DAB+ (%)'",
+          "as": "measure_title"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "fontSize": 15,
+        "fontWeight": "bold",
+        "color": "#1F3545"
+      },
+      "encoding": {
+        "x": {"value": 0},
+        "y": {"value": 0},
+        "text": {"field": "measure_title"}
       }
     }
   ],

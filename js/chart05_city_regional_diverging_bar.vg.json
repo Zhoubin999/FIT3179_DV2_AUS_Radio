@@ -1,0 +1,134 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 2 - diverging bar chart. Regional minus capital-city use (percentage points) for each way of listening (ACMA 2025). Bars right = more popular in regional areas, left = in the capitals.",
+  "width": "container",
+  "height": 270,
+  "autosize": {"type": "fit-x", "contains": "padding"},
+  "data": {
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"year": "number", "value": "number"}
+    }
+  },
+  "transform": [
+    {
+      "description": "Keep the 2025 ACMA rows for capital cities and regional areas and the chosen audio types.",
+      "filter": "datum.dataset == 'Audience survey'"
+    },
+    {"filter": "datum.year == 2025 && datum.subgroup_type == 'Area'"},
+    {
+      "filter": "(datum.section == 'Audio types (previous 7 days)' && indexof(['FM radio', 'DAB+ radio', 'Radio via internet/app'], datum.metric) >= 0) || datum.metric == 'Used music streaming service' || datum.metric == 'Listened to podcasts'"
+    },
+    {
+      "calculate": "datum.metric == 'Radio via internet/app' ? 'Online radio' : datum.metric == 'Used music streaming service' ? 'Music streaming' : datum.metric == 'Listened to podcasts' ? 'Podcasts' : datum.metric",
+      "as": "audio_type"
+    },
+    {
+      "description": "Pivot to one row per audio type and compute the gap and its label.",
+      "pivot": "subgroup",
+      "value": "value",
+      "groupby": ["audio_type"]
+    },
+    {"calculate": "datum['Regional'] - datum['Metropolitan']", "as": "gap"},
+    {
+      "calculate": "datum.gap > 0 ? 'More popular in regional areas' : 'More popular in capital cities'",
+      "as": "side"
+    },
+    {
+      "calculate": "(datum.gap > 0 ? '+' : '−') + abs(datum.gap) + ' points'",
+      "as": "gap_label"
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "audio_type",
+      "type": "nominal",
+      "title": null,
+      "sort": ["FM radio", "Online radio", "Music streaming", "Podcasts", "DAB+ radio"],
+      "axis": {"labelFontSize": 14, "labelPadding": 10, "domain": false, "ticks": false}
+    }
+  },
+  "layer": [
+    {
+      "description": "Bars from zero to the gap; colour shows which side is ahead.",
+      "mark": {
+        "type": "bar",
+        "height": {"band": 0.62},
+        "cornerRadiusEnd": 4
+      },
+      "encoding": {
+        "x": {
+          "field": "gap",
+          "type": "quantitative",
+          "title": "Difference in weekly use (percentage points)",
+          "scale": {"domain": [-12, 12]},
+          "axis": {
+            "values": [-10, -5, 0, 5, 10],
+            "labelExpr": "datum.value > 0 ? '+' + datum.value : datum.value"
+          }
+        },
+        "color": {
+          "field": "side",
+          "type": "nominal",
+          "title": null,
+          "scale": {
+            "domain": ["More popular in capital cities", "More popular in regional areas"],
+            "range": ["#44515C", "#14857A"]
+          },
+          "legend": {"orient": "top", "symbolSize": 180}
+        },
+        "tooltip": [
+          {"field": "audio_type", "title": "Audio type"},
+          {"field": "Metropolitan", "type": "quantitative", "title": "Capital cities (%)"},
+          {"field": "Regional", "type": "quantitative", "title": "Regional areas (%)"},
+          {"field": "gap_label", "title": "Difference"}
+        ]
+      }
+    },
+    {
+      "description": "Zero line.",
+      "mark": {"type": "rule", "color": "#3E5263", "strokeWidth": 1.5},
+      "encoding": {
+        "x": {"datum": 0}
+      }
+    },
+    {
+      "description": "Labels for positive gaps (right of the bar).",
+      "transform": [
+        {"filter": "datum.gap > 0"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 8,
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "color": "#14857A"
+      },
+      "encoding": {
+        "x": {"field": "gap", "type": "quantitative"},
+        "text": {"field": "gap_label"}
+      }
+    },
+    {
+      "description": "Labels for negative gaps (left of the bar).",
+      "transform": [
+        {"filter": "datum.gap < 0"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -8,
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "color": "#44515C"
+      },
+      "encoding": {
+        "x": {"field": "gap", "type": "quantitative"},
+        "text": {"field": "gap_label"}
+      }
+    }
+  ]
+}

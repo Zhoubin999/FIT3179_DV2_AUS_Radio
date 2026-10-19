@@ -1,15 +1,22 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 1 - heatmap. Weekly use (%) of each online audio service by year (Infinite Dial). Shared encoding: x = year, y = service; darker orange = more people.",
   "width": "container",
   "height": 260,
+  "autosize": {"type": "fit-x", "contains": "padding"},
   "data": {
-    "url": "data/australian_radio_combined_long.csv",
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
     "format": {
       "type": "csv",
       "parse": {"year": "number", "value": "number"}
     }
   },
   "transform": [
+    {
+      "description": "Keep the 'weekly online audio service usage' rows.",
+      "filter": "datum.dataset == 'Audience survey'"
+    },
     {"filter": "datum.metric == 'Weekly online audio service usage'"},
     {
       "window": [
@@ -21,6 +28,7 @@
       ]
     },
     {
+      "description": "Compare each year with the year before (lag) to build the change text for the tooltip.",
       "calculate": "isValid(datum.last_year) ? (datum.value - datum.last_year >= 0 ? '+' : '') + (datum.value - datum.last_year) + ' points' : 'First year measured'",
       "as": "change_note"
     },
@@ -48,13 +56,14 @@
   },
   "layer": [
     {
+      "description": "Coloured cells: orange sequential scale for % of people.",
       "mark": {"type": "rect", "cornerRadius": 4, "stroke": "#FFFFFF", "strokeWidth": 3},
       "encoding": {
         "color": {
           "field": "value",
           "type": "quantitative",
           "title": "Used weekly (%)",
-          "scale": {"domain": [0, 50], "range": ["#E9F6F1", "#087F79"]},
+          "scale": {"domain": [0, 50], "range": ["#FCE9DC", "#C4501A"]},
           "legend": {
             "orient": "bottom",
             "gradientLength": 220,
@@ -70,6 +79,7 @@
       }
     },
     {
+      "description": "Percentage printed in each cell; white text on cells of 25% or more, dark text otherwise.",
       "mark": {"type": "text", "fontSize": 15, "fontWeight": "bold"},
       "encoding": {
         "text": {"field": "pct_label"},

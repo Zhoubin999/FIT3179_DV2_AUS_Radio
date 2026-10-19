@@ -1,9 +1,12 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 1 - multi-series line chart. Weekly reach (%) of streaming, any radio, commercial radio, podcasts and DAB+ radio, 2018-2026 (Infinite Dial). Shared encoding: x = year, y = % of people, colour = series, dashed line = DAB+. Interaction: dropdown (Australia / regional), legend highlight, hover rule tooltip.",
   "width": "container",
   "height": 400,
+  "autosize": {"type": "fit-x", "contains": "padding"},
   "data": {
-    "url": "data/australian_radio_combined_long.csv",
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
     "format": {
       "type": "csv",
       "parse": {"year": "number", "value": "number"}
@@ -11,6 +14,7 @@
   },
   "params": [
     {
+      "description": "Dropdown that switches the whole chart between Australia overall and regional Australia.",
       "name": "Area_selection",
       "value": "Australia",
       "bind": {
@@ -22,6 +26,10 @@
     }
   ],
   "transform": [
+    {
+      "description": "Keep the audience-survey rows for the chosen area and the five reach measures.",
+      "filter": "datum.dataset == 'Audience survey'"
+    },
     {"filter": "datum.geography == Area_selection"},
     {"filter": "datum.subgroup_type == 'Overall'"},
     {
@@ -37,6 +45,7 @@
       }
     },
     {
+      "description": "Give each measure a short series name for the legend and labels.",
       "calculate": "datum.metric == 'Weekly streaming audio listening' ? 'Streaming audio' : datum.metric == 'Total radio weekly reach' ? 'Any radio' : datum.metric == 'Commercial radio weekly reach' ? 'Commercial radio' : datum.metric == 'Weekly podcast consumption' ? 'Podcasts' : 'DAB+ digital radio'",
       "as": "series"
     }
@@ -70,13 +79,41 @@
           "Podcasts",
           "DAB+ digital radio"
         ],
-        "range": ["#E47B5C", "#2F5D8A", "#7FA3C7", "#7753AC", "#087F79"]
+        "range": ["#E3672B", "#2F5D8A", "#8FB3D6", "#6C5BB5", "#2F5D8A"]
       },
-      "legend": {"orient": "top", "direction": "horizontal", "symbolStrokeWidth": 4}
+      "legend": {
+        "orient": "top",
+        "direction": "horizontal",
+        "symbolStrokeWidth": 3,
+        "symbolType": "stroke",
+        "symbolSize": 300
+      }
+    },
+    "strokeDash": {
+      "field": "series",
+      "type": "nominal",
+      "title": "Click to highlight",
+      "scale": {
+        "domain": [
+          "Streaming audio",
+          "Any radio",
+          "Commercial radio",
+          "Podcasts",
+          "DAB+ digital radio"
+        ],
+        "range": [
+          [1, 0],
+          [1, 0],
+          [1, 0],
+          [1, 0],
+          [6, 3]
+        ]
+      }
     }
   },
   "layer": [
     {
+      "description": "The five lines with points. Series_pick: clicking a legend item fades the other lines.",
       "params": [
         {
           "name": "Series_pick",
@@ -97,6 +134,7 @@
       }
     },
     {
+      "description": "End-of-line labels (series name and 2026 value), nudged apart so they do not overlap.",
       "transform": [
         {"filter": "datum.year == 2026"},
         {
@@ -125,6 +163,7 @@
       }
     },
     {
+      "description": "Hover rule: a vertical line at the nearest year with a tooltip listing every series.",
       "transform": [
         {"pivot": "series", "value": "value", "groupby": ["year"]}
       ],
@@ -177,6 +216,7 @@
       }
     },
     {
+      "description": "Annotation for 2025 when streaming overtook radio (Australia view only).",
       "data": {
         "values": [
           {

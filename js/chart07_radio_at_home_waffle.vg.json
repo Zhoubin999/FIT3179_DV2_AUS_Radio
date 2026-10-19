@@ -1,0 +1,118 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 3 - waffle charts (small multiples). Out of 100 adults, how many have any radio and how many have a DAB+ radio at home, capital cities vs regional areas (ACMA 2025). The two ACMA questions are kept as separate grids.",
+  "data": {
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
+    "format": {
+      "type": "csv",
+      "parse": {"year": "number", "value": "number"}
+    }
+  },
+  "transform": [
+    {
+      "description": "Keep the 2025 radio ownership rows for capital cities and regional areas.",
+      "filter": "datum.dataset == 'Audience survey'"
+    },
+    {"filter": "datum.year == 2025 && datum.subgroup_type == 'Area'"},
+    {
+      "filter": "datum.metric == 'Radio ownership at home' || datum.metric == 'Digital radio ownership at home'"
+    },
+    {
+      "calculate": "datum.subgroup == 'Metropolitan' ? 'Capital cities' : 'Regional areas'",
+      "as": "area"
+    },
+    {
+      "calculate": "datum.metric == 'Radio ownership at home' ? 'Any radio at home' : 'DAB+ radio at home'",
+      "as": "measure"
+    },
+    {
+      "description": "Make 100 squares per grid, place them in a 10 x 10 layout and fill the first N squares.",
+      "calculate": "sequence(0, 100)",
+      "as": "squares"
+    },
+    {"flatten": ["squares"], "as": ["square"]},
+    {"calculate": "datum.square % 10", "as": "x"},
+    {"calculate": "floor(datum.square / 10)", "as": "y"},
+    {
+      "calculate": "datum.square < datum.value ? 'Has one at home' : 'Does not'",
+      "as": "has_it"
+    }
+  ],
+  "facet": {
+    "row": {
+      "field": "measure",
+      "type": "nominal",
+      "sort": ["Any radio at home", "DAB+ radio at home"],
+      "title": null,
+      "header": {
+        "labelAngle": 0,
+        "labelAlign": "left",
+        "labelOrient": "top",
+        "labelAnchor": "start",
+        "labelFontWeight": "bold",
+        "labelFontSize": 14,
+        "labelPadding": 6
+      }
+    },
+    "column": {
+      "field": "area",
+      "type": "nominal",
+      "sort": ["Capital cities", "Regional areas"],
+      "title": null,
+      "header": {"labelFontSize": 13, "labelPadding": 6}
+    }
+  },
+  "spec": {
+    "description": "Facet: rows = ownership question, columns = area (grid size is set in main.js).",
+    "width": 180,
+    "height": 180,
+    "layer": [
+      {
+        "description": "One square per adult: navy = has one at home, grey = does not.",
+        "mark": {"type": "rect", "stroke": "white", "strokeWidth": 1.5, "cornerRadius": 2},
+        "encoding": {
+          "x": {
+            "field": "x",
+            "type": "ordinal",
+            "axis": null,
+            "sort": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+          },
+          "y": {
+            "field": "y",
+            "type": "ordinal",
+            "axis": null,
+            "sort": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+          },
+          "color": {
+            "field": "has_it",
+            "type": "nominal",
+            "title": ["Adults out of 100", "(18+, 2025)"],
+            "scale": {
+              "domain": ["Has one at home", "Does not"],
+              "range": ["#2F5D8A", "#E1E6EA"]
+            },
+            "legend": {
+              "orient": "right",
+              "direction": "vertical",
+              "titleLimit": 120,
+              "titleLineHeight": 16
+            }
+          },
+          "tooltip": [
+            {"field": "area", "title": "Area"},
+            {"field": "measure", "title": "Measure"},
+            {"field": "value", "title": "Adults out of 100 with one"}
+          ]
+        }
+      }
+    ]
+  },
+  "resolve": {
+    "scale": {"x": "independent", "y": "independent"}
+  },
+  "config": {
+    "view": {"stroke": null},
+    "facet": {"spacing": 18}
+  }
+}

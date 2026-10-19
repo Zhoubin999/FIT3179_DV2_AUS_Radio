@@ -1,9 +1,13 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chapter 4 - bump chart (linked to the city buttons). Rank of the top five stations in the selected city across Surveys 3-6 (GfK ratings). Shared encoding: x = survey, y = rank (1 at the top), colour = program type, one line per station.",
   "width": "container",
   "height": 320,
+  "autosize": {"type": "fit-x", "contains": "padding"},
+  "padding": {"left": 5, "top": 5, "bottom": 5, "right": 80},
   "data": {
-    "url": "data/metro_station_share_2026.csv",
+    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
+    "url": "data/australian_radio_data.csv",
     "format": {
       "type": "csv",
       "parse": {
@@ -15,9 +19,17 @@
     }
   },
   "params": [
-    {"name": "SelectedMarket", "value": "Melbourne"}
+    {
+      "description": "Selected city; main.js sets it when a city button is clicked.",
+      "name": "SelectedMarket",
+      "value": "Melbourne"
+    }
   ],
   "transform": [
+    {
+      "description": "Keep the selected city's stations that are in the top five in Survey 6.",
+      "filter": "datum.dataset == 'Station ratings'"
+    },
     {"filter": "datum.market == SelectedMarket"},
     {"filter": "datum.latest_rank <= 5"},
     {"calculate": "'Survey ' + datum.survey", "as": "survey_name"}
@@ -45,7 +57,6 @@
     "color": {
       "field": "program_format",
       "type": "nominal",
-      "title": "Program type",
       "scale": {
         "domain": [
           "Commercial music",
@@ -54,7 +65,7 @@
           "ABC talk & news",
           "Sport"
         ],
-        "range": ["#E47B5C", "#F2B8A0", "#2F5D8A", "#7FA3C7", "#E2B33C"]
+        "range": ["#B5446E", "#E8A6C0", "#B0821F", "#DDB453", "#7A6552"]
       },
       "legend": null
     },
@@ -62,6 +73,7 @@
   },
   "layer": [
     {
+      "description": "Rank lines with a point for each survey.",
       "mark": {
         "type": "line",
         "strokeWidth": 4,
@@ -78,9 +90,20 @@
       }
     },
     {
+      "description": "Station name and share at the right end; tied ranks are stacked so labels do not overlap.",
       "transform": [
-        {"filter": "datum.survey == 5"},
-        {"calculate": "datum.station + ' (' + datum.share + '%)'", "as": "end_label"}
+        {"filter": "datum.survey == 6"},
+        {"calculate": "datum.station + ' (' + datum.share + '%)'", "as": "end_label"},
+        {
+          "window": [
+            {"op": "row_number", "as": "tie_order"}
+          ],
+          "groupby": ["rank"],
+          "sort": [
+            {"field": "station"}
+          ]
+        },
+        {"calculate": "datum.rank + (datum.tie_order - 1) * 0.4", "as": "label_y"}
       ],
       "mark": {
         "type": "text",
@@ -91,10 +114,12 @@
       },
       "encoding": {
         "text": {"field": "end_label"},
+        "y": {"field": "label_y", "type": "quantitative"},
         "color": {"value": "#1F3545"}
       }
     },
     {
+      "description": "Survey 3 share at the left end of each line.",
       "transform": [
         {"filter": "datum.survey == 3"}
       ],
