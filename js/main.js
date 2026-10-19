@@ -106,22 +106,27 @@ function embedMapWithBars(elementId, specUrl) {
     var map = spec.hconcat[0];
     var side = spec.hconcat[1];
     var legend = map.layer[0].encoding.color.legend;
-    if (cardWidth >= 760) {
-      // side by side: both views start at the same height; the bars are as tall as the map
-      map.width = Math.min(760, cardWidth - 400);
-      side.width = Math.min(360, cardWidth - map.width - 150);
-      side.height = Math.round(map.width * 0.72) - 40;
+    var rightColumn = 380, gap = 24;                    // same columns as Chart 8 (see .zoom-body in style.css)
+    if (!window.matchMedia('(max-width: 900px)').matches) {
+      // side by side: map column | gap | right column, exactly as in Chart 8 above
+      map.width = cardWidth - rightColumn - gap;
+      map.height = Math.min(640, Math.round(map.width * 0.78));   // same height rule as Chart 8's map
+      side.width = rightColumn - 95;                    // leaves room for state codes and value labels
+      side.height = map.height - 40;
       // the colour legend sits inside the map, in the empty sea south of Western Australia
       legend.orient = "none";
       legend.legendX = 0;
-      legend.legendY = Math.round(map.width * 0.72) - 20;
+      legend.legendY = map.height - 20;
     } else {
       // stacked: map, then the paired bars, then the legend at the bottom
       spec.vconcat = spec.hconcat;
       delete spec.hconcat;
-      map.width = cardWidth - 90;
-      side.width = cardWidth - 150;
+      map.width = cardWidth - 4;                        // full width (less the outline), like Chart 8 when stacked
+      // state codes on the right of the bars: labels on the left would push the map right
+      side.encoding.y.axis.orient = "right";
+      side.width = cardWidth - 165;
       side.height = 360;
+      map.height = Math.max(340, Math.min(640, Math.round(map.width * 0.78)));   // Chart 8's height rule
       legend.orient = "bottom";
       // phones: shorter legend and a two-line "Showing" title so nothing is wider than the card
       legend.title = "Darker = higher value";
@@ -133,7 +138,6 @@ function embedMapWithBars(elementId, specUrl) {
         "['Grey: ' + (Measure_selection == 'per100k' ? 'share of people' : Measure_selection == 'retrans' ? 'share of all FM transmitters' : 'share of all radio sites'), " +
         "'Navy: ' + (Measure_selection == 'per100k' ? 'share of radio sites' : Measure_selection == 'retrans' ? 'share of FM relays' : 'share of DAB+ sites')]"};
     }
-    map.height = Math.round(map.width * 0.72);
     return vegaEmbed(elementId, spec, embedOptions);
   }).catch(console.error);
 }
@@ -215,7 +219,8 @@ var STATE_NAMES = {
   "NSW": "New South Wales", "VIC": "Victoria", "QLD": "Queensland", "SA": "South Australia",
   "WA": "Western Australia", "TAS": "Tasmania", "ACT": "Australian Capital Territory", "NT": "Northern Territory"
 };
-var AUSTRALIA_BOX = [111.8, -44.2, 155, -10.2];   // west, south, east, north (same as the spec's start)
+var AUSTRALIA_BOX = [112.9211, -43.6585, 159.2843, -9.2239];   // west, south, east, north: the full extent of the
+                                                                  // state boundaries, so this map matches Chart 9's
 var zoomView = null;
 var zoomSites = [];
 var zoomState = "";

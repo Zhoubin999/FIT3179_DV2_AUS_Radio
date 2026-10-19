@@ -305,6 +305,23 @@
           "encoding": {
             "text": {"field": "share_label"}
           }
+        },
+        {
+          "description": "Invisible point just past the longest bar, so its value label is never cut off.",
+          "transform": [
+            {
+              "aggregate": [
+                {"op": "max", "field": "share", "as": "max_share"}
+              ]
+            },
+            {"calculate": "datum.max_share * 1.18", "as": "x_room"}
+          ],
+          "mark": {"type": "point", "opacity": 0},
+          "encoding": {
+            "x": {"field": "x_room", "type": "quantitative"},
+            "y": {"value": 0},
+            "yOffset": null
+          }
         }
       ]
     }
@@ -314,6 +331,7 @@
   },
   "config": {
     "view": {"stroke": null},
-    "concat": {"spacing": 40}
-  }
+    "concat": {"spacing": 24}
+  },
+  "padding": {"left": 0, "right": 0, "top": 6, "bottom": 6}
 }

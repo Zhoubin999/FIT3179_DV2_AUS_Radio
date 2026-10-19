@@ -586,19 +586,21 @@ a {
   cursor: default;
 }
 
-/* map on the left, side panel on the right */
+/* map on the left, side panel on the right; the same columns as Chart 9 below
+   (380px right column, 24px gap) so the two maps and right-hand views line up */
 .zoom-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 290px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
   align-items: start;
 }
 
 /* side panel: list of states (Australia view) or sites (state view) */
 .zoom-panel {
-  max-height: 560px;
+  max-height: 640px;
   overflow-y: auto;
-  padding-left: 16px;
+  margin-left: -12px;        /* divider sits in the middle of the gap, text starts on the column line */
+  padding-left: 12px;
   border-left: 1px solid var(--edge);
   font-size: 14px;
   color: var(--ink);
@@ -907,6 +909,7 @@ a {
 
   .zoom-panel {
     max-height: none;
+    margin-left: 0;
     padding: 12px 0 0;
     border-left: none;
     border-top: 1px solid var(--edge);

@@ -16,28 +16,28 @@
       ]
     },
     {
-      "description": "Map height from its width, kept between 340 and 560 px.",
+      "description": "Map height from its width (same rule as the Chart 9 map, so both maps are the same size).",
       "name": "height",
-      "update": "clamp(round(width * 0.68), 340, 560)"
+      "update": "clamp(round(width * 0.78), 340, 640)"
     },
     {
       "name": "view_lon",
-      "value": 133.4,
+      "value": 136.1027,
       "description": "longitude at the centre of the map (set by main.js)"
     },
     {
       "name": "view_y",
-      "init": "(log(tan(PI / 4 + (-10.2) * PI / 360)) + log(tan(PI / 4 + (-44.2) * PI / 360))) / 2",
+      "init": "(log(tan(PI / 4 + (-9.2239) * PI / 360)) + log(tan(PI / 4 + (-43.6585) * PI / 360))) / 2",
       "description": "Mercator y at the centre of the map (set by main.js)"
     },
     {
       "name": "view_dx",
-      "init": "(155 - 111.8) * PI / 180",
-      "description": "width of the area to show, in radians of longitude"
+      "init": "(159.2843 - 112.9211) * PI / 180",
+      "description": "width of the area to show, in radians of longitude (starts at the full extent of the state boundaries, same as Chart 9)"
     },
     {
       "name": "view_dy",
-      "init": "log(tan(PI / 4 + (-10.2) * PI / 360)) - log(tan(PI / 4 + (-44.2) * PI / 360))",
+      "init": "log(tan(PI / 4 + (-9.2239) * PI / 360)) - log(tan(PI / 4 + (-43.6585) * PI / 360))",
       "description": "height of the area to show, in Mercator units"
     },
     {
