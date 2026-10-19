@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Chapter 3 - choropleth map with a linked ranking bar chart. Radio infrastructure by state: sites per 100,000 people, % of FM transmitters that are relays, or % of sites that are DAB+ (ACMA records + ABS population). Interaction: dropdown chooses the measure for both views; hovering a state or its bar highlights it in both. View sizes are set in main.js.",
+  "description": "Chapter 3 - choropleth map with linked paired bars. Radio infrastructure by state: sites per 100,000 people, % of FM transmitters that are relays, or % of sites that are DAB+ (ACMA records + ABS population). The paired bars show the two counts behind the chosen ratio as each state's share of Australia (grey = the base, navy = the radio count), on one linear axis. Interaction: the dropdown changes both views; hovering a state or its bars highlights it in both. View sizes are set in main.js.",
   "params": [
     {
       "description": "Dropdown that chooses which measure colours the map and sorts the bars.",
@@ -18,7 +18,7 @@
       }
     },
     {
-      "description": "One hover selection shared by the map and the bars (views lists both).",
+      "description": "One hover selection shared by the map and the paired bars (views lists both).",
       "name": "State_pick",
       "select": {
         "type": "point",
@@ -81,8 +81,8 @@
               "legend": {
                 "orient": "bottom-left",
                 "direction": "horizontal",
-                "gradientLength": 240,
-                "titleLimit": 300
+                "gradientLength": 200,
+                "titleLimit": 340
               }
             },
             "stroke": {
@@ -168,114 +168,142 @@
               "value": "#17374A"
             }
           }
-        },
-        {
-          "description": "Title inside the map naming the measure and its unit.",
-          "data": {
-            "values": [
-              {}
-            ]
-          },
-          "transform": [
-            {
-              "calculate": "Measure_selection == 'per100k' ? 'Showing: radio transmitter sites per 100,000 people (number)' : Measure_selection == 'retrans' ? 'Showing: share of FM transmitters that relay another station (%)' : 'Showing: share of radio sites that broadcast DAB+ (%)'",
-              "as": "measure_title"
-            }
-          ],
-          "mark": {
-            "type": "text",
-            "align": "left",
-            "baseline": "top",
-            "fontSize": 15,
-            "fontWeight": "bold",
-            "color": "#1F3545"
-          },
-          "encoding": {
-            "x": {"value": 0},
-            "y": {"value": 0},
-            "text": {"field": "measure_title"}
-          }
         }
-      ]
-    },
-    {
-      "description": "Right view: states ranked by the chosen measure (re-sorts when the dropdown changes).",
-      "width": 260,
-      "height": 330,
+      ],
       "title": {
-        "text": "States ranked",
-        "subtitle": "Hover a bar or a state to highlight it in both views",
+        "text": {
+          "expr": "Measure_selection == 'per100k' ? 'Showing: radio transmitter sites per 100,000 people (number)' : Measure_selection == 'retrans' ? 'Showing: share of FM transmitters that relay another station (%)' : 'Showing: share of radio sites that broadcast DAB+ (%)'"
+        },
         "anchor": "start",
         "fontSize": 15,
+        "offset": 10,
+        "subtitle": "Hover a state or its bars to highlight it in both views",
         "subtitleFontSize": 13,
-        "subtitleColor": "#5C7182",
-        "offset": 10
+        "subtitleColor": "#5C7182"
+      }
+    },
+    {
+      "description": "Right view: each state's share of Australia's base count (grey) and radio count (navy), sorted by the chosen measure. Navy longer than grey = above the Australian rate.",
+      "width": 300,
+      "height": 480,
+      "title": {
+        "text": "Each state's share of Australia",
+        "subtitle": {
+          "expr": "'Grey: share of ' + (Measure_selection == 'per100k' ? 'people' : Measure_selection == 'retrans' ? 'all FM transmitters' : 'all radio sites') + '   Navy: share of ' + (Measure_selection == 'per100k' ? 'radio sites' : Measure_selection == 'retrans' ? 'FM relays' : 'DAB+ sites')"
+        },
+        "anchor": "start",
+        "fontSize": 15,
+        "offset": 10,
+        "subtitleFontSize": 13,
+        "subtitleColor": "#5C7182"
       },
       "data": {"url": "data/australian_radio_data.csv"},
       "transform": [
         {
-          "description": "One row per state with the value of the chosen measure and its label.",
+          "description": "One row per state with the two counts behind the chosen measure.",
           "filter": "datum.dataset == 'State infrastructure'"
+        },
+        {
+          "calculate": "Measure_selection == 'per100k' ? toNumber(datum.population) : Measure_selection == 'retrans' ? toNumber(datum.fm_records) : toNumber(datum.all_radio_sites)",
+          "as": "base_count"
+        },
+        {
+          "calculate": "Measure_selection == 'per100k' ? toNumber(datum.all_radio_sites) : Measure_selection == 'retrans' ? toNumber(datum.fm_retransmission_records) : toNumber(datum.dab_sites)",
+          "as": "radio_count"
         },
         {
           "calculate": "Measure_selection == 'per100k' ? toNumber(datum.radio_sites_per_100k) : Measure_selection == 'retrans' ? toNumber(datum.fm_retransmission_pct) : toNumber(datum.dab_share_of_sites_pct)",
           "as": "shown_value"
         },
         {
-          "calculate": "format(datum.shown_value, '.1f') + (Measure_selection == 'per100k' ? '' : '%')",
-          "as": "value_label"
-        }
+          "description": "Turn both counts into shares of the Australian total.",
+          "joinaggregate": [
+            {"op": "sum", "field": "base_count", "as": "base_total"},
+            {"op": "sum", "field": "radio_count", "as": "radio_total"}
+          ]
+        },
+        {"calculate": "100 * datum.base_count / datum.base_total", "as": "Base share"},
+        {"calculate": "100 * datum.radio_count / datum.radio_total", "as": "Radio share"},
+        {
+          "description": "Two rows per state: one per bar.",
+          "fold": ["Base share", "Radio share"],
+          "as": ["bar", "share"]
+        },
+        {
+          "calculate": "datum.bar == 'Base share' ? 'Share of ' + (Measure_selection == 'per100k' ? 'people' : Measure_selection == 'retrans' ? 'all FM transmitters' : 'all radio sites') : 'Share of ' + (Measure_selection == 'per100k' ? 'radio sites' : Measure_selection == 'retrans' ? 'FM relays' : 'DAB+ sites')",
+          "as": "bar_name"
+        },
+        {"calculate": "format(datum.share, '.1f') + '%'", "as": "share_label"}
       ],
       "encoding": {
         "y": {
           "field": "state",
           "type": "nominal",
           "title": null,
-          "sort": "-x",
+          "sort": {"field": "shown_value", "op": "max", "order": "descending"},
           "axis": {
             "labelFontSize": 14,
             "labelFontWeight": "bold",
             "domain": false,
-            "ticks": false
+            "ticks": false,
+            "labelPadding": 6
           }
         },
-        "x": {"field": "shown_value", "type": "quantitative", "title": null, "axis": null}
+        "yOffset": {
+          "field": "bar",
+          "type": "nominal",
+          "sort": ["Base share", "Radio share"]
+        },
+        "x": {
+          "field": "share",
+          "type": "quantitative",
+          "scale": {"nice": true},
+          "axis": {
+            "title": "Share of Australia (%)",
+            "grid": true,
+            "tickCount": 5,
+            "titleFontSize": 13,
+            "titleColor": "#3E5263"
+          }
+        }
       },
       "layer": [
         {
-          "description": "Bars in the same colours as the map; hovering one highlights its state.",
+          "description": "The paired bars; hovering one highlights its state on the map too.",
           "name": "state_bars",
-          "mark": {
-            "type": "bar",
-            "height": {"band": 0.7},
-            "cornerRadiusEnd": 3,
-            "cursor": "pointer"
-          },
+          "mark": {"type": "bar", "cornerRadiusEnd": 3, "cursor": "pointer"},
           "encoding": {
-            "color": {"field": "shown_value", "type": "quantitative", "legend": null},
-            "stroke": {
-              "condition": {"param": "State_pick", "empty": false, "value": "#1F3545"},
-              "value": null
+            "color": {
+              "field": "bar",
+              "type": "nominal",
+              "legend": null,
+              "scale": {
+                "domain": ["Base share", "Radio share"],
+                "range": ["#B9C4CD", "#2F5D8A"]
+              }
             },
-            "strokeWidth": {"value": 2},
+            "opacity": {
+              "condition": {"param": "State_pick", "empty": true, "value": 1},
+              "value": 0.35
+            },
             "tooltip": [
               {"field": "state_name", "title": "State / territory"},
-              {"field": "value_label", "title": "Chosen measure"}
+              {"field": "bar_name", "title": "Bar"},
+              {"field": "share_label", "title": "Share of Australia"}
             ]
           }
         },
         {
-          "description": "Value at the end of each bar.",
+          "description": "Share at the end of each bar.",
           "mark": {
             "type": "text",
             "align": "left",
-            "dx": 5,
-            "fontSize": 13,
-            "fontWeight": "bold",
-            "color": "#1F3545"
+            "dx": 4,
+            "fontSize": 11,
+            "color": "#3E5263"
           },
           "encoding": {
-            "text": {"field": "value_label"}
+            "text": {"field": "share_label"}
           }
         }
       ]

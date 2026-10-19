@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "Chapter 3 - radar chart (Vega). Where people listened to radio in the past week, Australia overall vs regional Australia (Infinite Dial 2026). Distance from the centre = % of people; places are ordered from most to least common.",
-  "height": 430,
+  "height": 405,
   "padding": 10,
   "autosize": "none",
   "signals": [
@@ -19,7 +19,7 @@
     {
       "description": "Radius of the outer ring, limited so labels fit.",
       "name": "radius",
-      "update": "min(height / 2 - 62, width / 2 - 120)"
+      "update": "min(height / 2 - 62, width / 2 - 92)"
     }
   ],
   "data": [

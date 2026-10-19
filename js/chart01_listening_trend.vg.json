@@ -23,6 +23,16 @@
         "labels": ["Australia overall", "Regional Australia only"],
         "name": "Show audience: "
       }
+    },
+    {
+      "description": "Last year drawn; main.js steps it from 2017 to 2026 when Play is pressed.",
+      "name": "Year_shown",
+      "value": 2026
+    },
+    {
+      "description": "True while the replay runs (shows the big year counter).",
+      "name": "Replaying",
+      "value": false
     }
   ],
   "transform": [
@@ -48,6 +58,10 @@
       "description": "Give each measure a short series name for the legend and labels.",
       "calculate": "datum.metric == 'Weekly streaming audio listening' ? 'Streaming audio' : datum.metric == 'Total radio weekly reach' ? 'Any radio' : datum.metric == 'Commercial radio weekly reach' ? 'Commercial radio' : datum.metric == 'Weekly podcast consumption' ? 'Podcasts' : 'DAB+ digital radio'",
       "as": "series"
+    },
+    {
+      "description": "Replay: only draw years up to Year_shown.",
+      "filter": "datum.year <= Year_shown"
     }
   ],
   "encoding": {
@@ -149,9 +163,9 @@
       }
     },
     {
-      "description": "End-of-line labels (series name and 2026 value), nudged apart so they do not overlap.",
+      "description": "End-of-line labels (series name and value in the latest year shown), nudged apart so they do not overlap.",
       "transform": [
-        {"filter": "datum.year == 2026"},
+        {"filter": "datum.year == Year_shown"},
         {
           "calculate": "(datum.series == 'DAB+ digital radio' ? 'DAB+' : datum.series == 'Streaming audio' ? 'Streaming' : datum.series) + ' ' + datum.value + '%'",
           "as": "end_label"
@@ -231,14 +245,14 @@
       }
     },
     {
-      "description": "Annotation under the 2025 crossing point, where streaming overtook radio (Australia view only).",
+      "description": "Annotation under the 2025 crossing point, where streaming overtook radio (Australia view; appears when the replay reaches 2025).",
       "data": {
         "values": [
           {"year": 2025, "value": 70, "note": "2025: streaming overtakes radio ↑"}
         ]
       },
       "transform": [
-        {"filter": "Area_selection == 'Australia'"}
+        {"filter": "Area_selection == 'Australia' && Year_shown >= 2025"}
       ],
       "mark": {
         "type": "text",
@@ -253,6 +267,34 @@
         "y": {"field": "value", "type": "quantitative"},
         "text": {"field": "note"},
         "color": {"value": "#5C7182"}
+      }
+    },
+    {
+      "description": "Big faded year counter in the empty bottom-right corner while the replay runs.",
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "transform": [
+        {"filter": "Replaying"},
+        {"calculate": "Year_shown", "as": "year_label"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "bottom",
+        "dx": -8,
+        "dy": -8,
+        "fontSize": 46,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {"value": "width"},
+        "y": {"value": "height"},
+        "text": {"field": "year_label"},
+        "color": {"value": "#C9D3DB"},
+        "strokeDash": null
       }
     }
   ]

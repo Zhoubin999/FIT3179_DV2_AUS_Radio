@@ -411,6 +411,11 @@ a {
   align-items: center;
 }
 
+/* the waffles start at the card's left edge so their columns line up with the mosaic above */
+#c07 {
+  align-items: flex-start;
+}
+
 /* ...but its slider or drop-down starts at the left, like the others on the page */
 .chart-card:not(.wide):not(.full) .chart-wrap .vega-bindings {
   align-self: flex-start;
@@ -420,13 +425,45 @@ a {
 /* ---------- 8. Vega drop-down menus, notes and mini legends ---------- */
 /* drop-down menus and the slider created by "bind" parameters (Charts 1, 9 and 11) */
 .vega-bindings {
+  display: flex;            /* keeps a Play button on the same row as its drop-down or slider */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
   margin-top: 8px;
   font-size: 15px;
+}
+
+/* let a long drop-down shrink to the card width on phones */
+.vega-bindings .vega-bind {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .vega-bind-name {
   font-weight: 700;
   color: #1F3F5E;
+}
+
+/* Play buttons next to the Chart 1 drop-down and the Chart 11 slider (added by main.js) */
+.play-button {
+  padding: 6px 14px;
+  font: 600 14px var(--font-body);
+  color: #FFFFFF;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.play-button:hover {
+  background: #244A70;
+}
+
+.play-button:disabled {
+  background: transparent;
+  color: var(--accent);
+  cursor: default;
 }
 
 /* survey slider under Chart 11 */

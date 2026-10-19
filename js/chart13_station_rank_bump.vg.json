@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Chapter 4 - bump chart (linked to the city buttons). Rank of the top five stations in the selected city across Surveys 3-6 (GfK ratings). Shared encoding: x = survey, y = rank (1 at the top), colour = program type, one line per station.",
+  "description": "Chapter 4 - bump chart (linked to the city buttons). Rank of the top five stations in the selected city across Surveys 3-6 (GfK ratings). Shared encoding: x = survey, y = rank (1 at the top), colour = program type, one line per station. A note appears when the city's top five has no talk or news station.",
   "width": "container",
   "height": 320,
   "autosize": {"type": "fit-x", "contains": "padding"},
@@ -31,7 +31,6 @@
       "filter": "datum.dataset == 'Station ratings'"
     },
     {"filter": "datum.market == SelectedMarket"},
-    {"filter": "datum.latest_rank <= 5"},
     {"calculate": "'Survey ' + datum.survey", "as": "survey_name"}
   ],
   "encoding": {
@@ -87,11 +86,15 @@
           {"field": "share", "title": "Share (%)"},
           {"field": "program_format", "title": "Program type"}
         ]
-      }
+      },
+      "transform": [
+        {"filter": "datum.latest_rank <= 5"}
+      ]
     },
     {
       "description": "Station name and share at the right end; tied ranks are stacked so labels do not overlap.",
       "transform": [
+        {"filter": "datum.latest_rank <= 5"},
         {"filter": "datum.survey == 6"},
         {"calculate": "datum.station + ' (' + datum.share + '%)'", "as": "end_label"},
         {
@@ -121,12 +124,61 @@
     {
       "description": "Survey 3 share at the left end of each line.",
       "transform": [
+        {"filter": "datum.latest_rank <= 5"},
         {"filter": "datum.survey == 3"}
       ],
       "mark": {"type": "text", "align": "right", "dx": -14, "fontSize": 12},
       "encoding": {
         "text": {"field": "share", "type": "quantitative", "format": ".1f"},
         "color": {"value": "#5C7182"}
+      }
+    },
+    {
+      "description": "Note shown only when no talk or news station is in the city's top five (Brisbane), naming the highest one instead.",
+      "transform": [
+        {"filter": "datum.survey == 6"},
+        {
+          "calculate": "indexof(datum.program_format, 'talk') >= 0 ? 1 : 0",
+          "as": "is_talk"
+        },
+        {
+          "calculate": "datum.is_talk == 1 && datum.latest_rank <= 5 ? 1 : 0",
+          "as": "talk_in_top5"
+        },
+        {
+          "joinaggregate": [
+            {"op": "sum", "field": "talk_in_top5", "as": "talk_top5_count"}
+          ]
+        },
+        {"filter": "datum.talk_top5_count == 0 && datum.is_talk == 1"},
+        {
+          "window": [
+            {"op": "row_number", "as": "talk_order"}
+          ],
+          "sort": [
+            {"field": "latest_rank"}
+          ]
+        },
+        {"filter": "datum.talk_order == 1"},
+        {
+          "calculate": "'No talk or news station is in ' + datum.market + \"'s top five, so every line is music. The highest, \" + datum.station + ', is No. ' + datum.latest_rank + ' (' + datum.share + '%).'",
+          "as": "talk_note"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "color": "#8A6416"
+      },
+      "encoding": {
+        "x": {"datum": 3},
+        "y": {"datum": 6.1},
+        "text": {"field": "talk_note"},
+        "color": {"value": "#8A6416"},
+        "detail": null
       }
     }
   ]

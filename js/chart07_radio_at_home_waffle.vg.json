@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Chapter 3 - waffle charts (small multiples). Out of 100 adults, how many have any radio and how many have a DAB+ radio at home, capital cities vs regional areas (ACMA 2025). The two ACMA questions are kept as separate grids.",
+  "description": "Chapter 3 - waffle charts (small multiples). Out of 100 adults, how many have any radio and how many have a DAB+ radio at home, capital cities vs regional areas (ACMA 2025). The two ACMA questions are kept as separate grids. Each grid's number sits beside it in navy (the colour of the squares it counts), so no legend or tooltip is needed. Grid size and column spacing are set in main.js so the columns line up with the podcast mosaic above.",
   "data": {
     "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
     "url": "data/australian_radio_data.csv",
@@ -37,6 +37,10 @@
     {
       "calculate": "datum.square < datum.value ? 'Has one at home' : 'Does not'",
       "as": "has_it"
+    },
+    {
+      "calculate": "datum.measure == 'Any radio at home' ? ['adults have', 'any radio', 'at home'] : ['adults have', 'a DAB+ radio', 'at home']",
+      "as": "caption"
     }
   ],
   "facet": {
@@ -45,22 +49,20 @@
       "type": "nominal",
       "sort": ["Any radio at home", "DAB+ radio at home"],
       "title": null,
-      "header": {
-        "labelAngle": 0,
-        "labelAlign": "left",
-        "labelOrient": "top",
-        "labelAnchor": "start",
-        "labelFontWeight": "bold",
-        "labelFontSize": 14,
-        "labelPadding": 6
-      }
+      "header": {"labels": false, "title": null}
     },
     "column": {
       "field": "area",
       "type": "nominal",
       "sort": ["Capital cities", "Regional areas"],
       "title": null,
-      "header": {"labelFontSize": 13, "labelPadding": 6}
+      "header": {
+        "labelFontSize": 14,
+        "labelPadding": 8,
+        "labelFontWeight": "bold",
+        "labelAnchor": "start",
+        "labelAlign": "left"
+      }
     }
   },
   "spec": {
@@ -92,18 +94,47 @@
               "domain": ["Has one at home", "Does not"],
               "range": ["#2F5D8A", "#E1E6EA"]
             },
-            "legend": {
-              "orient": "right",
-              "direction": "vertical",
-              "titleLimit": 120,
-              "titleLineHeight": 16
-            }
-          },
-          "tooltip": [
-            {"field": "area", "title": "Area"},
-            {"field": "measure", "title": "Measure"},
-            {"field": "value", "title": "Adults out of 100 with one"}
-          ]
+            "legend": null
+          }
+        }
+      },
+      {
+        "description": "Number beside each grid, in navy like the squares it counts.",
+        "transform": [
+          {"filter": "datum.square == 0"},
+          {"calculate": "datum.value + ' of 100'", "as": "number_label"}
+        ],
+        "mark": {
+          "type": "text",
+          "x": {"expr": "child_width + 10"},
+          "y": 0,
+          "align": "left",
+          "baseline": "top",
+          "fontSize": 18,
+          "fontWeight": "bold",
+          "color": "#2F5D8A"
+        },
+        "encoding": {
+          "text": {"field": "number_label"}
+        }
+      },
+      {
+        "description": "What the navy squares are, in plain words, under the number.",
+        "transform": [
+          {"filter": "datum.square == 0"}
+        ],
+        "mark": {
+          "type": "text",
+          "x": {"expr": "child_width + 10"},
+          "y": 26,
+          "align": "left",
+          "baseline": "top",
+          "fontSize": 12,
+          "lineHeight": 15,
+          "color": "#3E5263"
+        },
+        "encoding": {
+          "text": {"field": "caption"}
         }
       }
     ]
@@ -113,6 +144,8 @@
   },
   "config": {
     "view": {"stroke": null},
-    "facet": {"spacing": 18}
-  }
+    "facet": {}
+  },
+  "spacing": {"row": 22, "column": 120},
+  "bounds": "flush"
 }

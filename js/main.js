@@ -68,36 +68,70 @@ function embedScaledMapChart(elementId, specUrl) {
   }).catch(console.error);
 }
 
-// Map + ranking bars (state infrastructure): share the card width between the two views.
+// Radio-at-home waffles: square grids with their numbers beside them. Each grid starts where a
+// podcast-mosaic panel starts (same card width and gap), so the two charts line up vertically.
+// On narrow cards the four grids stack in one column instead.
+function embedWaffleChart(elementId, specUrl) {
+  fetch(specUrl).then(function (response) { return response.json(); }).then(function (spec) {
+    var cardWidth = document.querySelector(elementId).clientWidth;
+    var mosaicPanel = Math.min(255, Math.floor((cardWidth - 60) / 2));   // same formula as the mosaic
+    var grid;
+    if (mosaicPanel >= 200) {
+      grid = mosaicPanel - 85;                         // room for the label beside each grid
+      spec.spacing.column = mosaicPanel + 22 - grid;   // 22 = the mosaic's facet spacing
+    } else {
+      spec.transform.push({
+        "calculate": "datum.area + ': ' + (datum.measure == 'Any radio at home' ? 'any radio' : 'DAB+ radio')",
+        "as": "panel"
+      });
+      spec.facet = {"row": {
+        "field": "panel", "type": "nominal", "title": null,
+        "sort": ["Capital cities: any radio", "Regional areas: any radio", "Capital cities: DAB+ radio", "Regional areas: DAB+ radio"],
+        "header": {"labelAngle": 0, "labelOrient": "top", "labelAnchor": "start", "labelAlign": "left",
+                   "labelFontWeight": "bold", "labelFontSize": 13, "labelPadding": 6}
+      }};
+      grid = Math.min(150, cardWidth - 150);
+    }
+    spec.spec.width = grid;
+    spec.spec.height = grid;
+    return vegaEmbed(elementId, spec, embedOptions);
+  }).catch(console.error);
+}
+
+// Map + paired bars (state infrastructure): share the card width between the two views.
 // On narrow screens the bars move under the map (hconcat -> vconcat).
 function embedMapWithBars(elementId, specUrl) {
   fetch(specUrl).then(function (response) { return response.json(); }).then(function (spec) {
     var cardWidth = document.querySelector(elementId).clientWidth;
     var map = spec.hconcat[0];
-    var bars = spec.hconcat[1];
+    var side = spec.hconcat[1];
     var legend = map.layer[0].encoding.color.legend;
     if (cardWidth >= 760) {
-      // side by side: the colour legend sits under the ranking bars
-      map.width = Math.min(760, cardWidth - 370);
-      bars.width = cardWidth - map.width - 140;
+      // side by side: both views start at the same height; the bars are as tall as the map
+      map.width = Math.min(760, cardWidth - 400);
+      side.width = Math.min(360, cardWidth - map.width - 150);
+      side.height = Math.round(map.width * 0.72) - 40;
+      // the colour legend sits inside the map, in the empty sea south of Western Australia
       legend.orient = "none";
-      legend.legendX = map.width + 40;
-      legend.legendY = bars.height + 60;
+      legend.legendX = 0;
+      legend.legendY = Math.round(map.width * 0.72) - 20;
     } else {
-      // stacked: map, then bars, then the legend at the bottom
+      // stacked: map, then the paired bars, then the legend at the bottom
       spec.vconcat = spec.hconcat;
       delete spec.hconcat;
-      map.width = cardWidth - 70;
-      bars.width = cardWidth - 160;
+      map.width = cardWidth - 90;
+      side.width = cardWidth - 150;
+      side.height = 360;
       legend.orient = "bottom";
       // phones: shorter legend and a two-line "Showing" title so nothing is wider than the card
       legend.title = "Darker = higher value";
       legend.gradientLength = Math.min(240, cardWidth - 100);
-      var showing = map.layer[2];
-      showing.transform[0].calculate = "Measure_selection == 'per100k' ? 'Showing: radio sites|per 100,000 people' : " +
-        "Measure_selection == 'retrans' ? 'Showing: FM relays|(% of FM transmitters)' : 'Showing: DAB+ sites|(% of radio sites)'";
-      showing.mark.lineBreak = "|";
-      bars.title.subtitle = ["Hover a bar or a state to", "highlight it in both views"];
+      map.title.text = {"expr": "Measure_selection == 'per100k' ? ['Showing: radio sites', 'per 100,000 people'] : " +
+        "Measure_selection == 'retrans' ? ['Showing: FM relays', '(% of FM transmitters)'] : ['Showing: DAB+ sites', '(% of radio sites)']"};
+      map.title.subtitle = ["Hover a state or its bars", "to highlight it in both views"];
+      side.title.subtitle = {"expr":
+        "['Grey: ' + (Measure_selection == 'per100k' ? 'share of people' : Measure_selection == 'retrans' ? 'share of all FM transmitters' : 'share of all radio sites'), " +
+        "'Navy: ' + (Measure_selection == 'per100k' ? 'share of radio sites' : Measure_selection == 'retrans' ? 'share of FM relays' : 'share of DAB+ sites')]"};
     }
     map.height = Math.round(map.width * 0.72);
     return vegaEmbed(elementId, spec, embedOptions);
@@ -105,8 +139,54 @@ function embedMapWithBars(elementId, specUrl) {
 }
 
 
+// Play button: steps one signal through a list of values (e.g. years or surveys) so the chart
+// animates frame by frame. The button sits next to the chart's own drop-down or slider.
+function addPlayButton(elementId, view, options) {
+  var button = document.createElement('button');
+  button.type = "button";
+  button.className = "play-button";
+  button.textContent = options.label;
+  var controls = document.querySelector(elementId + ' .vega-bindings') || document.querySelector(elementId);
+  controls.appendChild(button);
+
+  var timer = null;
+  button.addEventListener('click', function () {
+    if (timer) return;                       // already playing
+    // runs only when clicked and moves in discrete steps (no sliding motion),
+    // so it also plays when the system asks for reduced motion
+    var steps = options.steps;
+    var index = 0;
+    button.disabled = true;
+    button.textContent = "Playing\u2026";
+    if (options.flag) view.signal(options.flag, true);
+
+    function showStep() {
+      view.signal(options.signal, steps[index]).runAsync();
+      index += 1;
+      if (index < steps.length) {
+        timer = setTimeout(showStep, options.delay);
+      } else {
+        timer = setTimeout(function () {    // hold the last frame briefly, then reset the button
+          if (options.flag) view.signal(options.flag, false).runAsync();
+          button.disabled = false;
+          button.textContent = options.label;
+          timer = null;
+        }, options.delay);
+      }
+    }
+    showStep();
+  });
+}
+
+
 // ---------- Chapter 1: the big shift ----------
-vegaEmbed('#c01', "js/chart01_listening_trend.vg.json", embedOptions).catch(console.error);
+vegaEmbed('#c01', "js/chart01_listening_trend.vg.json", embedOptions).then(function (result) {
+  // replay the trend year by year (Year_shown filters the data; Replaying shows the big year)
+  addPlayButton('#c01', result.view, {
+    label: "\u25B6 Play 2017 \u2192 2026", signal: "Year_shown", flag: "Replaying", delay: 650,
+    steps: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+  });
+}).catch(console.error);
 vegaEmbed('#c02', "js/chart02_streaming_services_heatmap.vg.json", embedOptions).catch(console.error);
 
 // ---------- Chapter 2: who listens ----------
@@ -116,7 +196,7 @@ vegaEmbed('#c05', "js/chart05_city_regional_diverging_bar.vg.json", embedOptions
 
 // ---------- Chapter 3: how Australians reach radio, and where digital radio can operate ----------
 vegaEmbed('#c06', "js/chart06_listening_places_radar.vg.json", embedOptions).catch(console.error);
-embedTwoPanelChart('#c07', "js/chart07_radio_at_home_waffle.vg.json", 1, 165, 150);
+embedWaffleChart('#c07', "js/chart07_radio_at_home_waffle.vg.json");
 // Chart 8 is a zoomable map (see the section below). Set useZoomMap to false to go back
 // to the earlier static symbol map.
 var useZoomMap = true;
@@ -437,7 +517,7 @@ function showMarket(market) {
 }
 
 function embedMarketChart(elementId, specUrl) {
-  vegaEmbed(elementId, specUrl, embedOptions).then(function (result) {
+  return vegaEmbed(elementId, specUrl, embedOptions).then(function (result) {
     // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
     marketViews.push(result.view);
     result.view.signal('SelectedMarket', selectedMarket).runAsync();
@@ -448,11 +528,18 @@ function embedMarketChart(elementId, specUrl) {
         showMarket(item.datum.market);
       }
     });
+    return result.view;
   }).catch(console.error);
 }
 
 embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json");
-embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json");
+embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json").then(function (view) {
+  // step the survey slider from Survey 3 to Survey 6
+  addPlayButton('#c11', view, {
+    label: "\u25B6 Play Surveys 3 \u2192 6", signal: "Survey_pick", delay: 1100,
+    steps: [3, 4, 5, 6]
+  });
+});
 embedMarketChart('#c12', "js/chart12_station_treemap.vg.json");
 embedMarketChart('#c13', "js/chart13_station_rank_bump.vg.json");
 
