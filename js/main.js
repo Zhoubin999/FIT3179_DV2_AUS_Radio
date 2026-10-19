@@ -98,6 +98,22 @@ function embedWaffleChart(elementId, specUrl) {
   }).catch(console.error);
 }
 
+// Chart 9: the finding for each measure (figures from the merged CSV; shares are of the Australian total)
+var MEASURE_NOTES = {
+  "per100k": "<b>Sites per 100,000 people:</b> the Northern Territory has 32.7 radio transmitter sites for every 100,000 people, " +
+    "compared with 2.6 in Victoria. Victoria has 26% of Australia's people but under 12% of its radio sites, while Western " +
+    "Australia has 11% of the people and 20% of the sites.",
+  "retrans": "<b>FM relays:</b> in Western Australia, 65% of FM transmitters are relays that repeat a station from elsewhere " +
+    "for distant towns. WA has 26% of Australia's FM transmitters but 54% of its relays, while Victoria has 10% of the " +
+    "transmitters and about 1% of the relays. The ACT has none.",
+  "dab": "<b>DAB+ share:</b> the ACT has the highest share of radio sites that broadcast DAB+ (14%). Victoria has 11.5% of " +
+    "Australia's radio sites but 21% of its DAB+ sites, while Queensland has 25.5% of the sites but under 14% of the DAB+ sites."
+};
+
+function showMeasureNote(measure) {
+  document.querySelector('#c09-note').innerHTML = MEASURE_NOTES[measure];
+}
+
 // Map + paired bars (state infrastructure): share the card width between the two views.
 // On narrow screens the bars move under the map (hconcat -> vconcat).
 function embedMapWithBars(elementId, specUrl) {
@@ -139,6 +155,10 @@ function embedMapWithBars(elementId, specUrl) {
         "'Navy: ' + (Measure_selection == 'per100k' ? 'share of radio sites' : Measure_selection == 'retrans' ? 'share of FM relays' : 'share of DAB+ sites')]"};
     }
     return vegaEmbed(elementId, spec, embedOptions);
+  }).then(function (result) {
+    // keep the text finding in step with the drop-down
+    showMeasureNote(result.view.signal('Measure_selection'));
+    result.view.addSignalListener('Measure_selection', function (name, value) { showMeasureNote(value); });
   }).catch(console.error);
 }
 
@@ -540,6 +560,10 @@ function embedMarketChart(elementId, specUrl) {
 embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json");
 embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json").then(function (view) {
   // step the survey slider from Survey 3 to Survey 6
+  // the badge says which survey the donuts show, so it is clear Charts 12-13 stay on their own surveys
+  view.addSignalListener('Survey_pick', function (name, value) {
+    document.querySelectorAll('.survey-name').forEach(function (span) { span.textContent = value; });
+  });
   addPlayButton('#c11', view, {
     label: "\u25B6 Play Surveys 3 \u2192 6", signal: "Survey_pick", delay: 1100,
     steps: [3, 4, 5, 6]

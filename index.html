@@ -175,7 +175,7 @@
         <!-- Chart 2: heatmap - js/chart02_streaming_services_heatmap.vg.json -->
 
         <article class="chart-card wide">
-          <h3 class="card-heading">Spotify is used by nearly twice as many people as YouTube Music, and growth slowed in 2026</h3>
+          <h3 class="card-heading">Spotify leads YouTube Music by 18 points (47% vs 29%), and growth slowed in 2026</h3>
           <p class="interpretation">
             Spotify is used weekly by almost half of Australians (47%). Apple Music and Amazon Music grew fastest in 2025, then held steady in 2026. Three years is too short to say whether growth has stopped.
           </p>
@@ -292,12 +292,16 @@
         <!-- Chart 9: choropleth map with linked paired bars - js/chart09_state_infrastructure_choropleth.vg.json -->
 
         <article class="chart-card full" id="card-c09">
-          <h3 class="card-heading">Big, empty states need many small transmitters</h3>
+          <h3 class="card-heading">Radio infrastructure is spread very unevenly: the NT has 12 times Victoria's sites per person</h3>
           <p class="interpretation">
-            The Northern Territory has 32.7 radio transmitter sites for every 100,000 people, compared with only 2.6 in Victoria.
-            In Western Australia, 65% of FM transmitters are relays that repeat a station from elsewhere for distant towns.
-            The ACT has the highest share of DAB+ sites (14%). More sites per person reflects distance and how spread out people are, not better reception. The bars on the right compare each state's share of Australia's people (grey) with its share of radio sites (navy): Victoria has 26% of the people but under 12% of the sites, while Western Australia has 11% of the people and 20% of the sites, and the Northern Territory 1% of the people but 5.5% of the sites.
+            Choose a measure from the drop-down under the map. The map shows that measure for each state, and the bars beside it
+            show the two counts behind it as each state's share of Australia: a <span class="key base">grey bar</span> for the base
+            (people, all FM transmitters or all radio sites) and a <span class="key radio">navy bar</span> for the radio count.
+            A navy bar longer than its grey bar means the state is above the Australian rate.
+            More sites per person reflects distance and how spread out people are, not better reception.
           </p>
+          <!-- Filled by main.js: the finding for the measure chosen in the drop-down -->
+          <p class="measure-note" id="c09-note" aria-live="polite"></p>
           <div id="c09" class="chart-wrap"></div>
         </article>
       </div>
@@ -333,7 +337,7 @@
       <div class="chart-grid linked-grid">
         <!-- Chart 10: alluvial diagram (linked) - js/chart10_program_mix_alluvial.vg.json -->
         <article class="chart-card linked wide">
-          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span></p>
+          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Surveys 3&ndash;6</p>
           <h3 class="card-heading">How <span class="market-name">Melbourne</span>'s listening mix moved across four surveys</h3>
           <p class="interpretation">
             Each column is 100% of the city's radio listening in one survey, read from left to right. Ribbons connect the same program type from survey to survey;
@@ -346,13 +350,13 @@
         <!-- Chart 11: donut-glyph map with a survey slider (Vega, linked) - js/chart11_program_mix_donut_map.vg.json -->
 
         <article class="chart-card linked">
-          <p class="linked-badge">&#128279; Linked &middot; <span class="market-name">Melbourne</span> outlined</p>
+          <p class="linked-badge">&#128279; Linked &middot; <span class="market-name">Melbourne</span> outlined &middot; Survey <span class="survey-name">6</span> (slider)</p>
           <h3 class="card-heading">Each city has its own listening mix</h3>
           <p class="interpretation">
             Each donut splits a city's radio listening by program type; drag the slider under the map, or press Play, to step through Surveys 3 to 6.
             In Survey 6, among the rated stations, Melbourne has the highest <span class="key talk">talk-and-news share</span> (22%)
             and Perth the highest <span class="key music">music share</span> (64%). Grey is listening to stations not rated individually.
-            Click a donut to show that city in all four linked charts.
+            Click a donut to show that city in all four linked charts. The slider changes only this map: the treemap always shows Survey 6, and the alluvial and bump charts show Surveys 3 to 6.
           </p>
           <div id="c11" class="chart-wrap"></div>
         </article>
@@ -360,8 +364,8 @@
         <!-- Chart 12: treemap (Vega, linked) - js/chart12_station_treemap.vg.json -->
 
         <article class="chart-card linked">
-          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span></p>
-          <h3 class="card-heading">Which stations make up <span class="market-name">Melbourne</span>'s mix?</h3>
+          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Survey 6</p>
+          <h3 class="card-heading">Which stations make up <span class="market-name">Melbourne</span>'s mix in Survey 6?</h3>
           <p class="interpretation">
             Each box is one station, sized by its share of listening in Survey 6 and grouped by program type. Small boxes show their details on hover.
             Many <span class="key music">music stations</span> split the music audience, while one <span class="key talk">talk station</span> can hold a large share on its own.
@@ -372,7 +376,7 @@
         <!-- Chart 13: bump chart (linked) - js/chart13_station_rank_bump.vg.json -->
 
         <article class="chart-card linked wide">
-          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span></p>
+          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Surveys 3&ndash;6</p>
           <h3 class="card-heading">Who climbed and who slipped in the top five</h3>
           <p class="interpretation">
             Each line follows one of the five most-listened stations in Survey 6 across four surveys, coloured by program type: <span class="key music">rose for commercial music</span> and <span class="key talk">gold for commercial talk and news</span>. Numbers on the left are shares in Survey 3; labels on the right are Survey 6.
@@ -456,9 +460,9 @@
       <p class="source-list">
         <strong>How the data was combined.</strong> Every chart reads one file,
         <a href="data/australian_radio_data.csv">australian_radio_data.csv</a>. It merges the Infinite Dial and ACMA survey results,
-        four GfK ratings surveys (with a program type for each station from an explicit table, <a href="https://github.com/Zhoubin999/FIT3179_DV2/blob/main/data/raw/station_program_types.csv" target="_blank" rel="noopener">station_program_types.csv</a>), ACMA DAB+ transmitter sites, and ACMA radio sites
+        four GfK ratings surveys (with a program type for each station from an explicit table, <a href="https://github.com/Zhoubin999/FIT3179_DV2_AUS_Radio/blob/main/data/raw/station_program_types.csv" target="_blank" rel="noopener">station_program_types.csv</a>), ACMA DAB+ transmitter sites, and ACMA radio sites
         joined to ABS state populations. A <code>dataset</code> column says which kind each row is. The original downloads are in
-        <a href="https://github.com/Zhoubin999/FIT3179_DV2/tree/main/data/raw" target="_blank" rel="noopener">data/raw on GitHub</a> and the merge script is <a href="data/build_merged_data.py">data/build_merged_data.py</a>.
+        <a href="https://github.com/Zhoubin999/FIT3179_DV2_AUS_Radio/tree/main/data/raw" target="_blank" rel="noopener">data/raw on GitHub</a> and the merge script is <a href="data/build_merged_data.py">data/build_merged_data.py</a>.
         Surveys cover different ages (ACMA: adults 18+; Infinite Dial and GfK: people 10+), so their numbers are shown in separate charts rather than mixed together.
       </p>
       <p class="source-list">AI tools assisted with data organisation and grammar refinement.</p>
