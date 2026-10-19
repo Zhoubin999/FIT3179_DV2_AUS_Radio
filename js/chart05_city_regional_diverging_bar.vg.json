@@ -39,6 +39,10 @@
     {
       "calculate": "(datum.gap > 0 ? '+' : '−') + abs(datum.gap) + ' points'",
       "as": "gap_label"
+    },
+    {
+      "calculate": "'Regional ' + datum['Regional'] + '% vs capitals ' + datum['Metropolitan'] + '%'",
+      "as": "both_values"
     }
   ],
   "encoding": {
@@ -128,6 +132,40 @@
       "encoding": {
         "x": {"field": "gap", "type": "quantitative"},
         "text": {"field": "gap_label"}
+      }
+    },
+    {
+      "description": "Both percentages, left of zero for rows where regional areas lead.",
+      "transform": [
+        {"filter": "datum.gap > 0"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -10,
+        "fontSize": 13,
+        "color": "#5C7182"
+      },
+      "encoding": {
+        "x": {"datum": 0},
+        "text": {"field": "both_values"}
+      }
+    },
+    {
+      "description": "Both percentages, right of zero for rows where the capitals lead.",
+      "transform": [
+        {"filter": "datum.gap < 0"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 10,
+        "fontSize": 13,
+        "color": "#5C7182"
+      },
+      "encoding": {
+        "x": {"datum": 0},
+        "text": {"field": "both_values"}
       }
     }
   ]

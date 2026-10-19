@@ -1,8 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "ROLLBACK VERSION (not shown by default; see useZoomMap in main.js). Proportional-symbol map of DAB+ sites with a linked bar chart of sites per region (ACMA, July 2026).",
   "data": {
-    "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
     "url": "data/australian_radio_data.csv",
     "format": {
       "type": "csv",
@@ -10,10 +8,7 @@
     }
   },
   "transform": [
-    {
-      "description": "Keep the DAB+ transmitter rows, build the map labels and count sites per region.",
-      "filter": "datum.dataset == 'DAB+ transmitter'"
-    },
+    {"filter": "datum.dataset == 'DAB+ transmitter'"},
     {"calculate": "datum.region + ' ' + datum.power_kw + ' kW'", "as": "map_label"},
     {
       "joinaggregate": [
@@ -24,7 +19,6 @@
   ],
   "hconcat": [
     {
-      "description": "Left view: the map.",
       "width": 700,
       "height": 525,
       "projection": {
@@ -39,7 +33,6 @@
       },
       "layer": [
         {
-          "description": "Australian state boundaries (TopoJSON, cartdeco/Australia-json-data).",
           "data": {
             "url": "https://raw.githubusercontent.com/cartdeco/Australia-json-data/master/aus25fgd_r.topojson",
             "format": {"type": "topojson", "feature": "collection"}
@@ -53,7 +46,6 @@
           "encoding": {"longitude": null, "latitude": null}
         },
         {
-          "description": "One circle per site: size = power (kW), colour = main or infill site.",
           "mark": {"type": "circle", "stroke": "#FFFFFF", "strokeWidth": 1},
           "encoding": {
             "size": {
@@ -94,7 +86,6 @@
           }
         },
         {
-          "description": "Labels for main sites placed to the right.",
           "transform": [
             {"filter": "datum.label_side == 'right'"}
           ],
@@ -111,7 +102,6 @@
           }
         },
         {
-          "description": "Labels for main sites placed to the left.",
           "transform": [
             {"filter": "datum.label_side == 'left'"}
           ],
@@ -128,7 +118,6 @@
           }
         },
         {
-          "description": "Labels for main sites placed below.",
           "transform": [
             {"filter": "datum.label_side == 'below'"}
           ],
@@ -148,7 +137,6 @@
       ]
     },
     {
-      "description": "Right view: number of sites in each region.",
       "width": 230,
       "height": 420,
       "title": {
@@ -167,7 +155,6 @@
       },
       "layer": [
         {
-          "description": "Stacked bars by site type; hovering a bar highlights that region on the map.",
           "params": [
             {
               "name": "Region_pick",
@@ -216,7 +203,6 @@
           }
         },
         {
-          "description": "Total sites at the end of each bar.",
           "mark": {
             "type": "text",
             "align": "left",

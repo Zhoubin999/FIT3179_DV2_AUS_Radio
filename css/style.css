@@ -10,7 +10,7 @@
      5. "Four things to try" and jargon buster boxes
      6. Chapter headings
      7. Chart cards (layout shared by every chart)
-     8. Vega drop-down menus, notes and mini legends
+     8. Vega drop-down menus, notes, mini legends and coloured key words
      9. Chart 8: zoomable DAB+ map and side panel
     10. Chapter 4: city picker and linked charts
     11. Conclusion (takeaways)
@@ -39,7 +39,7 @@
   --accent: #2F5D8A;     /* links, buttons, highlights */
   --shadow: 0 4px 24px rgba(29, 62, 77, .06);
 
-  /* data colours (same meaning in every chart) */
+  /* data colours */
   --radio: #2F5D8A;      /* radio */
   --stream: #E3672B;     /* streaming */
   --podcast: #6C5BB5;    /* podcasts */
@@ -132,11 +132,11 @@ a {
   color: #FFFFFF;
 }
 
-/* text on the left, headline numbers stacked on the right */
+/* same two columns as the chart grid: text on the left, headline numbers on the right */
 .hero-inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(220px, 1fr);
-  gap: 48px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
   align-items: center;
   padding: 64px 0 56px;
 }
@@ -147,7 +147,7 @@ a {
 }
 
 .hero h1 {
-  font: 700 clamp(40px, 5vw, 66px)/1.08 var(--font-head);
+  font: 700 clamp(40px, 4.4vw, 60px)/1.08 var(--font-head);
   letter-spacing: -.03em;
   margin: 14px 0 18px;
 }
@@ -174,16 +174,21 @@ a {
   color: #FFFFFF;
 }
 
+/* the left border lines up with the right-hand column of chart cards below */
 .hero-stats {
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding-left: 32px;
+  gap: 18px;
+  padding-left: 26px;
   border-left: 1px solid rgba(255, 255, 255, .25);
 }
 
+/* big number on the left, its meaning on the right */
 .stat {
-  max-width: 300px;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
 }
 
 .stat strong {
@@ -204,7 +209,7 @@ a {
 }
 
 .stat p {
-  margin: 6px 0 0;
+  margin: 0;
   font-size: 15px;
   color: #CBDCE1;
   line-height: 1.4;
@@ -212,10 +217,11 @@ a {
 
 
 /* ---------- 5. "Four things to try" and jargon buster boxes ---------- */
+/* same two columns and gap as the chart grid, so the edges line up */
 .guide-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
   margin-top: 36px;
 }
 
@@ -371,6 +377,14 @@ a {
   margin: 0 0 10px;
 }
 
+/* a whole-row card has room for the text in two columns */
+.chart-card.wide .interpretation,
+.chart-card.full .interpretation {
+  max-width: none;
+  columns: 2;
+  column-gap: 44px;
+}
+
 /* the box each chart is drawn into (id c01 ... c13) */
 .chart-wrap {
   width: 100%;
@@ -446,6 +460,32 @@ a {
 
 .dot.national { background: var(--national); }
 .dot.regional { background: var(--regional); }
+
+/* key words coloured like the marks they describe (darker shades where needed so text stays readable) */
+.key {
+  font-weight: 700;
+}
+
+.key.stream   { color: #C4501A; }
+.key.radio    { color: var(--radio); }
+.key.podcast  { color: var(--podcast); }
+.key.national { color: var(--national); }
+.key.regional { color: var(--regional); }
+.key.music    { color: #B5446E; }   /* commercial music */
+.key.talk     { color: #8A6416; }   /* commercial talk & news */
+
+/* light colours are too pale for text, so these get a colour swatch instead */
+.key.swatch::before {
+  content: "";
+  display: inline-block;
+  width: .7em;
+  height: .7em;
+  margin-right: .25em;
+  border-radius: 2px;
+  background: var(--swatch);
+}
+
+.key.infill { --swatch: #8FB3D6; }
 
 
 /* ---------- 9. Chart 8: zoomable DAB+ map and side panel ---------- */
@@ -687,7 +727,7 @@ a {
 .takeaway-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
+  gap: 22px;   /* same gap as the chart grid, so the middle line matches */
 }
 
 .takeaway {
@@ -780,6 +820,11 @@ a {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .chart-card.wide .interpretation,
+  .chart-card.full .interpretation {
+    columns: 1;
+  }
+
   /* hero numbers go back to one row under the text */
   .hero-stats {
     flex-direction: row;
@@ -792,6 +837,11 @@ a {
 
   .stat {
     width: 220px;
+    display: block;
+  }
+
+  .stat p {
+    margin-top: 6px;
   }
 
   .takeaway-grid {

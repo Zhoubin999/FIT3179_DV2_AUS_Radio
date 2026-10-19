@@ -51,8 +51,8 @@
       "field": "rank",
       "type": "quantitative",
       "title": "Rank in the city (1 = most listened)",
-      "scale": {"domain": [7.3, 0.7]},
-      "axis": {"values": [1, 2, 3, 4, 5, 6, 7], "grid": true}
+      "scale": {"domain": [6.4, 0.6]},
+      "axis": {"values": [1, 2, 3, 4, 5, 6], "grid": true}
     },
     "color": {
       "field": "program_format",

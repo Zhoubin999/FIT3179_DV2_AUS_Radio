@@ -40,16 +40,17 @@
     {
       "calculate": "datum.gap == 0 ? 'Same reach: 80%' : (format(datum.gap,'.0f') + ' percentage-point gap')",
       "as": "gap_label"
-    }
+    },
+    {"calculate": "'Gap: ' + format(datum.gap, '.0f') + ' points'", "as": "gap_note"}
   ],
   "encoding": {
     "x": {
       "field": "Australia overall",
       "type": "quantitative",
-      "scale": {"domain": [0, 100]},
+      "scale": {"domain": [45, 85], "nice": false},
       "axis": {
         "title": "Weekly radio reach (%)",
-        "values": [0, 20, 40, 60, 80, 100],
+        "values": [50, 60, 70, 80],
         "grid": true
       }
     },
@@ -164,6 +165,25 @@
       "encoding": {
         "x": {"field": "Australia overall", "type": "quantitative"},
         "text": {"field": "gap_label", "type": "nominal"}
+      }
+    },
+    {
+      "description": "Size of the gap written at the left edge of each row (empty space before the dots).",
+      "transform": [
+        {"filter": "datum.age_group != '55+'"}
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 4,
+        "fontSize": 13,
+        "fontStyle": "italic",
+        "color": "#5C7182"
+      },
+      "encoding": {
+        "x": {"datum": 45},
+        "text": {"field": "gap_note"}
       }
     }
   ],

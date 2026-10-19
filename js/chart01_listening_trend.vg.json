@@ -82,11 +82,15 @@
         "range": ["#E3672B", "#2F5D8A", "#8FB3D6", "#6C5BB5", "#2F5D8A"]
       },
       "legend": {
-        "orient": "top",
+        "orient": "top-left",
         "direction": "horizontal",
+        "titleOrient": "left",
         "symbolStrokeWidth": 3,
         "symbolType": "stroke",
-        "symbolSize": 300
+        "symbolSize": 300,
+        "fillColor": "rgba(255,255,255,0.9)",
+        "padding": 6,
+        "offset": 4
       }
     },
     "strokeDash": {
@@ -108,6 +112,17 @@
           [1, 0],
           [6, 3]
         ]
+      },
+      "legend": {
+        "orient": "top-left",
+        "direction": "horizontal",
+        "titleOrient": "left",
+        "symbolStrokeWidth": 3,
+        "symbolType": "stroke",
+        "symbolSize": 300,
+        "fillColor": "rgba(255,255,255,0.9)",
+        "padding": 6,
+        "offset": 4
       }
     }
   },
@@ -216,14 +231,10 @@
       }
     },
     {
-      "description": "Annotation for 2025 when streaming overtook radio (Australia view only).",
+      "description": "Annotation under the 2025 crossing point, where streaming overtook radio (Australia view only).",
       "data": {
         "values": [
-          {
-            "year": 2025,
-            "value": 96,
-            "note": "2025: streaming (79%) overtakes radio (78%) for the first time"
-          }
+          {"year": 2025, "value": 70, "note": "2025: streaming overtakes radio ↑"}
         ]
       },
       "transform": [
@@ -232,7 +243,7 @@
       "mark": {
         "type": "text",
         "align": "right",
-        "dx": 4,
+        "dx": 6,
         "fontSize": 13,
         "fontStyle": "italic",
         "color": "#5C7182"
