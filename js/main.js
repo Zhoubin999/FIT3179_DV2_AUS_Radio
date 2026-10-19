@@ -61,6 +61,34 @@ function embedScaledMapChart(elementId, specUrl) {
   }).catch(console.error);
 }
 
+// Map + ranking bars (state infrastructure): share the card width between the two views.
+// On narrow screens the bars move under the map (hconcat -> vconcat).
+function embedMapWithBars(elementId, specUrl) {
+  fetch(specUrl).then(function (response) { return response.json(); }).then(function (spec) {
+    var cardWidth = document.querySelector(elementId).clientWidth;
+    var map = spec.hconcat[0];
+    var bars = spec.hconcat[1];
+    var legend = map.layer[0].encoding.color.legend;
+    if (cardWidth >= 760) {
+      // side by side: the colour legend sits under the ranking bars
+      map.width = Math.min(760, cardWidth - 370);
+      bars.width = cardWidth - map.width - 140;
+      legend.orient = "none";
+      legend.legendX = map.width + 40;
+      legend.legendY = bars.height + 60;
+    } else {
+      // stacked: map, then bars, then the legend at the bottom
+      spec.vconcat = spec.hconcat;
+      delete spec.hconcat;
+      map.width = cardWidth - 60;
+      bars.width = cardWidth - 140;
+      legend.orient = "bottom";
+    }
+    map.height = Math.round(map.width * 0.72);
+    return vegaEmbed(elementId, spec, embedOptions);
+  }).catch(console.error);
+}
+
 
 // ---------- Chapter 1: the big shift ----------
 vegaEmbed('#c01', "js/chart01_listening_trend.vg.json", embedOptions).catch(console.error);
@@ -82,7 +110,7 @@ if (!useZoomMap) {
   document.querySelector('#c08-panel').hidden = true;
   embedScaledMapChart('#c08', "js/chart08_dab_sites_symbol_map.vg.json");
 }
-vegaEmbed('#c09', "js/chart09_state_infrastructure_choropleth.vg.json", embedOptions).catch(console.error);
+embedMapWithBars('#c09', "js/chart09_state_infrastructure_choropleth.vg.json");
 
 
 // ---------- Chart 8: DAB+ map that zooms from Australia into one state ----------

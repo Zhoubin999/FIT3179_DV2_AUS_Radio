@@ -7,7 +7,7 @@
      2. Base page styles
      3. Top navigation
      4. Hero (title, byline, headline numbers)
-     5. "How to use" and jargon buster boxes
+     5. "Four things to try" and jargon buster boxes
      6. Chapter headings
      7. Chart cards (layout shared by every chart)
      8. Vega drop-down menus, notes and mini legends
@@ -132,7 +132,12 @@ a {
   color: #FFFFFF;
 }
 
+/* text on the left, headline numbers stacked on the right */
 .hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(220px, 1fr);
+  gap: 48px;
+  align-items: center;
   padding: 64px 0 56px;
 }
 
@@ -162,7 +167,7 @@ a {
 .byline {
   font-size: 17px;
   color: #CFE3E8;
-  margin: 0 0 30px;
+  margin: 0;
 }
 
 .byline strong {
@@ -171,14 +176,14 @@ a {
 
 .hero-stats {
   display: flex;
-  gap: 36px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 22px;
+  padding-left: 32px;
+  border-left: 1px solid rgba(255, 255, 255, .25);
 }
 
 .stat {
-  width: 220px;
-  border-top: 1px solid rgba(255, 255, 255, .3);
-  padding-top: 12px;
+  max-width: 300px;
 }
 
 .stat strong {
@@ -206,7 +211,7 @@ a {
 }
 
 
-/* ---------- 5. "How to use" and jargon buster boxes ---------- */
+/* ---------- 5. "Four things to try" and jargon buster boxes ---------- */
 .guide-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
@@ -226,30 +231,45 @@ a {
   margin: 0 0 12px;
 }
 
-.how-list {
+.guide-lead {
+  margin: 0 0 14px;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+/* one specific interaction per item: chart tag on the left, what to do and what you will see on the right */
+.try-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.how-list li {
+.try-list li {
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 14px;
+  margin-bottom: 16px;
   font-size: 16px;
 }
 
-/* round icon in front of each instruction */
-.how-icon {
-  flex: 0 0 30px;
-  height: 30px;
-  border-radius: 50%;
+.try-list li:last-child {
+  margin-bottom: 0;
+}
+
+.try-chart {
+  flex: 0 0 68px;
+  align-self: flex-start;
+  padding: 3px 0;
+  border-radius: 999px;
   background: var(--accent);
   color: #FFFFFF;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.try-list a {
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .glossary {
@@ -257,11 +277,11 @@ a {
   border-color: var(--edge);
 }
 
-/* term on the left, meaning on the right */
+/* two terms per row; each term sits above its meaning */
 .glossary dl {
   display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
-  gap: 8px 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
   margin: 0;
   font-size: 15px;
 }
@@ -331,6 +351,12 @@ a {
 .chart-card.wide,
 .chart-card.full {
   grid-column: 1 / -1;
+}
+
+/* "Go to Chart N" links land with the card below the sticky navigation */
+.chart-card,
+.city-picker {
+  scroll-margin-top: 76px;
 }
 
 .card-heading {
@@ -749,8 +775,23 @@ a {
 /* tablets and small laptops: one chart per row */
 @media (max-width: 1020px) {
   .chart-grid,
-  .guide-grid {
+  .guide-grid,
+  .hero-inner {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* hero numbers go back to one row under the text */
+  .hero-stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px 36px;
+    padding: 18px 0 0;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, .25);
+  }
+
+  .stat {
+    width: 220px;
   }
 
   .takeaway-grid {
