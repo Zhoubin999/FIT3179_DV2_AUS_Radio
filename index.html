@@ -306,7 +306,7 @@
           <p>
             Ratings surveys (GfK Surveys 3 to 6 of 2026; Survey 6 was released on 8 October) show which stations people in the five largest cities listen to.
             Program types come from each station's on-air format, listed in a table in the data folder. Listening to stations GfK does not report separately is shown as &ldquo;Other / unrated&rdquo;,
-            so the shares below describe the rated stations only.
+            so every share below is a percentage of all radio listening in that city.
           </p>
         </div>
       </div>
@@ -322,6 +322,17 @@
           <button type="button" class="city-button" data-market="Perth">Perth</button>
         </div>
       </div>
+
+      <!-- City commentary: main.js fills it with what stands out in the selected city (figures from the merged CSV) -->
+      <section class="city-insight" aria-live="polite">
+        <h3>What stands out in <span class="market-name">Melbourne</span></h3>
+        <p class="insight-lead" id="insight-lead"></p>
+        <ul class="insight-list">
+          <li><span class="insight-tag">Listening mix &middot; Charts 10&ndash;11</span><span id="insight-mix"></span></li>
+          <li><span class="insight-tag">Stations &middot; Chart 12</span><span id="insight-stations"></span></li>
+          <li><span class="insight-tag">Top five &middot; Chart 13</span><span id="insight-top"></span></li>
+        </ul>
+      </section>
 
       <div class="chart-grid linked-grid">
         <!-- Chart 10: alluvial diagram (linked) - js/chart10_program_mix_alluvial.vg.json -->
@@ -343,7 +354,7 @@
           <h3 class="card-heading">Each city has its own listening mix</h3>
           <p class="interpretation">
             Each donut splits a city's radio listening by program type; drag the slider under the map, or press Play, to step through Surveys 3 to 6.
-            In Survey 6, among the rated stations, Melbourne has the highest <span class="key talk">talk-and-news share</span> (22%)
+            In Survey 6, Melbourne has the highest <span class="key talk">talk-and-news share</span> (22%)
             and Perth the highest <span class="key music">music share</span> (64%). Grey is listening to stations not rated individually.
             Click a donut to show that city in all four linked charts. The slider changes only this map: the treemap always shows Survey 6, and the alluvial and bump charts show Surveys 3 to 6.
           </p>

@@ -597,8 +597,74 @@ var selectedMarket = "Melbourne";
 var cityButtons = document.querySelectorAll('.city-button');
 var marketName = document.querySelectorAll('.market-name');
 
+// What stands out in each city, shown under the city picker.
+// Figures checked against the merged CSV (GfK Surveys 3-6 2026); shares are percentages of all radio listening in the city.
+// key() colours a phrase to match its marks in the charts.
+function key(type, text) {
+  return '<span class="key ' + type + '">' + text + '</span>';
+}
+
+var CITY_INSIGHTS = {
+  "Sydney": {
+    lead: "The steadiest market: little moved between Survey 3 and Survey 6.",
+    mix: "Every program type stayed within 2 points of its Survey 3 share; " + key('music', 'commercial music') +
+      " went from 52.5% to 51.8%.",
+    stations: "smoothfm 95.3 leads with 13.2%. " + key('talk', 'Commercial talk') + " station 2GB is second with 10.8%, " +
+      "the only talk station in Sydney's top five.",
+    top: "The same five stations made the top five in every survey, and smoothfm was No. 1 each time. " +
+      "2GB slipped from 11.8% to 10.8%."
+  },
+  "Melbourne": {
+    lead: "The talk-radio city: the only capital where a talk station is No. 1.",
+    mix: "Talk and news (commercial and ABC) take 22% of all listening, the most of the five cities. " +
+      key('music', 'Commercial music') + " fell 3.3 points (55.6% to 52.3%) while " +
+      key('swatch abc-talk', 'ABC talk &amp; news') + " rose from 7.4% to 8.8%.",
+    stations: key('talk', 'Commercial talk') + " station 3AW leads with 13.4%. ABC Melbourne gained the most of any " +
+      "Melbourne station, up 1.6 points to 5.7%.",
+    top: "3AW was No. 1 in all four surveys, although its share dipped from 14.0% to 13.4%."
+  },
+  "Brisbane": {
+    lead: "The closest race at the top: the No. 1 station changed twice in four surveys.",
+    mix: key('music', 'Commercial music') + " fell the most of any city, down 4.8 points (56.6% to 51.8%), while " +
+      key('swatch unrated', 'unrated stations') + " rose to 27% of listening, the highest of the five cities.",
+    stations: "Talk is weakest here: 4BC 882, the only " + key('talk', 'commercial talk') + " station, has 4.1% and " +
+      "ranks eighth, so all of the top five play music.",
+    top: "Triple M led in Survey 3 (13.0%), B105 in Surveys 4 and 5 (12.0%), and 4BH 1116 in Survey 6 (12.3%). " +
+      "The ratings do not say why, but the top three are within 1.7 points of each other, so small shifts reorder them."
+  },
+  "Adelaide": {
+    lead: "The strongest ABC talk audience of the five cities.",
+    mix: key('swatch abc-talk', 'ABC talk &amp; news') + " has 10.3% of listening, the highest of any city; with " +
+      "FIVEaa, talk and news reach 19%, level with Sydney and behind only Melbourne. " +
+      key('music', 'Commercial music') + " fell 2.2 points (53.9% to 51.7%).",
+    stations: "5MMM (Triple M) leads with 14.0%, 3.2 points ahead of NOVA91.9. KIIS1023 lost the most share, " +
+      "down 1.6 points.",
+    top: "5MMM was No. 1 in all four surveys. " + key('talk', 'Commercial talk') + " station FIVEaa rose from 8.2% " +
+      "to 10.1% in Survey 4, then eased back to 8.7%."
+  },
+  "Perth": {
+    lead: "The only city where commercial music grew.",
+    mix: key('music', 'Commercial music') + " rose 4.0 points (52.6% to 56.6%) while " +
+      key('swatch abc-talk', 'ABC talk &amp; news') + " fell from 9.8% to 6.2%. These are city totals, so they " +
+      "do not show individual listeners switching.",
+    stations: "NOVA93.7 has 18.3%, the largest share of any station in the five cities. ABC Perth halved, " +
+      "from 7.1% to 3.7%.",
+    top: "NOVA93.7 grew in every survey (14.9%, 16.7%, 17.6%, 18.3%), and Triple M climbed from 8.3% to 11.0%, " +
+      "close behind Mix 94.5 and Gold 96FM."
+  }
+};
+
+function showCityInsight(market) {
+  var insight = CITY_INSIGHTS[market];
+  document.querySelector('#insight-lead').textContent = insight.lead;
+  document.querySelector('#insight-mix').innerHTML = insight.mix;
+  document.querySelector('#insight-stations').innerHTML = insight.stations;
+  document.querySelector('#insight-top').innerHTML = insight.top;
+}
+
 function showMarket(market) {
   selectedMarket = market;
+  showCityInsight(market);
 
   // update every linked chart
   marketViews.forEach(function (view) {
@@ -650,3 +716,20 @@ cityButtons.forEach(function (button) {
     showMarket(button.dataset.market);
   });
 });
+// Keep the commentary box at the height of the longest city's text, so picking a city does not shift the charts below.
+// Phones skip this: the city picker does not stay on screen there, and the reserved space would be a large gap.
+function reserveInsightHeight() {
+  var box = document.querySelector('.city-insight');
+  var tallest = 0;
+  box.style.minHeight = '';
+  if (window.innerWidth > 700) {
+    Object.keys(CITY_INSIGHTS).forEach(function (market) {
+      showCityInsight(market);
+      tallest = Math.max(tallest, box.offsetHeight);
+    });
+    box.style.minHeight = tallest + 'px';
+  }
+  showCityInsight(selectedMarket);
+}
+reserveInsightHeight();
+window.addEventListener('resize', reserveInsightHeight);
