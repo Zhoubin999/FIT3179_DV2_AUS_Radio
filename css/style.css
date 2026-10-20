@@ -7,7 +7,7 @@
      2. Base page styles
      3. Top navigation
      4. Hero (title, byline, headline numbers)
-     5. "Four things to try" and jargon buster boxes
+     5. Jargon buster
      6. Chapter headings
      7. Chart cards (layout shared by every chart)
      8. Vega drop-down menus, notes, mini legends and coloured key words
@@ -217,80 +217,47 @@ a {
 }
 
 
-/* ---------- 5. "Four things to try" and jargon buster boxes ---------- */
-/* same two columns and gap as the chart grid, so the edges line up */
-.guide-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
-  margin-top: 36px;
-}
-
+/* ---------- 5. Jargon buster ---------- */
+/* full width of the page shell, so its edges line up with the chart cards below */
 .guide-box {
-  background: var(--tint);
-  border: 1px solid #C9D6E3;
+  margin-top: 36px;
+  background: #FFFFFF;
+  border: 1px solid var(--edge);
   border-radius: 16px;
   padding: 22px 26px;
 }
 
 .guide-box h2 {
   font: 700 22px var(--font-head);
-  margin: 0 0 12px;
+  margin: 0 0 6px;
 }
 
 .guide-lead {
-  margin: 0 0 14px;
+  margin: 0 0 6px;
   font-size: 16px;
   color: var(--muted);
 }
 
-/* one specific interaction per item: chart tag on the left, what to do and what you will see on the right */
-.try-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.glossary-group {
+  margin: 16px 0 4px;
+  font: 700 13px var(--font-head);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--note);
 }
 
-.try-list li {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 16px;
-  font-size: 16px;
-}
-
-.try-list li:last-child {
-  margin-bottom: 0;
-}
-
-.try-chart {
-  flex: 0 0 68px;
-  align-self: flex-start;
-  padding: 3px 0;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #FFFFFF;
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.try-list a {
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.glossary {
-  background: #FFFFFF;
-  border-color: var(--edge);
-}
-
-/* two terms per row; each term sits above its meaning */
 .glossary dl {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 24px;
   margin: 0;
   font-size: 15px;
+}
+
+/* one term per row, read top to bottom: the term on the left, its meaning beside it */
+.glossary dl > div {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 16px;
+  padding: 6px 0;
+  border-top: 1px solid var(--edge);
 }
 
 .glossary dt {
@@ -887,7 +854,6 @@ a {
 /* tablets and small laptops: one chart per row */
 @media (max-width: 1100px) {
   .chart-grid,
-  .guide-grid,
   .hero-inner {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -945,8 +911,10 @@ a {
     display: none;
   }
 
-  .glossary dl {
-    grid-template-columns: 1fr;
+  /* term above its meaning */
+  .glossary dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
   }
 
   .chart-card {

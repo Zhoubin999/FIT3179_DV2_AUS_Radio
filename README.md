@@ -24,8 +24,9 @@ It helps readers see that the change is uneven by age, place and city, not a sim
 
 ## Who
 
-The average Australian, with no background in media or statistics. Technical terms (weekly reach, share, points,
-DAB+, kW, frequency block, ratings survey, relay transmitter) are explained in a jargon buster at the top of the page.
+The average Australian, with no background in media or statistics. A jargon buster at the top of the page explains
+the terms used: weekly reach, share, points, survey ages, ratings survey, program type, DAB+, transmitter site, kW,
+frequency block and relay transmitter.
 Charts are introduced with plain-language headings that state the finding.
 
 ## What: the data
