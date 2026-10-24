@@ -129,6 +129,26 @@ a {
   color: var(--accent);
 }
 
+/* active chapter indicator: the link for the chapter being read is dark with an accent underline (set by main.js) */
+.links a {
+  position: relative;
+}
+
+.links a.active {
+  color: var(--ink);
+}
+
+.links a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
 
 /* ---------- 4. Hero (title, byline, headline numbers) ---------- */
 .hero {

@@ -880,3 +880,33 @@ function reserveInsightHeight() {
 }
 reserveInsightHeight();
 window.addEventListener('resize', reserveInsightHeight);
+
+// ---------- Active chapter indicator ----------
+// The navigation link for the chapter being read is highlighted: the last chapter whose top has passed a reading
+// line a third of the way down the screen (below the navigation). At the very bottom of the page, Sources is active.
+var chapterLinks = Array.prototype.slice.call(document.querySelectorAll('.links a'));
+var chapterSections = chapterLinks.map(function (link) { return document.querySelector(link.getAttribute('href')); });
+var chapterQueued = false;
+function updateActiveChapter() {
+  chapterQueued = false;
+  var readingLine = document.querySelector('.topnav').offsetHeight + window.innerHeight / 3;
+  var active = -1;
+  chapterSections.forEach(function (section, i) {
+    if (section && section.getBoundingClientRect().top <= readingLine) active = i;
+  });
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) active = chapterLinks.length - 1;
+  chapterLinks.forEach(function (link, i) {
+    link.classList.toggle('active', i === active);
+    if (i === active) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  });
+}
+function queueActiveChapter() {
+  if (!chapterQueued) {
+    chapterQueued = true;
+    window.requestAnimationFrame(updateActiveChapter);
+  }
+}
+window.addEventListener('scroll', queueActiveChapter, {passive: true});
+window.addEventListener('resize', queueActiveChapter);
+updateActiveChapter();
