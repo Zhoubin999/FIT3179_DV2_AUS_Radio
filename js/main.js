@@ -238,7 +238,7 @@ function adaptChart10(spec, width) {
       "replace(replace(replace(replace(datum.program_format, 'Commercial', 'Comm.'), ' stations', ''), ' & news', ''), ' / unrated', '')";
     var note = spec.layer[spec.layer.length - 1];
     var last = note.transform[note.transform.length - 1];
-    last.calculate = "['Biggest change since Survey 3:', lower(datum.program_format) + ', ' + " +
+    last.calculate = "['Biggest change among rated', 'program types since Survey 3:', lower(datum.program_format) + ', ' + " +
       "(datum.change > 0 ? '+' : '\u2212') + format(abs(datum.change), '.1f') + ' points', " +
       "'(' + format(datum.first_share, '.1f') + '% \u2192 ' + format(datum.type_share, '.1f') + '%)']";
     note.mark.fontSize = 12;

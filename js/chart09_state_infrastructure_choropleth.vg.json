@@ -126,7 +126,7 @@
           }
         },
         {
-          "description": "State labels with the value of the chosen measure. White only on the darkest fills; the ACT label sits offshore on the white background, so it is always dark.",
+          "description": "State labels with the value of the chosen measure (white only on the darkest fills). The ACT has its own layer below.",
           "data": {
             "url": "data/australian_radio_data.csv",
             "format": {
@@ -148,7 +148,8 @@
               "joinaggregate": [
                 {"op": "max", "field": "shown_value", "as": "max_value"}
               ]
-            }
+            },
+            {"filter": "datum.state != 'ACT'"}
           ],
           "mark": {
             "type": "text",
@@ -162,11 +163,40 @@
             "text": {"field": "state_label"},
             "color": {
               "condition": {
-                "test": "datum.state != 'ACT' && datum.shown_value > datum.max_value * 0.65",
+                "test": "datum.shown_value > datum.max_value * 0.65",
                 "value": "#FFFFFF"
               },
               "value": "#050A0D"
             }
+          }
+        },
+        {
+          "description": "ACT label: too small to sit inside, so it is offshore, left-aligned just past the end of the leader line from Canberra, and always dark (it is on the white background).",
+          "data": {"url": "data/australian_radio_data.csv"},
+          "transform": [
+            {"filter": "datum.dataset == 'State infrastructure' && datum.state == 'ACT'"},
+            {
+              "calculate": "Measure_selection == 'per100k' ? toNumber(datum.radio_sites_per_100k) : Measure_selection == 'retrans' ? toNumber(datum.fm_retransmission_pct) : toNumber(datum.dab_share_of_sites_pct)",
+              "as": "shown_value"
+            },
+            {
+              "calculate": "'ACT: ' + format(datum.shown_value, '.1f') + (Measure_selection == 'per100k' ? '' : '%')",
+              "as": "state_label"
+            },
+            {"calculate": "150.9", "as": "act_lon"},
+            {"calculate": "-36.0", "as": "act_lat"}
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 15,
+            "fontWeight": "bold",
+            "align": "left",
+            "color": "#050A0D"
+          },
+          "encoding": {
+            "longitude": {"field": "act_lon", "type": "quantitative"},
+            "latitude": {"field": "act_lat", "type": "quantitative"},
+            "text": {"field": "state_label"}
           }
         },
         {
@@ -230,6 +260,32 @@
             "latitude": {"field": "lat", "type": "quantitative"},
             "text": {"field": "note"}
           }
+        },
+        {
+          "description": "ACT is too small to label inside: a dot marks Canberra and a short leader runs towards the offshore ACT label (ending just before its left edge).",
+          "data": {
+            "values": [
+              {"lon": 149.13, "lat": -35.28, "end_lon": 150.6, "end_lat": -35.95}
+            ]
+          },
+          "layer": [
+            {
+              "mark": {"type": "rule", "color": "#5C7182", "strokeWidth": 1},
+              "encoding": {
+                "longitude": {"field": "lon", "type": "quantitative"},
+                "latitude": {"field": "lat", "type": "quantitative"},
+                "longitude2": {"field": "end_lon"},
+                "latitude2": {"field": "end_lat"}
+              }
+            },
+            {
+              "mark": {"type": "circle", "size": 22, "color": "#132D43", "opacity": 1},
+              "encoding": {
+                "longitude": {"field": "lon", "type": "quantitative"},
+                "latitude": {"field": "lat", "type": "quantitative"}
+              }
+            }
+          ]
         }
       ],
       "title": {

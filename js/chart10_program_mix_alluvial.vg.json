@@ -139,7 +139,7 @@
         {"calculate": "[datum.column - 0.16, datum.column + 0.16]", "as": "edges"},
         {"flatten": ["edges"], "as": ["edge_x"]}
       ],
-      "mark": {"type": "area", "opacity": 0.35, "interpolate": "monotone"},
+      "mark": {"type": "area", "opacity": 0.5, "interpolate": "monotone"},
       "encoding": {
         "x": {
           "field": "edge_x",
@@ -232,7 +232,7 @@
       }
     },
     {
-      "description": "Annotation under the chart: the program type (other than unrated) whose five-city average changed most between Survey 3 and Survey 6.",
+      "description": "Annotation under the chart: the rated program type (not Other / unrated, which the text names) whose five-city average changed most between Survey 3 and Survey 6.",
       "transform": [
         {
           "filter": "datum.survey == 6 && datum.program_format != 'Other / unrated stations'"
@@ -249,7 +249,7 @@
         },
         {"filter": "datum.change_order == 1"},
         {
-          "calculate": "'Biggest change since Survey 3: ' + lower(datum.program_format) + ', ' + (datum.change > 0 ? '+' : '−') + format(abs(datum.change), '.1f') + ' points (' + format(datum.first_share, '.1f') + '% → ' + format(datum.type_share, '.1f') + '%)'",
+          "calculate": "'Biggest change among rated program types since Survey 3: ' + lower(datum.program_format) + ', ' + (datum.change > 0 ? '+' : '−') + format(abs(datum.change), '.1f') + ' points (' + format(datum.first_share, '.1f') + '% → ' + format(datum.type_share, '.1f') + '%)'",
           "as": "change_note"
         }
       ],

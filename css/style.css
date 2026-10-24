@@ -571,7 +571,7 @@ a {
 .key.regional { color: var(--regional); }
 .key.music    { color: #B5446E; }   /* commercial music */
 .key.talk     { color: #8A6416; }   /* commercial talk & news */
-.key.base     { color: #6B7A86; }   /* grey bars in Chart 9 (darker than the bars so the text is readable) */
+.key.base     { color: #5C6C78; }   /* grey bars in Chart 9 (darker than the bars so the text is readable) */
 
 /* pale mark colours are too light to read as text, so these words use a darker shade of the same colour
    (at least 4.5:1 on white and on the light commentary box) */
@@ -760,12 +760,12 @@ a {
   align-items: center;
   flex-wrap: wrap;
   gap: 6px 20px;
-  padding: 10px 20px;
+  padding: 7px 18px;
   margin-bottom: 20px;
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--night);
   color: #FFFFFF;
-  box-shadow: 0 6px 20px rgba(19, 45, 67, .25);
+  box-shadow: 0 2px 8px rgba(19, 45, 67, .18);
 }
 
 .program-key-label {
@@ -818,13 +818,13 @@ a {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px 18px;
-  padding: 14px 20px;
+  gap: 8px 18px;
+  padding: 8px 18px;
   margin-bottom: 20px;
   border-radius: 14px;
   background: var(--night);
   color: #FFFFFF;
-  box-shadow: 0 -6px 0 var(--paper), 0 6px 20px rgba(19, 45, 67, .25);
+  box-shadow: 0 -6px 0 var(--paper), 0 2px 8px rgba(19, 45, 67, .18);
 }
 
 .picker-label {
@@ -840,7 +840,7 @@ a {
 
 .city-button {
   font: 600 15px var(--font-body);
-  padding: 7px 16px;
+  padding: 4px 14px;
   border-radius: 999px;
   border: 1px solid #6F93A8;
   background: transparent;
@@ -920,12 +920,12 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 6px 24px;
-  padding: 8px 18px;
+  padding: 5px 16px;
   border: 2px solid #B7C7D6;
   border-radius: 12px;
   background: var(--card);
   /* the first shadow fills the gap under the city picker with page colour, so no chart text shows through */
-  box-shadow: 0 -10px 0 var(--paper), 0 4px 14px rgba(19, 45, 67, .12);
+  box-shadow: 0 -10px 0 var(--paper), 0 2px 8px rgba(19, 45, 67, .12);
 }
 
 .survey-toolbar strong {
