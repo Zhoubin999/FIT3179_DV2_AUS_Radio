@@ -418,6 +418,9 @@ a {
 /* the waffles start at the card's left edge so their columns line up with the mosaic above */
 #c07 {
   align-items: flex-start;
+  /* ...and start right under the text (not centred), the same distance below it as the radar beside it */
+  justify-content: flex-start;
+  padding-top: 17px;
 }
 
 /* ...but its slider or drop-down starts at the left, like the others on the page */

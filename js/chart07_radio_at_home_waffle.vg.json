@@ -39,8 +39,13 @@
       "as": "has_it"
     },
     {
-      "calculate": "datum.measure == 'Any radio at home' ? ['adults have', 'any radio', 'at home'] : ['adults have', 'a DAB+ radio', 'at home']",
+      "description": "Caption beside each grid, in three lines drawn as separate marks: 'adults have', what is counted (bold), 'at home'.",
+      "calculate": "'adults have'",
       "as": "caption"
+    },
+    {
+      "calculate": "datum.measure == 'Any radio at home' ? 'any radio' : 'a DAB+ radio'",
+      "as": "caption_key"
     }
   ],
   "facet": {
@@ -135,6 +140,41 @@
         },
         "encoding": {
           "text": {"field": "caption"}
+        }
+      },
+      {
+        "description": "Last caption line, under the bold one.",
+        "transform": [
+          {"filter": "datum.square == 0"}
+        ],
+        "mark": {
+          "type": "text",
+          "x": {"expr": "child_width + 10"},
+          "y": 59,
+          "align": "left",
+          "baseline": "top",
+          "fontSize": 13,
+          "color": "#3E5263",
+          "text": "at home"
+        }
+      },
+      {
+        "description": "The middle caption line in bold ('any radio' or 'a DAB+ radio'), so the two rows of grids read differently at a glance.",
+        "transform": [
+          {"filter": "datum.square == 0"}
+        ],
+        "mark": {
+          "type": "text",
+          "x": {"expr": "child_width + 10"},
+          "y": 42,
+          "align": "left",
+          "baseline": "top",
+          "fontSize": 14,
+          "fontWeight": "bold",
+          "color": "#1F3545"
+        },
+        "encoding": {
+          "text": {"field": "caption_key"}
         }
       }
     ]
