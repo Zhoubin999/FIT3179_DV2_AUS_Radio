@@ -263,7 +263,7 @@
           <h3 class="card-heading">Digital radio is built for the big cities</h3>
           <p class="interpretation">
             The July 2026 ACMA licence records analysed here list 29 distinct DAB+ transmitter sites. Each capital has at least one <span class="key radio">high-power site</span> (20&ndash;50 kW),
-            and Sydney and Melbourne add several <span class="key swatch infill">low-power &ldquo;infill&rdquo; sites</span>. All 29 sites are in these 11 city regions, which may help explain why only 4% of regional adults use DAB+.
+            and Sydney and Melbourne add several <span class="key infill">low-power &ldquo;infill&rdquo; sites</span>. All 29 sites are in these 11 city regions, which may help explain why only 4% of regional adults use DAB+.
           </p>
           <div class="zoom-map">
             <div class="zoom-bar">
@@ -296,22 +296,51 @@
     </section>
 
 
-    <!-- ===== Chapter 4: local stations (four charts linked by the city picker) ===== -->
+    <!-- ===== Chapter 4: local stations (the five-city picture, then three charts linked by the city picker) ===== -->
     <section class="chapter" id="local">
       <div class="chapter-heading">
         <div class="chapter-no">04</div>
         <div>
           <h2>Local stations: what do city audiences choose?</h2>
           <p>
-            GfK ratings Surveys 3 to 6 of 2026 show which stations people in the five largest cities choose. Every share below is a percentage of all radio listening in the city,
-            including stations GfK does not rate separately (&ldquo;Other / unrated&rdquo;).
+            GfK ratings Surveys 3 to 6 of 2026 show which stations people in the five largest cities choose: first the overall picture, then each city up close.
+            Every share below is a percentage of all radio listening in the city, including stations GfK does not rate separately (&ldquo;Other / unrated&rdquo;).
           </p>
         </div>
       </div>
 
-      <!-- City picker: main.js updates the SelectedMarket parameter in Charts 10-13 -->
+      <!-- Program-type colours used by Charts 10-13 (same as the Vega "color" scales). The bar stays at the top
+           while scrolling through the chapter; the city picker sticks under it from Chart 11 (main.js sets the offsets). -->
+      <div class="program-key" id="program-key">
+        <span class="program-key-label">Program type</span>
+        <ul class="program-legend" aria-label="Program type colours">
+          <li style="--swatch: #B5446E">Commercial music</li>
+          <li style="--swatch: #E8A6C0">ABC music</li>
+          <li style="--swatch: #94701A">Commercial talk &amp; news</li>
+          <li style="--swatch: #78B84A">ABC talk &amp; news</li>
+          <li style="--swatch: #00B5C9">Sport</li>
+          <li style="--swatch: #A69C8D">Other / unrated stations</li>
+        </ul>
+      </div>
+
+      <!-- Chart 10: alluvial diagram, the overall picture (not linked) - js/chart10_program_mix_alluvial.vg.json -->
+      <div class="chart-grid">
+        <article class="chart-card wide" id="card-c10">
+          <p class="scope-badge">Overall &middot; average of the five cities &middot; Surveys 3&ndash;6</p>
+          <h3 class="card-heading">Across the five cities, the overall mix barely moved</h3>
+          <p class="interpretation">
+            On average across the five cities, <span class="key music">commercial music</span> slipped 1.4 points between Survey 3 and Survey 6 (54.2% to 52.8%),
+            while the share not accounted for by <span class="key unrated">individually listed stations</span> rose 2.0 points (20.1% to 22.1%). Talk and news held steady at about 17%.
+            This calm average hides bigger, opposite moves in individual cities: commercial music fell 4.8 points in Brisbane but rose 4.0 in Perth.
+            Each city counts equally in the average, so it is not a national total.
+          </p>
+          <div id="c10" class="chart-wrap"></div>
+        </article>
+      </div>
+
+      <!-- City picker: main.js updates the SelectedMarket parameter in Charts 11-13 -->
       <div class="city-picker" id="city-picker">
-        <span class="picker-label">&#128279; Pick a city to update all four charts below:</span>
+        <span class="picker-label">&#128279; Pick a city to update the three charts below:</span>
         <div class="city-buttons">
           <button type="button" class="city-button" data-market="Sydney">Sydney</button>
           <button type="button" class="city-button active" data-market="Melbourne">Melbourne</button>
@@ -319,15 +348,6 @@
           <button type="button" class="city-button" data-market="Adelaide">Adelaide</button>
           <button type="button" class="city-button" data-market="Perth">Perth</button>
         </div>
-        <!-- program-type colours used by all four linked charts (same as the Vega "color" scales) -->
-        <ul class="program-legend" aria-label="Program type colours">
-          <li style="--swatch: #B5446E">Commercial music</li>
-          <li style="--swatch: #E8A6C0">ABC music</li>
-          <li style="--swatch: #94701A">Commercial talk &amp; news</li>
-          <li style="--swatch: #78B84A">ABC talk &amp; news</li>
-          <li style="--swatch: #00B5C9">Sport</li>
-          <li style="--swatch: #D5DDE2">Other / unrated stations</li>
-        </ul>
       </div>
 
       <!-- City commentary: main.js fills it with what stands out in the selected city (figures from the merged CSV) -->
@@ -335,25 +355,13 @@
         <h3>What stands out in <span class="market-name">Melbourne</span></h3>
         <p class="insight-lead" id="insight-lead"></p>
         <ul class="insight-list">
-          <li><span class="insight-tag">Mix, Surveys 3&ndash;6 &middot; Charts 10&ndash;11</span><span id="insight-mix"></span></li>
+          <li><span class="insight-tag">Mix, Surveys 3&ndash;6 &middot; Chart 11</span><span id="insight-mix"></span></li>
           <li><span class="insight-tag">Stations, Survey 6 &middot; Chart 12</span><span id="insight-stations"></span></li>
           <li><span class="insight-tag">Top five, Surveys 3&ndash;6 &middot; Chart 13</span><span id="insight-top"></span></li>
         </ul>
       </section>
 
       <div class="chart-grid linked-grid">
-        <!-- Chart 10: alluvial diagram (linked) - js/chart10_program_mix_alluvial.vg.json -->
-        <article class="chart-card linked wide">
-          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Surveys 3&ndash;6</p>
-          <h3 class="card-heading">How <span class="market-name">Melbourne</span>'s listening mix moved across four surveys</h3>
-          <p class="interpretation">
-            Between Survey 3 and Survey 6, <span class="key music">commercial music</span> lost share in four of the five cities, most in Brisbane (&minus;4.8 points) and Melbourne (&minus;3.3); Perth went the other way (+4.0).
-            The share not accounted for by <span class="key swatch unrated">individually listed stations</span> also rose in every city, most in Brisbane (+4.0 points).
-            These are city totals, so they do not track individual listeners switching stations or formats.
-          </p>
-          <div id="c10" class="chart-wrap"></div>
-        </article>
-
         <!-- Charts 11-12 share one survey slider. The toolbar (slider + Play, moved here by main.js) stays
              visible below the city picker while either chart is on screen, and stops at the end of this wrapper. -->
         <div class="survey-pair">

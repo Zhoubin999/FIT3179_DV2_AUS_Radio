@@ -15,7 +15,7 @@ The story runs in five chapters:
 1. **The big shift:** streaming, podcasts and radio over ten years, and the leading streaming services.
 2. **Who listens:** differences by age, between cities and regions, and in how people consume podcasts.
 3. **Technology:** where people listen, radios at home, and where radio and DAB+ transmitters are.
-4. **Local stations:** the listening mix and leading stations in the five largest cities, linked by a city picker.
+4. **Local stations:** the overall listening mix across the five largest cities, then each city's mix and leading stations through a city picker.
 5. **Takeaways:** what this means for Australian radio.
 
 ## Data

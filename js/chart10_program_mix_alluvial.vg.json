@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Chapter 4 - alluvial diagram (linked to the city buttons). Share of radio listening by program type in Surveys 3-6 for the selected city (GfK ratings). Each column = 100% of listening; ribbons join the same program type in neighbouring surveys. Shared encoding: colour = program type.",
+  "description": "Chapter 4 - alluvial diagram (not linked: the overall picture before the city charts). Average share of radio listening by program type across the five capital cities (unweighted mean) in Surveys 3-6 (GfK ratings). Each column = 100% of listening; ribbons join the same program type in neighbouring surveys. Shared encoding: colour = program type.",
   "width": "container",
   "height": 420,
   "autosize": {"type": "fit-x", "contains": "padding"},
@@ -12,17 +12,10 @@
       "parse": {"survey": "number", "share": "number"}
     }
   },
-  "params": [
-    {
-      "description": "Selected city; main.js sets it when a city button is clicked.",
-      "name": "SelectedMarket",
-      "value": "Melbourne"
-    }
-  ],
   "transform": [
     {
-      "description": "Keep the selected city and add up station shares by program type in each survey.",
-      "filter": "datum.dataset == 'Station ratings' && datum.market == SelectedMarket"
+      "description": "Keep the station ratings and add up station shares by program type in each city and survey.",
+      "filter": "datum.dataset == 'Station ratings'"
     },
     {
       "aggregate": [
@@ -50,6 +43,18 @@
         "Other / unrated stations"
       ],
       "as": ["program_format", "type_share"]
+    },
+    {
+      "description": "A city with no station of a type (e.g. no sport station in Adelaide or Perth) counts as 0, so every average is over all five cities.",
+      "calculate": "isValid(datum.type_share) ? datum.type_share : 0",
+      "as": "type_share"
+    },
+    {
+      "description": "Average the five cities (unweighted mean) for each program type in each survey.",
+      "aggregate": [
+        {"op": "mean", "field": "type_share", "as": "type_share"}
+      ],
+      "groupby": ["survey", "program_format"]
     },
     {
       "description": "Drop empty groups and round the shares.",
@@ -122,7 +127,7 @@
           "Sport",
           "Other / unrated stations"
         ],
-        "range": ["#B5446E", "#E8A6C0", "#94701A", "#78B84A", "#00B5C9", "#D5DDE2"]
+        "range": ["#B5446E", "#E8A6C0", "#94701A", "#78B84A", "#00B5C9", "#A69C8D"]
       },
       "legend": null
     }
@@ -227,7 +232,7 @@
       }
     },
     {
-      "description": "Annotation under the chart: the program type that changed most between Survey 3 and Survey 6 (updates with the city).",
+      "description": "Annotation under the chart: the program type (other than unrated) whose five-city average changed most between Survey 3 and Survey 6.",
       "transform": [
         {
           "filter": "datum.survey == 6 && datum.program_format != 'Other / unrated stations'"

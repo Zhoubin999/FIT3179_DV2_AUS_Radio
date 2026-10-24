@@ -554,23 +554,11 @@ a {
 .key.talk     { color: #8A6416; }   /* commercial talk & news */
 .key.base     { color: #6B7A86; }   /* grey bars in Chart 9 (darker than the bars so the text is readable) */
 
-/* light colours are too pale for text: these show the mark's colour as a swatch, and the words use a darker
-   shade of the same colour (at least 4.5:1 on white and on the light commentary box) */
-.key.swatch::before {
-  content: "";
-  display: inline-block;
-  width: .7em;
-  height: .7em;
-  margin-right: .25em;
-  border-radius: 2px;
-  background: var(--swatch);
-}
-
-.key.infill    { --swatch: #8FB3D6; color: #3470AA; }
-.key.abc-talk  { --swatch: #78B84A; color: #4A7928; }
-.key.abc-music { --swatch: #E8A6C0; }   /* not used in the text; a readable dark pink would look like commercial music */
-.key.unrated   { --swatch: #D5DDE2; color: #557182; }
-.key.unrated::before { box-shadow: inset 0 0 0 1px #8A99A6; }   /* pale grey needs an outline */
+/* pale mark colours are too light to read as text, so these words use a darker shade of the same colour
+   (at least 4.5:1 on white and on the light commentary box) */
+.key.infill   { color: #3470AA; }   /* low-power infill sites, Chart 8 (marks #8FB3D6) */
+.key.abc-talk { color: #4A7928; }   /* ABC talk & news (marks #78B84A) */
+.key.unrated  { color: #766C5C; }   /* other / unrated stations (marks #A69C8D) */
 
 
 /* ---------- 9. Chart 8: zoomable DAB+ map and side panel ---------- */
@@ -744,10 +732,69 @@ a {
 
 
 /* ---------- 10. Chapter 4: city picker and linked charts ---------- */
-/* dark bar that stays at the top while scrolling through Chapter 4 */
-.city-picker {
+/* program-type key: dark bar that stays under the navigation through Chapter 4 (Charts 10-13) */
+.program-key {
   position: sticky;
   top: 60px;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  background: var(--night);
+  color: #FFFFFF;
+  box-shadow: 0 6px 20px rgba(19, 45, 67, .25);
+}
+
+.program-key-label {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.program-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: #DCE6EE;
+}
+
+.program-legend li::before {
+  content: "";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 6px;
+  border-radius: 2px;
+  vertical-align: -1px;
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .55);
+}
+
+/* light badge for the overall (not linked) chart, so it reads differently from the dark "Linked" badges */
+.scope-badge {
+  align-self: flex-start;
+  margin: 0 0 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid #B7C7D6;
+  background: var(--tint);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* dark bar that sticks under the program key from Chart 11 to the end of Chapter 4
+   (main.js sets "top" from the key's real height); the page-coloured band fills the gap between the bars */
+.city-picker {
+  position: sticky;
+  top: 112px;
   z-index: 40;
   display: flex;
   align-items: center;
@@ -758,7 +805,7 @@ a {
   border-radius: 14px;
   background: var(--night);
   color: #FFFFFF;
-  box-shadow: 0 6px 20px rgba(19, 45, 67, .25);
+  box-shadow: 0 -6px 0 var(--paper), 0 6px 20px rgba(19, 45, 67, .25);
 }
 
 .picker-label {
@@ -787,32 +834,6 @@ a {
 }
 
 /* the city currently shown */
-/* program-type key on its own line under the city buttons; light text and outlined swatches on the dark bar */
-.program-legend {
-  flex: 1 1 100%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 20px;
-  margin: 0;
-  padding: 8px 0 0;
-  list-style: none;
-  border-top: 1px solid rgba(255, 255, 255, .18);
-  font-size: 13px;
-  color: #DCE6EE;
-}
-
-.program-legend li::before {
-  content: "";
-  display: inline-block;
-  width: 11px;
-  height: 11px;
-  margin-right: 6px;
-  border-radius: 2px;
-  vertical-align: -1px;
-  background: var(--swatch);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .55);
-}
-
 .city-button.active {
   background: #FFFFFF;
   border-color: #FFFFFF;
@@ -1117,6 +1138,7 @@ a {
     font-size: 16px;
   }
 
+  .program-key,
   .city-picker {
     position: static;
   }

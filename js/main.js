@@ -1,5 +1,5 @@
 // FIT3179 DV2 - Australian Radio in the Digital Age
-// Embeds every chart (Vega-Lite, plus Vega for the radar, donut map and treemap) and keeps the four "local market" charts in sync.
+// Embeds every chart (Vega-Lite, plus Vega for the radar, donut map and treemap) and keeps the three "local market" charts in sync.
 
 // Shared look for every chart (fonts, colours and text sizes)
 var chartConfig = {
@@ -640,9 +640,9 @@ if (useZoomMap) {
 }
 
 
-// ---------- Chapter 4: local markets (four linked charts) ----------
+// ---------- Chapter 4: local markets (Chart 10 is the five-city average; Charts 11-13 are linked) ----------
 // Each of these specs has a parameter (Vega-Lite) or signal (Vega) called "SelectedMarket".
-// Changing the city here updates that parameter in all four charts at once.
+// Changing the city here updates that parameter in all three charts at once.
 var marketViews = [];
 var selectedMarket = "Melbourne";
 var cityButtons = document.querySelectorAll('.city-button');
@@ -669,7 +669,7 @@ var CITY_INSIGHTS = {
     lead: "The talk-radio city: the only capital where a talk station is No. 1.",
     mix: "Talk and news (commercial and ABC) take 22% of all listening, the most of the five cities. " +
       key('music', 'Commercial music') + " fell 3.3 points (55.6% to 52.3%) while " +
-      key('swatch abc-talk', 'ABC talk &amp; news') + " rose from 7.4% to 8.8%.",
+      key('abc-talk', 'ABC talk &amp; news') + " rose from 7.4% to 8.8%.",
     stations: key('talk', 'Commercial talk') + " station 3AW leads with 13.4%. ABC Melbourne gained the most of any " +
       "Melbourne station since Survey 3, up 1.6 points to 5.7%.",
     top: "3AW was No. 1 in all four surveys, although its share dipped from 14.0% to 13.4%."
@@ -677,7 +677,7 @@ var CITY_INSIGHTS = {
   "Brisbane": {
     lead: "The closest race at the top: the No. 1 station changed twice in four surveys.",
     mix: key('music', 'Commercial music') + " fell the most of any city, down 4.8 points (56.6% to 51.8%), while " +
-      key('swatch unrated', 'unrated stations') + " rose to 27% of listening, the highest of the five cities.",
+      key('unrated', 'unrated stations') + " rose to 27% of listening, the highest of the five cities.",
     stations: "Talk is weakest here: 4BC 882, the only " + key('talk', 'commercial talk') + " station, has 4.1% and " +
       "ranks eighth, so all of the top five play music.",
     top: "Triple M led in Survey 3 (13.0%), B105 in Surveys 4 and 5 (12.0%), and 4BH 1116 in Survey 6 (12.3%). " +
@@ -685,7 +685,7 @@ var CITY_INSIGHTS = {
   },
   "Adelaide": {
     lead: "The strongest ABC talk audience of the five cities.",
-    mix: key('swatch abc-talk', 'ABC talk &amp; news') + " has 10.3% of listening, the highest of any city; with " +
+    mix: key('abc-talk', 'ABC talk &amp; news') + " has 10.3% of listening, the highest of any city; with " +
       "FIVEaa, talk and news reach 19%, level with Sydney and behind only Melbourne. " +
       key('music', 'Commercial music') + " fell 2.2 points (53.9% to 51.7%).",
     stations: "5MMM (Triple M) leads with 14.0%, 3.2 points ahead of NOVA91.9. KIIS1023 lost the most share " +
@@ -696,7 +696,7 @@ var CITY_INSIGHTS = {
   "Perth": {
     lead: "The only city where commercial music grew.",
     mix: key('music', 'Commercial music') + " rose 4.0 points (52.6% to 56.6%) while " +
-      key('swatch abc-talk', 'ABC talk &amp; news') + " fell from 9.8% to 6.2%. These are city totals, so they " +
+      key('abc-talk', 'ABC talk &amp; news') + " fell from 9.8% to 6.2%. These are city totals, so they " +
       "do not show individual listeners switching.",
     stations: "NOVA93.7 has 18.3%, the largest share of any station in the five cities. ABC Perth halved " +
       "since Survey 3, from 7.1% to 3.7%.",
@@ -747,21 +747,33 @@ function embedMarketChart(elementId, specUrl, adapt) {
   }).catch(console.error);
 }
 
-embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json", adaptChart10);
+embedResponsive('#c10', "js/chart10_program_mix_alluvial.vg.json", adaptChart10).catch(console.error);
 var treemapView = embedMarketChart('#c12', "js/chart12_station_treemap.vg.json");
 
-// The survey toolbar sticks just below the city picker; measure the picker so the two never overlap
-// (it wraps onto more lines on narrower screens, and is not sticky at all on phones).
-function setSurveyStickyTop() {
+// Chapter 4 stacks three sticky bars: the program key, the city picker under it, and the survey toolbar under
+// that. Measure the real heights (they wrap onto more lines on narrower screens) so the bars never overlap.
+// On phones the key and picker are not sticky, so the toolbar sits just under the navigation.
+function setChapter4StickyOffsets() {
+  var key = document.querySelector('#program-key');
   var picker = document.querySelector('#city-picker');
   var nav = document.querySelector('.topnav');
-  var top = getComputedStyle(picker).position === 'sticky'
-    ? parseFloat(getComputedStyle(picker).top) + picker.offsetHeight
-    : nav.offsetHeight;
-  document.documentElement.style.setProperty('--survey-sticky-top', Math.round(top + 8) + 'px');
+  picker.style.top = '';
+  var surveyTop = nav.offsetHeight;
+  if (getComputedStyle(picker).position === 'sticky') {
+    var pickerTop = parseFloat(getComputedStyle(key).top) + key.offsetHeight + 6;
+    picker.style.top = pickerTop + 'px';
+    surveyTop = pickerTop + picker.offsetHeight;
+  }
+  document.documentElement.style.setProperty('--survey-sticky-top', Math.round(surveyTop + 8) + 'px');
 }
-setSurveyStickyTop();
-window.addEventListener('resize', setSurveyStickyTop);
+setChapter4StickyOffsets();
+window.addEventListener('resize', setChapter4StickyOffsets);
+// measure again whenever a bar changes height (e.g. once the web fonts load and the text wraps differently)
+if ('ResizeObserver' in window) {
+  var stickyBarWatcher = new ResizeObserver(setChapter4StickyOffsets);
+  stickyBarWatcher.observe(document.querySelector('#program-key'));
+  stickyBarWatcher.observe(document.querySelector('#city-picker'));
+}
 
 // Chart 11: one sentence for the survey on the slider: the talk-and-news range and the city with the most music
 function describeSurvey(slices, survey) {
