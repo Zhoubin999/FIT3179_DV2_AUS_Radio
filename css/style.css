@@ -515,7 +515,8 @@ a {
   position: relative;
 }
 
-/* map notes have a white halo (stroke) so they stay readable where they cross land; draw it behind the letters */
+/* map notes (Chart 9) and radar ring labels (Chart 6) have a white halo (stroke); draw it behind the letters */
+#c06 svg text,
 #c09 svg text {
   paint-order: stroke;
 }

@@ -164,16 +164,19 @@
         },
         {
           "type": "text",
-          "description": "ring labels",
+          "description": "ring labels, on the empty diagonal between the Smart speaker and Walking spokes (both polygons stay under 20% there), each centred on its ring with a white halo",
           "from": {"data": "rings"},
           "encode": {
-            "enter": {
-              "x": {"value": 4},
-              "y": {"signal": "-scale('radial', datum.pct)"},
+            "update": {
+              "x": {"signal": "scale('radial', datum.pct) * cos((scale('angular', 'Smart speaker') + scale('angular', 'Walking')) / 2)"},
+              "y": {"signal": "scale('radial', datum.pct) * sin((scale('angular', 'Smart speaker') + scale('angular', 'Walking')) / 2)"},
               "text": {"signal": "datum.pct + '%'"},
-              "fill": {"value": "#7A8992"},
-              "fontSize": {"value": 12},
-              "baseline": {"value": "bottom"}
+              "align": {"value": "center"},
+              "baseline": {"value": "middle"},
+              "fill": {"value": "#5C7182"},
+              "stroke": {"value": "#FFFFFF"},
+              "strokeWidth": {"value": 4},
+              "fontSize": {"value": 12}
             }
           }
         },
