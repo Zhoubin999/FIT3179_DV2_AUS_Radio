@@ -395,6 +395,12 @@ a {
   justify-content: flex-start;
 }
 
+/* Chart 2: the heatmap and its legend sit at the bottom of the card, so the shorter plot lines up
+   with Chart 1's plot instead of floating in the middle */
+#card-c02 .chart-wrap {
+  justify-content: flex-end;
+}
+
 /* the waffles start at the card's left edge so their columns line up with the mosaic above */
 #c07 {
   align-items: flex-start;
@@ -817,51 +823,60 @@ a {
   color: var(--note);
 }
 
-/* Charts 11-12: survey title, how-to note and the slider + Play button that drive both cards */
-.survey-strip {
+/* Charts 11-12: one survey slider drives both cards. The compact toolbar sticks just below the city
+   picker (main.js sets --survey-sticky-top from the picker's real height) and only while .survey-pair
+   is on screen, so it is gone by Chart 13. The note and legend scroll normally. */
+.survey-pair {
   grid-column: 1 / -1;
+}
+
+.survey-toolbar {
+  position: sticky;
+  top: var(--survey-sticky-top, 132px);
+  z-index: 35;               /* below the city picker (40) */
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px 24px;
-  padding: 12px 20px;
+  gap: 6px 24px;
+  padding: 8px 18px;
   border: 2px solid #B7C7D6;
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--card);
+  /* the first shadow fills the gap under the city picker with page colour, so no chart text shows through */
+  box-shadow: 0 -10px 0 var(--paper), 0 4px 14px rgba(19, 45, 67, .12);
 }
 
-.survey-strip-text {
-  flex: 1 1 420px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.survey-strip-text strong {
+.survey-toolbar strong {
   font: 700 17px var(--font-head);
 }
 
-.survey-strip-note {
+.survey-toolbar .vega-bindings {
+  margin-top: 0;
+}
+
+.survey-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 24px;
+  margin: 10px 4px 14px;
+}
+
+.survey-note {
   font-size: 13px;
   font-style: italic;
   color: var(--note);
 }
 
-.survey-strip .vega-bindings {
-  margin-top: 0;
-}
-
 /* program-type key shared by the donut map and the treemap */
 .program-legend {
-  flex: 1 1 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 4px 18px;
   margin: 0;
-  padding: 8px 0 0;
+  padding: 0;
   list-style: none;
-  border-top: 1px solid var(--edge);
   font-size: 13px;
   color: var(--muted);
 }
@@ -875,6 +890,13 @@ a {
   border-radius: 2px;
   vertical-align: -1px;
   background: var(--swatch);
+}
+
+/* the two cards, side by side like the rest of the chart grid */
+.survey-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
 }
 
 /* thicker border and a badge mark the four linked charts */
@@ -986,6 +1008,7 @@ a {
 /* tablets and small laptops: one chart per row */
 @media (max-width: 1100px) {
   .chart-grid,
+  .survey-cards,
   .hero-inner {
     grid-template-columns: minmax(0, 1fr);
   }

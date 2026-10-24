@@ -281,18 +281,13 @@ var chart01 = embedResponsive('#c01', "js/chart01_listening_trend.vg.json", adap
 });
 var chart02 = embedResponsive('#c02', "js/chart02_streaming_services_heatmap.vg.json", adaptChart02);
 
-// Charts 1 and 2 share a row: stretch the heatmap so its bottom lines up with Chart 1's drop-down and Play button.
-// When the cards stack (narrow screens) the heatmap keeps the spec's own height.
+// Charts 1 and 2 share a row: give the heatmap the same plot height as Chart 1 (300 in its spec); CSS sits the
+// heatmap at the bottom of its card, so its rows line up with Chart 1's y-axis. When the cards stack (narrow
+// screens) it keeps the spec's own height.
+var HEATMAP_PLOT_HEIGHT = 300;
 function matchHeatmapHeight(heatmap) {
   var sideBySide = document.querySelector('#card-c01').offsetTop === document.querySelector('#card-c02').offsetTop;
-  var plotHeight = 200;
-  if (sideBySide) {
-    var chart1Bottom = document.querySelector('#c01 .vega-bindings').getBoundingClientRect().bottom;
-    var heatmapSvg = document.querySelector('#c02 svg').getBoundingClientRect();
-    var heatmapTop = document.querySelector('#c02').getBoundingClientRect().top + 10;   // top padding of .chart-wrap
-    plotHeight = heatmap.height() + (chart1Bottom - heatmapTop) - heatmapSvg.height;
-  }
-  heatmap.height(Math.max(200, Math.round(plotHeight))).runAsync();
+  heatmap.height(sideBySide ? HEATMAP_PLOT_HEIGHT : 200).runAsync();
 }
 
 Promise.all([chart01, chart02]).then(function (results) {
@@ -722,7 +717,20 @@ function embedMarketChart(elementId, specUrl, adapt) {
 embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json", adaptChart10);
 var treemapView = embedMarketChart('#c12', "js/chart12_station_treemap.vg.json");
 
-// Chart 11: one sentence comparing the five cities in the survey on the slider (lowest and highest of each group)
+// The survey toolbar sticks just below the city picker; measure the picker so the two never overlap
+// (it wraps onto more lines on narrower screens, and is not sticky at all on phones).
+function setSurveyStickyTop() {
+  var picker = document.querySelector('#city-picker');
+  var nav = document.querySelector('.topnav');
+  var top = getComputedStyle(picker).position === 'sticky'
+    ? parseFloat(getComputedStyle(picker).top) + picker.offsetHeight
+    : nav.offsetHeight;
+  document.documentElement.style.setProperty('--survey-sticky-top', Math.round(top + 8) + 'px');
+}
+setSurveyStickyTop();
+window.addEventListener('resize', setSurveyStickyTop);
+
+// Chart 11: one sentence for the survey on the slider: the talk-and-news range and the city with the most music
 function describeSurvey(slices, survey) {
   var cities = {};
   slices.forEach(function (slice) {
@@ -738,8 +746,9 @@ function describeSurvey(slices, survey) {
     var low = list[0], high = list[list.length - 1];
     return Math.round(low[field]) + '% in ' + low.market + ' to ' + Math.round(high[field]) + '% in ' + high.market;
   }
-  return 'In Survey ' + survey + ', music ranges from ' + range('music') + ', talk and news from ' + range('talk') +
-    ', and unrated stations from ' + range('other') + '.';
+  var musicLeader = list.slice().sort(function (a, b) { return b.music - a.music; })[0];
+  return 'In Survey ' + survey + ', talk and news ranges from ' + range('talk') + ', and ' + musicLeader.market +
+    ' has the largest music share (' + Math.round(musicLeader.music) + '%).';
 }
 
 embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json").then(function (view) {

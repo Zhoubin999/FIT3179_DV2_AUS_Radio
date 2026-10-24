@@ -126,7 +126,7 @@
           }
         },
         {
-          "description": "State labels with the value of the chosen measure.",
+          "description": "State labels with the value of the chosen measure. White only on the darkest fills; the ACT label sits offshore on the white background, so it is always dark.",
           "data": {
             "url": "data/australian_radio_data.csv",
             "format": {
@@ -162,10 +162,10 @@
             "text": {"field": "state_label"},
             "color": {
               "condition": {
-                "test": "datum.shown_value > datum.max_value * 0.45",
+                "test": "datum.state != 'ACT' && datum.shown_value > datum.max_value * 0.65",
                 "value": "#FFFFFF"
               },
-              "value": "#17374A"
+              "value": "#050A0D"
             }
           }
         }

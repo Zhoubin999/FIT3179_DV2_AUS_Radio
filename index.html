@@ -345,48 +345,53 @@
           <div id="c10" class="chart-wrap"></div>
         </article>
 
-        <!-- Survey strip: Chart 11's slider and Play button (moved here by main.js) drive Charts 11 and 12 -->
-        <div class="survey-strip">
-          <div class="survey-strip-text">
-            <strong>Showing GfK Survey <span class="survey-name">6</span>, 2026</strong>
-            <span class="survey-strip-note">The slider sets the survey for the map and the treemap; the alluvial and bump charts show Surveys 3 to 6. Click a donut to pick that city in all four linked charts.</span>
+        <!-- Charts 11-12 share one survey slider. The toolbar (slider + Play, moved here by main.js) stays
+             visible below the city picker while either chart is on screen, and stops at the end of this wrapper. -->
+        <div class="survey-pair">
+          <div class="survey-toolbar">
+            <strong>GfK Survey <span class="survey-name">6</span>, 2026</strong>
+            <div class="survey-controls" id="c11-controls"></div>
           </div>
-          <div class="survey-controls" id="c11-controls"></div>
-          <!-- shared colour key for the donuts and the treemap (same colours as the Vega "color" scale) -->
-          <ul class="program-legend" aria-label="Program type colours">
-            <li style="--swatch: #B5446E">Commercial music</li>
-            <li style="--swatch: #E8A6C0">ABC music</li>
-            <li style="--swatch: #94701A">Commercial talk &amp; news</li>
-            <li style="--swatch: #DDB453">ABC talk &amp; news</li>
-            <li style="--swatch: #7A6552">Sport</li>
-            <li style="--swatch: #D5DDE2">Other / unrated stations</li>
-          </ul>
+          <div class="survey-meta">
+            <span class="survey-note">The slider updates the map and treemap; click a donut to select a city.</span>
+            <!-- shared colour key for the donuts and the treemap (same colours as the Vega "color" scale) -->
+            <ul class="program-legend" aria-label="Program type colours">
+              <li style="--swatch: #B5446E">Commercial music</li>
+              <li style="--swatch: #E8A6C0">ABC music</li>
+              <li style="--swatch: #94701A">Commercial talk &amp; news</li>
+              <li style="--swatch: #DDB453">ABC talk &amp; news</li>
+              <li style="--swatch: #7A6552">Sport</li>
+              <li style="--swatch: #D5DDE2">Other / unrated stations</li>
+            </ul>
+          </div>
+
+          <div class="survey-cards">
+            <!-- Chart 11: donut-glyph map with a survey slider (Vega, linked) - js/chart11_program_mix_donut_map.vg.json -->
+
+            <article class="chart-card linked paired">
+              <p class="linked-badge">&#128279; Linked &middot; <span class="market-name">Melbourne</span> outlined</p>
+              <h3 class="card-heading">Each city has its own listening mix</h3>
+              <p class="interpretation">
+                Music dominates all five cities, but <span class="key talk">talk and news</span> and unrated listening distinguish them.
+                <!-- Filled by main.js for the survey on the slider; this is the Survey 6 text -->
+                <span id="c11-finding">In Survey 6, talk and news ranges from 13% in Brisbane to 22% in Melbourne, and Perth has the largest music share (64%).</span>
+              </p>
+              <div id="c11" class="chart-wrap"></div>
+            </article>
+
+            <!-- Chart 12: treemap (Vega, linked) - js/chart12_station_treemap.vg.json -->
+
+            <article class="chart-card linked paired">
+              <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span></p>
+              <h3 class="card-heading">Which stations make up <span class="market-name">Melbourne</span>'s mix in Survey <span class="survey-name">6</span>?</h3>
+              <p class="interpretation">
+                <span class="key music">Music</span> listening is split among several individually rated stations, while a single <span class="key talk">commercial talk station</span> can lead a local market.
+                Box areas leave out listening not attributed to rated stations.
+              </p>
+              <div id="c12" class="chart-wrap"></div>
+            </article>
+          </div>
         </div>
-
-        <!-- Chart 11: donut-glyph map with a survey slider (Vega, linked) - js/chart11_program_mix_donut_map.vg.json -->
-
-        <article class="chart-card linked paired">
-          <p class="linked-badge">&#128279; Linked &middot; <span class="market-name">Melbourne</span> outlined &middot; Survey <span class="survey-name">6</span> (slider above)</p>
-          <h3 class="card-heading">Each city has its own listening mix</h3>
-          <p class="interpretation">
-            Music is the largest share of radio listening in every city. <span class="key talk">Talk and news</span>, and the share going to unrated stations, are important sources of difference between cities.
-            <!-- Filled by main.js for the survey on the slider; this is the Survey 6 text -->
-            <span id="c11-finding">In Survey 6, music ranges from 57% in Sydney to 64% in Perth, talk and news from 13% in Brisbane to 22% in Melbourne, and unrated stations from 16% in Melbourne to 27% in Brisbane.</span>
-          </p>
-          <div id="c11" class="chart-wrap"></div>
-        </article>
-
-        <!-- Chart 12: treemap (Vega, linked) - js/chart12_station_treemap.vg.json -->
-
-        <article class="chart-card linked paired">
-          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Survey <span class="survey-name">6</span> (slider above)</p>
-          <h3 class="card-heading">Which stations make up <span class="market-name">Melbourne</span>'s mix in Survey <span class="survey-name">6</span>?</h3>
-          <p class="interpretation">
-            In every city, <span class="key music">commercial music</span> is split across five to eight individually rated stations, while <span class="key talk">commercial talk and news</span> is a single rated station,
-            so a city's leading station need not come from its largest program type. Box areas cover rated stations only; the &ldquo;Other / unrated&rdquo; share is left out.
-          </p>
-          <div id="c12" class="chart-wrap"></div>
-        </article>
 
         <!-- Chart 13: bump chart (linked) - js/chart13_station_rank_bump.vg.json -->
 
@@ -396,7 +401,7 @@
           <p class="interpretation">
             The top of the ratings rarely changes: four cities kept the same No. 1 in all four surveys, and only Melbourne's is a <span class="key talk">talk station</span>.
             Brisbane is the exception, where the top spot changed hands twice (Triple M, then B105, then 4BH 1116) with the leaders within 1.7 points.
-            Growth is possible, though: Perth's NOVA93.7 rose in every survey, from 14.9% to 18.3%.
+            Leadership was stable, but individual shares still changed: Perth's NOVA93.7 rose from 14.9% to 18.3% across the four surveys.
           </p>
           <div id="c13" class="chart-wrap"></div>
         </article>
