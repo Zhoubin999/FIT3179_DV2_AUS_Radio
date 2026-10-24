@@ -382,6 +382,19 @@ a {
   align-items: center;
 }
 
+/* Charts 11 and 12: the two cards share row lines (subgrid), so the treemap starts level with the map
+   however the text above them wraps; the treemap sits at the top of its space instead of the middle */
+.chart-card.paired {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+}
+
+.chart-grid .chart-card.paired .chart-wrap {
+  justify-content: flex-start;
+}
+
 /* the waffles start at the card's left edge so their columns line up with the mosaic above */
 #c07 {
   align-items: flex-start;

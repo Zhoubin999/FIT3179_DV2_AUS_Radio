@@ -721,18 +721,19 @@ function embedMarketChart(elementId, specUrl, adapt) {
 }
 
 embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json", adaptChart10);
+var treemapView = embedMarketChart('#c12', "js/chart12_station_treemap.vg.json");
 embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json").then(function (view) {
-  // step the survey slider from Survey 3 to Survey 6
-  // the badge says which survey the donuts show, so it is clear Charts 12-13 stay on their own surveys
+  // the survey slider drives the donuts and the treemap; the badges and treemap heading name the survey shown
   view.addSignalListener('Survey_pick', function (name, value) {
     document.querySelectorAll('.survey-name').forEach(function (span) { span.textContent = value; });
+    treemapView.then(function (treemap) { treemap.signal('Survey_pick', value).runAsync(); });
   });
+  // step the survey slider from Survey 3 to Survey 6
   addPlayButton('#c11', view, {
     label: "\u25B6 Play Surveys 3 \u2192 6", signal: "Survey_pick", delay: 1100,
     steps: [3, 4, 5, 6]
   });
 });
-embedMarketChart('#c12', "js/chart12_station_treemap.vg.json");
 embedMarketChart('#c13', "js/chart13_station_rank_bump.vg.json");
 
 cityButtons.forEach(function (button) {

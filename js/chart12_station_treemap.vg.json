@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
-  "description": "Chapter 4 - treemap (Vega, linked to the city buttons). Every rated station in the selected city, grouped by program type and sized by its share of listening in Survey 6 (GfK). Tooltip shows the change since Survey 5.",
-  "height": 470,
+  "description": "Chapter 4 - treemap (Vega, linked to the city buttons). Every rated station in the selected city, grouped by program type and sized by its share of listening in the GfK survey chosen on the Chart 11 slider (Surveys 3-6). Tooltip shows the change since the survey before.",
+  "height": 540,
   "padding": 10,
   "autosize": "none",
   "signals": [
@@ -20,11 +20,16 @@
       "description": "Selected city; main.js sets it when a city button is clicked.",
       "name": "SelectedMarket",
       "value": "Melbourne"
+    },
+    {
+      "description": "Survey shown (3 to 6); main.js copies it from the Chart 11 slider.",
+      "name": "Survey_pick",
+      "value": 6
     }
   ],
   "data": [
     {
-      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep the selected city's stations in Surveys 5 and 6 and compute the change.",
+      "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page. Keep the selected city's stations in the chosen survey and the one before, and compute the change.",
       "name": "stations",
       "url": "data/australian_radio_data.csv",
       "format": {
@@ -35,7 +40,7 @@
         {"type": "filter", "expr": "datum.dataset == 'Station ratings'"},
         {
           "type": "filter",
-          "expr": "datum.market == SelectedMarket && (datum.survey == 5 || datum.survey == 6)"
+          "expr": "datum.market == SelectedMarket && (datum.survey == Survey_pick || datum.survey == Survey_pick - 1)"
         },
         {
           "type": "pivot",
@@ -43,11 +48,11 @@
           "value": "share",
           "groupby": ["market", "station", "program_format"]
         },
-        {"type": "formula", "as": "share", "expr": "datum['6']"},
+        {"type": "formula", "as": "share", "expr": "datum[Survey_pick]"},
         {
           "type": "formula",
           "as": "change",
-          "expr": "round((datum['6'] - datum['5']) * 10) / 10"
+          "expr": "Survey_pick > 3 ? round((datum[Survey_pick] - datum[Survey_pick - 1]) * 10) / 10 : null"
         },
         {"type": "formula", "as": "id", "expr": "datum.station"},
         {"type": "formula", "as": "parent", "expr": "datum.program_format"}
@@ -191,7 +196,7 @@
           "stroke": {"value": "#FFFFFF"},
           "strokeWidth": {"value": 1},
           "tooltip": {
-            "signal": "{'Station': datum.station, 'Program type': datum.program_format, 'Share in Survey 6 (%)': datum.share, 'Change since Survey 5 (points)': (datum.change > 0 ? '+' : '') + datum.change}"
+            "signal": "{'Station': datum.station, 'Program type': datum.program_format, 'Survey': Survey_pick, 'Share (%)': datum.share, 'Change since the survey before (points)': datum.change == null ? 'n/a (first survey shown)' : (datum.change > 0 ? '+' : '') + datum.change}"
           }
         }
       }

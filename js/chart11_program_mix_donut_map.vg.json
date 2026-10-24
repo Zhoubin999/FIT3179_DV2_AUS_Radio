@@ -1,7 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "Chapter 4 - donut-glyph map (Vega, linked to the city buttons). Each donut splits one capital city's radio listening by program type in the GfK survey chosen with the slider (Surveys 3-6). Donuts sit offshore with a leader line to the city; the selected city gets a dark ring, and clicking a donut selects that city in all four linked charts.",
-  "height": 470,
   "padding": 10,
   "autosize": "none",
   "signals": [
@@ -17,6 +16,16 @@
       ]
     },
     {
+      "description": "Phone layout: the map fills the width and the donuts sit in a grid under it, instead of offshore beside their cities.",
+      "name": "narrow",
+      "update": "width < 420"
+    },
+    {
+      "description": "Chart height: taller on phones to fit the donut grid under the map.",
+      "name": "height",
+      "update": "narrow ? 830 : 540"
+    },
+    {
       "description": "Selected city; main.js sets it when a city button is clicked.",
       "name": "SelectedMarket",
       "value": "Melbourne"
@@ -30,11 +39,11 @@
   ],
   "projections": [
     {
-      "description": "Mercator projection fitted to Australia.",
+      "description": "Mercator projection fitted to Australia, below the title and annotation band.",
       "name": "projection",
       "type": "mercator",
       "fit": {"signal": "data('states')"},
-      "extent": {"signal": "[[75, 10], [width - 150, height - 120]]"}
+      "extent": {"signal": "narrow ? [[20, 125], [width - 20, 335]] : [[75, 80], [width - 150, height - 120]]"}
     }
   ],
   "data": [
@@ -117,13 +126,18 @@
         },
         {
           "type": "formula",
+          "as": "grid_index",
+          "expr": "indexof(['Perth', 'Adelaide', 'Melbourne', 'Sydney', 'Brisbane'], datum.market)"
+        },
+        {
+          "type": "formula",
           "as": "cx",
-          "expr": "datum.px + (datum.market == 'Sydney' ? 80 : datum.market == 'Brisbane' ? 75 : datum.market == 'Adelaide' ? -55 : 0)"
+          "expr": "narrow ? (datum.grid_index == 4 ? width / 2 : datum.grid_index % 2 == 0 ? width * 0.25 : width * 0.75) : datum.px + (datum.market == 'Sydney' ? 80 : datum.market == 'Brisbane' ? 75 : datum.market == 'Adelaide' ? -55 : 0)"
         },
         {
           "type": "formula",
           "as": "cy",
-          "expr": "datum.py + (datum.market == 'Sydney' ? 25 : datum.market == 'Brisbane' ? -30 : datum.market == 'Adelaide' ? 60 : datum.market == 'Melbourne' ? 75 : 0)"
+          "expr": "narrow ? 392 + floor(datum.grid_index / 2) * 112 : datum.py + (datum.market == 'Sydney' ? 25 : datum.market == 'Brisbane' ? -30 : datum.market == 'Adelaide' ? 60 : datum.market == 'Melbourne' ? 75 : 0)"
         }
       ]
     },
@@ -203,7 +217,7 @@
     },
     {
       "type": "rule",
-      "description": "leader line from the city to its donut",
+      "description": "leader line from the city to its donut (not on phones, where the donuts sit in a grid)",
       "from": {"data": "cities"},
       "encode": {
         "update": {
@@ -212,7 +226,8 @@
           "x2": {"field": "cx"},
           "y2": {"field": "cy"},
           "stroke": {"value": "#7A8992"},
-          "strokeWidth": {"value": 1}
+          "strokeWidth": {"value": 1},
+          "strokeOpacity": {"signal": "narrow ? 0 : 1"}
         }
       }
     },
@@ -226,6 +241,25 @@
           "y": {"field": "py"},
           "size": {"value": 30},
           "fill": {"value": "#132D43"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "Phones only: city name beside its dot, since there are no leader lines to the donut grid.",
+      "from": {"data": "cities"},
+      "encode": {
+        "update": {
+          "x": {"field": "px"},
+          "y": {"field": "py"},
+          "dx": {"signal": "datum.market == 'Adelaide' ? -7 : datum.market == 'Melbourne' ? 0 : 7"},
+          "dy": {"signal": "datum.market == 'Melbourne' ? 12 : 0"},
+          "align": {"signal": "datum.market == 'Adelaide' ? 'right' : datum.market == 'Melbourne' ? 'center' : 'left'"},
+          "baseline": {"signal": "datum.market == 'Melbourne' ? 'top' : 'middle'"},
+          "text": {"signal": "narrow ? datum.market : ''"},
+          "fontSize": {"value": 12},
+          "fontWeight": {"signal": "datum.market == SelectedMarket ? 'bold' : 'normal'"},
+          "fill": {"value": "#1F3545"}
         }
       }
     },
@@ -328,6 +362,22 @@
           "fontSize": {"value": 15},
           "fontWeight": {"value": "bold"},
           "fill": {"value": "#1F3545"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "Annotation under the title: how this map drives the other linked charts (shorter lines on phones).",
+      "encode": {
+        "update": {
+          "x": {"value": 0},
+          "y": {"value": 26},
+          "baseline": {"value": "top"},
+          "text": {"signal": "width < 420 ? ['Click a donut to pick that city', 'in all four linked charts.', 'The slider sets the survey here and', 'in the treemap; the alluvial and', 'bump charts show Surveys 3 to 6.'] : ['Click a donut to pick that city in all four linked charts.', 'The slider sets the survey here and in the treemap;', 'the alluvial and bump charts show Surveys 3 to 6.']"},
+          "fontSize": {"value": 13},
+          "fontStyle": {"value": "italic"},
+          "lineHeight": {"value": 17},
+          "fill": {"value": "#5C7182"}
         }
       }
     }
