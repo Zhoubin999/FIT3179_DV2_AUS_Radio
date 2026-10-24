@@ -18,7 +18,7 @@
     {
       "description": "Map height from its width (same rule as the Chart 9 map, so both maps are the same size).",
       "name": "height",
-      "update": "clamp(round(width * 0.78), 340, 640)"
+      "update": "clamp(round(width * 0.78), 340, 440)"
     },
     {
       "name": "view_lon",

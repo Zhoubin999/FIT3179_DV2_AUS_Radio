@@ -126,7 +126,7 @@ function embedMapWithBars(elementId, specUrl) {
     if (!window.matchMedia('(max-width: 900px)').matches) {
       // side by side: map column | gap | right column, exactly as in Chart 8 above
       map.width = cardWidth - rightColumn - gap;
-      map.height = Math.min(640, Math.round(map.width * 0.78));   // same height rule as Chart 8's map
+      map.height = Math.min(440, Math.round(map.width * 0.78));   // same height rule as Chart 8's map
       side.width = rightColumn - 95;                    // leaves room for state codes and value labels
       side.height = map.height - 40;
       // the colour legend sits inside the map, in the empty sea south of Western Australia
@@ -142,7 +142,7 @@ function embedMapWithBars(elementId, specUrl) {
       side.encoding.y.axis.orient = "right";
       side.width = cardWidth - 165;
       side.height = 360;
-      map.height = Math.max(340, Math.min(640, Math.round(map.width * 0.78)));   // Chart 8's height rule
+      map.height = Math.max(340, Math.min(440, Math.round(map.width * 0.78)));   // Chart 8's height rule
       legend.orient = "bottom";
       // phones: shorter legend and a two-line "Showing" title so nothing is wider than the card
       legend.title = "Darker = higher value";
@@ -757,6 +757,8 @@ embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json").then(functi
     label: "\u25B6 Play Surveys 3 \u2192 6", signal: "Survey_pick", delay: 1100,
     steps: [3, 4, 5, 6]
   });
+  // the slider drives Charts 11 and 12, so its controls sit in the strip above both cards
+  document.querySelector('#c11-controls').appendChild(document.querySelector('#c11 .vega-bindings'));
 });
 embedMarketChart('#c13', "js/chart13_station_rank_bump.vg.json");
 

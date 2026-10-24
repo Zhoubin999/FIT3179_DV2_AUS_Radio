@@ -345,10 +345,28 @@
           <div id="c10" class="chart-wrap"></div>
         </article>
 
+        <!-- Survey strip: Chart 11's slider and Play button (moved here by main.js) drive Charts 11 and 12 -->
+        <div class="survey-strip">
+          <div class="survey-strip-text">
+            <strong>Showing GfK Survey <span class="survey-name">6</span>, 2026</strong>
+            <span class="survey-strip-note">The slider sets the survey for the map and the treemap; the alluvial and bump charts show Surveys 3 to 6. Click a donut to pick that city in all four linked charts.</span>
+          </div>
+          <div class="survey-controls" id="c11-controls"></div>
+          <!-- shared colour key for the donuts and the treemap (same colours as the Vega "color" scale) -->
+          <ul class="program-legend" aria-label="Program type colours">
+            <li style="--swatch: #B5446E">Commercial music</li>
+            <li style="--swatch: #E8A6C0">ABC music</li>
+            <li style="--swatch: #94701A">Commercial talk &amp; news</li>
+            <li style="--swatch: #DDB453">ABC talk &amp; news</li>
+            <li style="--swatch: #7A6552">Sport</li>
+            <li style="--swatch: #D5DDE2">Other / unrated stations</li>
+          </ul>
+        </div>
+
         <!-- Chart 11: donut-glyph map with a survey slider (Vega, linked) - js/chart11_program_mix_donut_map.vg.json -->
 
         <article class="chart-card linked paired">
-          <p class="linked-badge">&#128279; Linked &middot; <span class="market-name">Melbourne</span> outlined &middot; Survey <span class="survey-name">6</span> (slider)</p>
+          <p class="linked-badge">&#128279; Linked &middot; <span class="market-name">Melbourne</span> outlined &middot; Survey <span class="survey-name">6</span> (slider above)</p>
           <h3 class="card-heading">Each city has its own listening mix</h3>
           <p class="interpretation">
             Music is the largest share of radio listening in every city. <span class="key talk">Talk and news</span>, and the share going to unrated stations, are important sources of difference between cities.
@@ -361,7 +379,7 @@
         <!-- Chart 12: treemap (Vega, linked) - js/chart12_station_treemap.vg.json -->
 
         <article class="chart-card linked paired">
-          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Survey <span class="survey-name">6</span> (map slider)</p>
+          <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Survey <span class="survey-name">6</span> (slider above)</p>
           <h3 class="card-heading">Which stations make up <span class="market-name">Melbourne</span>'s mix in Survey <span class="survey-name">6</span>?</h3>
           <p class="interpretation">
             In every city, <span class="key music">commercial music</span> is split across five to eight individually rated stations, while <span class="key talk">commercial talk and news</span> is a single rated station,

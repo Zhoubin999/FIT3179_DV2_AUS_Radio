@@ -608,9 +608,9 @@ a {
   align-items: start;
 }
 
-/* side panel: list of states (Australia view) or sites (state view) */
+/* side panel: list of states (Australia view) or sites (state view); no taller than the map */
 .zoom-panel {
-  max-height: 640px;
+  max-height: 440px;
   overflow-y: auto;
   margin-left: -12px;        /* divider sits in the middle of the gap, text starts on the column line */
   padding-left: 12px;
@@ -815,6 +815,66 @@ a {
   letter-spacing: .04em;
   text-transform: uppercase;
   color: var(--note);
+}
+
+/* Charts 11-12: survey title, how-to note and the slider + Play button that drive both cards */
+.survey-strip {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 24px;
+  padding: 12px 20px;
+  border: 2px solid #B7C7D6;
+  border-radius: 14px;
+  background: var(--card);
+}
+
+.survey-strip-text {
+  flex: 1 1 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.survey-strip-text strong {
+  font: 700 17px var(--font-head);
+}
+
+.survey-strip-note {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--note);
+}
+
+.survey-strip .vega-bindings {
+  margin-top: 0;
+}
+
+/* program-type key shared by the donut map and the treemap */
+.program-legend {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0;
+  padding: 8px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--edge);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.program-legend li::before {
+  content: "";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 6px;
+  border-radius: 2px;
+  vertical-align: -1px;
+  background: var(--swatch);
 }
 
 /* thicker border and a badge mark the four linked charts */

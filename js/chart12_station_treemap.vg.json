@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "Chapter 4 - treemap (Vega, linked to the city buttons). Every rated station in the selected city, grouped by program type and sized by its share of listening in the GfK survey chosen on the Chart 11 slider (Surveys 3-6). Tooltip shows the change since the survey before.",
-  "height": 540,
+  "height": 395,
   "padding": 10,
   "autosize": "none",
   "signals": [

@@ -23,7 +23,7 @@
     {
       "description": "Chart height: taller on phones to fit the donut grid under the map.",
       "name": "height",
-      "update": "narrow ? 830 : 540"
+      "update": "narrow ? 580 : 395"
     },
     {
       "description": "Selected city; main.js sets it when a city button is clicked.",
@@ -39,11 +39,11 @@
   ],
   "projections": [
     {
-      "description": "Mercator projection fitted to Australia, below the title and annotation band.",
+      "description": "Mercator projection fitted to Australia.",
       "name": "projection",
       "type": "mercator",
       "fit": {"signal": "data('states')"},
-      "extent": {"signal": "narrow ? [[20, 125], [width - 20, 335]] : [[75, 80], [width - 150, height - 120]]"}
+      "extent": {"signal": "narrow ? [[20, 10], [width - 20, 220]] : [[75, 10], [width - 150, height - 120]]"}
     }
   ],
   "data": [
@@ -137,7 +137,7 @@
         {
           "type": "formula",
           "as": "cy",
-          "expr": "narrow ? 392 + floor(datum.grid_index / 2) * 112 : datum.py + (datum.market == 'Sydney' ? 25 : datum.market == 'Brisbane' ? -30 : datum.market == 'Adelaide' ? 60 : datum.market == 'Melbourne' ? 75 : 0)"
+          "expr": "narrow ? 277 + floor(datum.grid_index / 2) * 112 : datum.py + (datum.market == 'Sydney' ? 25 : datum.market == 'Brisbane' ? -30 : datum.market == 'Adelaide' ? 60 : datum.market == 'Melbourne' ? 75 : 0)"
         }
       ]
     },
@@ -173,7 +173,7 @@
   ],
   "scales": [
     {
-      "description": "Program-type colours, shared with Charts 10, 12 and 13.",
+      "description": "Program-type colours, shared with Charts 10, 12 and 13 (legend in the survey strip above Charts 11-12).",
       "name": "color",
       "type": "ordinal",
       "domain": [
@@ -185,18 +185,6 @@
         "Other / unrated stations"
       ],
       "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#7A6552", "#D5DDE2"]
-    }
-  ],
-  "legends": [
-    {
-      "description": "Program-type legend in the bottom-left corner (one column on phones).",
-      "fill": "color",
-      "orient": "bottom-left",
-      "columns": {"signal": "width < 420 ? 1 : 2"},
-      "symbolType": "square",
-      "labelFontSize": 13,
-      "title": "Program type",
-      "titleFontSize": 12
     }
   ],
   "marks": [
@@ -347,37 +335,6 @@
           "fontWeight": {"signal": "datum.market == SelectedMarket ? 'bold' : 'normal'"},
           "lineHeight": {"value": 16},
           "fill": {"value": "#1F3545"}
-        }
-      }
-    },
-    {
-      "type": "text",
-      "description": "Which survey is shown (follows the slider).",
-      "encode": {
-        "update": {
-          "x": {"value": 0},
-          "y": {"value": 0},
-          "baseline": {"value": "top"},
-          "text": {"signal": "'Showing GfK Survey ' + Survey_pick + ', 2026'"},
-          "fontSize": {"value": 15},
-          "fontWeight": {"value": "bold"},
-          "fill": {"value": "#1F3545"}
-        }
-      }
-    },
-    {
-      "type": "text",
-      "description": "Annotation under the title: how this map drives the other linked charts (shorter lines on phones).",
-      "encode": {
-        "update": {
-          "x": {"value": 0},
-          "y": {"value": 26},
-          "baseline": {"value": "top"},
-          "text": {"signal": "width < 420 ? ['Click a donut to pick that city', 'in all four linked charts.', 'The slider sets the survey here and', 'in the treemap; the alluvial and', 'bump charts show Surveys 3 to 6.'] : ['Click a donut to pick that city in all four linked charts.', 'The slider sets the survey here and in the treemap;', 'the alluvial and bump charts show Surveys 3 to 6.']"},
-          "fontSize": {"value": 13},
-          "fontStyle": {"value": "italic"},
-          "lineHeight": {"value": 17},
-          "fill": {"value": "#5C7182"}
         }
       }
     }
