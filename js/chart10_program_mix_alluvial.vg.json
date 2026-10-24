@@ -122,7 +122,7 @@
           "Sport",
           "Other / unrated stations"
         ],
-        "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#7A6552", "#D5DDE2"]
+        "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#5B5FA8", "#D5DDE2"]
       },
       "legend": null
     }

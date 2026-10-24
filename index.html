@@ -319,6 +319,15 @@
           <button type="button" class="city-button" data-market="Adelaide">Adelaide</button>
           <button type="button" class="city-button" data-market="Perth">Perth</button>
         </div>
+        <!-- program-type colours used by all four linked charts (same as the Vega "color" scales) -->
+        <ul class="program-legend" aria-label="Program type colours">
+          <li style="--swatch: #B5446E">Commercial music</li>
+          <li style="--swatch: #E8A6C0">ABC music</li>
+          <li style="--swatch: #94701A">Commercial talk &amp; news</li>
+          <li style="--swatch: #DDB453">ABC talk &amp; news</li>
+          <li style="--swatch: #5B5FA8">Sport</li>
+          <li style="--swatch: #D5DDE2">Other / unrated stations</li>
+        </ul>
       </div>
 
       <!-- City commentary: main.js fills it with what stands out in the selected city (figures from the merged CSV) -->
@@ -349,22 +358,12 @@
              visible below the city picker while either chart is on screen, and stops at the end of this wrapper. -->
         <div class="survey-pair">
           <div class="survey-toolbar">
-            <strong>GfK Survey <span class="survey-name">6</span>, 2026</strong>
+            <div class="survey-toolbar-text">
+              <strong>GfK Survey <span class="survey-name">6</span>, 2026</strong>
+              <span class="survey-note">The slider updates the map and treemap; click a donut to select a city.</span>
+            </div>
             <div class="survey-controls" id="c11-controls"></div>
           </div>
-          <div class="survey-meta">
-            <span class="survey-note">The slider updates the map and treemap; click a donut to select a city.</span>
-            <!-- shared colour key for the donuts and the treemap (same colours as the Vega "color" scale) -->
-            <ul class="program-legend" aria-label="Program type colours">
-              <li style="--swatch: #B5446E">Commercial music</li>
-              <li style="--swatch: #E8A6C0">ABC music</li>
-              <li style="--swatch: #94701A">Commercial talk &amp; news</li>
-              <li style="--swatch: #DDB453">ABC talk &amp; news</li>
-              <li style="--swatch: #7A6552">Sport</li>
-              <li style="--swatch: #D5DDE2">Other / unrated stations</li>
-            </ul>
-          </div>
-
           <div class="survey-cards">
             <!-- Chart 11: donut-glyph map with a survey slider (Vega, linked) - js/chart11_program_mix_donut_map.vg.json -->
 

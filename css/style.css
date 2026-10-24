@@ -772,6 +772,32 @@ a {
 }
 
 /* the city currently shown */
+/* program-type key on its own line under the city buttons; light text and outlined swatches on the dark bar */
+.program-legend {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin: 0;
+  padding: 8px 0 0;
+  list-style: none;
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  font-size: 13px;
+  color: #DCE6EE;
+}
+
+.program-legend li::before {
+  content: "";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 6px;
+  border-radius: 2px;
+  vertical-align: -1px;
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .55);
+}
+
 .city-button.active {
   background: #FFFFFF;
   border-color: #FFFFFF;
@@ -855,12 +881,12 @@ a {
   margin-top: 0;
 }
 
-.survey-meta {
+/* survey title with the short how-to note beside it, sharing its baseline */
+.survey-toolbar-text {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 24px;
-  margin: 10px 4px 14px;
+  align-items: baseline;
+  gap: 2px 14px;
 }
 
 .survey-note {
@@ -869,34 +895,12 @@ a {
   color: var(--note);
 }
 
-/* program-type key shared by the donut map and the treemap */
-.program-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 18px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.program-legend li::before {
-  content: "";
-  display: inline-block;
-  width: 11px;
-  height: 11px;
-  margin-right: 6px;
-  border-radius: 2px;
-  vertical-align: -1px;
-  background: var(--swatch);
-}
-
 /* the two cards, side by side like the rest of the chart grid */
 .survey-cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 22px;
+  margin-top: 14px;
 }
 
 /* thicker border and a badge mark the four linked charts */
