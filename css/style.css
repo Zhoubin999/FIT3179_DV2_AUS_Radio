@@ -554,7 +554,8 @@ a {
 .key.talk     { color: #8A6416; }   /* commercial talk & news */
 .key.base     { color: #6B7A86; }   /* grey bars in Chart 9 (darker than the bars so the text is readable) */
 
-/* light colours are too pale for text, so these get a colour swatch instead */
+/* light colours are too pale for text: these show the mark's colour as a swatch, and the words use a darker
+   shade of the same colour (at least 4.5:1 on white and on the light commentary box) */
 .key.swatch::before {
   content: "";
   display: inline-block;
@@ -565,10 +566,10 @@ a {
   background: var(--swatch);
 }
 
-.key.infill { --swatch: #8FB3D6; }
-.key.abc-talk  { --swatch: #DDB453; }
-.key.abc-music { --swatch: #E8A6C0; }
-.key.unrated   { --swatch: #D5DDE2; }
+.key.infill    { --swatch: #8FB3D6; color: #3470AA; }
+.key.abc-talk  { --swatch: #78B84A; color: #4A7928; }
+.key.abc-music { --swatch: #E8A6C0; }   /* not used in the text; a readable dark pink would look like commercial music */
+.key.unrated   { --swatch: #D5DDE2; color: #557182; }
 .key.unrated::before { box-shadow: inset 0 0 0 1px #8A99A6; }   /* pale grey needs an outline */
 
 

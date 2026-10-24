@@ -122,7 +122,7 @@
           "Sport",
           "Other / unrated stations"
         ],
-        "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#5B5FA8", "#D5DDE2"]
+        "range": ["#B5446E", "#E8A6C0", "#94701A", "#78B84A", "#00B5C9", "#D5DDE2"]
       },
       "legend": null
     }
@@ -180,7 +180,7 @@
         "text": {"field": "type_share", "type": "quantitative", "format": ".1f"},
         "color": {
           "condition": {
-            "test": "datum.program_format == 'Commercial music' || datum.program_format == 'Commercial talk & news' || datum.program_format == 'Sport'",
+            "test": "datum.program_format == 'Commercial music' || datum.program_format == 'Commercial talk & news'",
             "value": "#FFFFFF"
           },
           "value": "#14212D"

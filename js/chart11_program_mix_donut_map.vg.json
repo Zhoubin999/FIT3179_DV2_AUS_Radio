@@ -43,7 +43,7 @@
       "name": "projection",
       "type": "mercator",
       "fit": {"signal": "data('states')"},
-      "extent": {"signal": "narrow ? [[20, 10], [width - 20, 220]] : [[75, 10], [width - 150, height - 120]]"}
+      "extent": {"signal": "narrow ? [[20, 10], [width - 20, 220]] : [[45, 0], [width - 130, height - 100]]"}
     }
   ],
   "data": [
@@ -132,12 +132,12 @@
         {
           "type": "formula",
           "as": "cx",
-          "expr": "narrow ? (datum.grid_index == 4 ? width / 2 : datum.grid_index % 2 == 0 ? width * 0.25 : width * 0.75) : datum.px + (datum.market == 'Sydney' ? 80 : datum.market == 'Brisbane' ? 75 : datum.market == 'Adelaide' ? -55 : 0)"
+          "expr": "narrow ? (datum.grid_index == 4 ? width / 2 : datum.grid_index % 2 == 0 ? width * 0.25 : width * 0.75) : datum.px + (datum.market == 'Sydney' ? 88 : datum.market == 'Brisbane' ? 83 : datum.market == 'Adelaide' ? -62 : 0)"
         },
         {
           "type": "formula",
           "as": "cy",
-          "expr": "narrow ? 277 + floor(datum.grid_index / 2) * 112 : datum.py + (datum.market == 'Sydney' ? 25 : datum.market == 'Brisbane' ? -30 : datum.market == 'Adelaide' ? 60 : datum.market == 'Melbourne' ? 75 : 0)"
+          "expr": "narrow ? 277 + floor(datum.grid_index / 2) * 112 : datum.py + (datum.market == 'Sydney' ? 28 : datum.market == 'Brisbane' ? -34 : datum.market == 'Adelaide' ? 72 : datum.market == 'Melbourne' ? 80 : 0)"
         }
       ]
     },
@@ -184,7 +184,7 @@
         "Sport",
         "Other / unrated stations"
       ],
-      "range": ["#B5446E", "#E8A6C0", "#94701A", "#DDB453", "#5B5FA8", "#D5DDE2"]
+      "range": ["#B5446E", "#E8A6C0", "#94701A", "#78B84A", "#00B5C9", "#D5DDE2"]
     }
   ],
   "marks": [
@@ -259,7 +259,7 @@
         "update": {
           "x": {"field": "cx"},
           "y": {"field": "cy"},
-          "size": {"value": 3600},
+          "size": {"signal": "narrow ? 3600 : 5184"},
           "fill": {"value": "transparent"},
           "stroke": {"value": "#132D43"},
           "strokeWidth": {"signal": "datum.market == SelectedMarket ? 3 : 0"}
@@ -301,13 +301,13 @@
           "from": {"data": "city_pie"},
           "encode": {
             "enter": {
-              "innerRadius": {"value": 13},
-              "outerRadius": {"value": 27},
               "stroke": {"value": "#FFFFFF"},
               "strokeWidth": {"value": 1},
               "cursor": {"value": "pointer"}
             },
             "update": {
+              "innerRadius": {"signal": "narrow ? 13 : 16"},
+              "outerRadius": {"signal": "narrow ? 27 : 33"},
               "startAngle": {"field": "startAngle"},
               "endAngle": {"field": "endAngle"},
               "fill": {"scale": "color", "field": "program_format"},
@@ -322,12 +322,29 @@
     },
     {
       "type": "text",
+      "description": "Annotation in the empty space above the Brisbane donut, on the same line as the treemap's first group label beside it (y 37 = the treemap's 22px top padding + 15, alphabetic baseline, same chart padding). On phones it sits just above the donut grid.",
+      "from": {"data": "cities"},
+      "encode": {
+        "update": {
+          "x": {"signal": "narrow ? width / 2 : datum.cx"},
+          "y": {"signal": "narrow ? 242 : 37"},
+          "align": {"value": "center"},
+          "baseline": {"signal": "narrow ? 'bottom' : 'alphabetic'"},
+          "text": {"signal": "datum.market == 'Brisbane' ? 'Click a donut to select a city ↓' : ''"},
+          "fontSize": {"value": 13},
+          "fontStyle": {"value": "italic"},
+          "fill": {"value": "#5C7182"}
+        }
+      }
+    },
+    {
+      "type": "text",
       "description": "city name, music share and talk share",
       "from": {"data": "cities"},
       "encode": {
         "update": {
           "x": {"field": "cx"},
-          "y": {"signal": "datum.cy + 32"},
+          "y": {"signal": "datum.cy + (narrow ? 32 : 38)"},
           "align": {"value": "center"},
           "baseline": {"value": "top"},
           "text": {"field": "label"},
