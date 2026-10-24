@@ -40,5 +40,4 @@ Full references are listed at the bottom of the page.
 
 ## Use of AI
 
-AI tools (Claude, by Anthropic) were used to help write and debug the Vega and Vega-Lite specifications, JavaScript and
-CSS, to cross-check figures against the original sources, and to edit the text for grammar and clarity.
+AI tools Claude and chatGPT were used to help debug and implement some interactivities. Both ChatGPT and Claude cross-check figures against the original sources, and to edit the text for grammar and clarity.
