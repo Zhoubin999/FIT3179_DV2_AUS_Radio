@@ -498,15 +498,31 @@ a {
   max-width: 100%;
 }
 
-/* Chart 9: the finding for the measure chosen in the drop-down (filled by main.js) */
-.measure-note {
-  max-width: 80ch;
-  margin: 0 0 10px;
-  padding: 8px 12px;
-  border-left: 3px solid var(--accent);
-  background: var(--tint);
-  font-size: 15px;
-  color: var(--ink);
+/* Chart 9: the "Colour the map by" drop-down sits above the map instead of under it */
+#c09 {
+  display: flex;
+  flex-direction: column;
+}
+
+#c09 .vega-bindings {
+  order: -1;
+  margin: 0 0 2px;
+}
+
+/* the bars note is moved under the bars by main.js (absolute position inside the card) */
+#card-c09 {
+  position: relative;
+}
+
+/* map notes have a white halo (stroke) so they stay readable where they cross land; draw it behind the letters */
+#c09 svg text {
+  paint-order: stroke;
+}
+
+/* beside the colour legend the note uses the legend's small-print size */
+.chart-note.beside-legend {
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 /* small print under a chart */

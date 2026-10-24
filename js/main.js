@@ -99,19 +99,36 @@ function embedWaffleChart(elementId, specUrl) {
   }).catch(console.error);
 }
 
-// Chart 9: the finding for each measure (figures from the merged CSV; shares are of the Australian total)
-var MEASURE_NOTES = {
-  "per100k": "<b>Sites per 100,000 people:</b> Victoria has 26% of Australia's people but under 12% of its radio sites, while " +
-    "Western Australia has 11% of the people and 20% of the sites.",
-  "retrans": "<b>FM relays:</b> in Western Australia, 65% of FM transmitters are relays that repeat a station from elsewhere " +
-    "for distant towns. WA has 26% of Australia's FM transmitters but 54% of its relays, while Victoria has 10% of the " +
-    "transmitters and about 1% of the relays. The ACT has none.",
-  "dab": "<b>DAB+ share:</b> the ACT has the highest share of radio sites that broadcast DAB+ (14%). Victoria has 11.5% of " +
-    "Australia's radio sites but 21% of its DAB+ sites, while Queensland has 25.5% of the sites but under 14% of the DAB+ sites."
-};
+// Chart 9: put the bars note under the bars, starting level with the map's colour legend (side-by-side layout).
+// Stacked cards keep it in the normal flow under the chart.
+function placeBarsNote(elementId) {
+  var note = document.querySelector('#c09-bars-note');
+  var card = document.querySelector('#card-c09');
+  note.style.position = '';
+  note.classList.remove('beside-legend');
+  card.style.paddingBottom = '';
+  var legendTitle = document.querySelector(elementId + ' .role-legend-title text');
+  var stateCodes = Array.prototype.filter.call(document.querySelectorAll(elementId + ' .role-axis-label text'), function (label) {
+    return /^[A-Z]{2,3}$/.test(label.textContent);      // the bars' y-axis labels (ACT, NSW ...)
+  });
+  var axisTitles = Array.prototype.filter.call(document.querySelectorAll(elementId + ' .role-axis-title text'), function (title) {
+    return title.textContent.indexOf('Share of Australia') === 0;
+  });
+  if (window.matchMedia('(max-width: 900px)').matches || !legendTitle || !stateCodes.length || !axisTitles.length) return;
 
-function showMeasureNote(measure) {
-  document.querySelector('#c09-note').innerHTML = MEASURE_NOTES[measure];
+  var cardBox = card.getBoundingClientRect();
+  var left = Math.min.apply(null, stateCodes.map(function (label) { return label.getBoundingClientRect().left; }));
+  var top = Math.max(legendTitle.getBoundingClientRect().top, axisTitles[0].getBoundingClientRect().bottom + 10);
+  note.classList.add('beside-legend');
+  note.style.position = 'absolute';
+  note.style.margin = '0';
+  note.style.left = Math.round(left - cardBox.left) + 'px';
+  note.style.right = '26px';                           // the card's side padding
+  note.style.top = Math.round(top - cardBox.top) + 'px';
+  // make room in the card if the note reaches below the chart (measure the card again: it got shorter
+  // when the note left the normal flow)
+  var overflow = note.getBoundingClientRect().bottom + 22 - card.getBoundingClientRect().bottom;
+  if (overflow > 0) card.style.paddingBottom = (22 + overflow) + 'px';
 }
 
 // Map + paired bars (state infrastructure): share the card width between the two views.
@@ -128,7 +145,7 @@ function embedMapWithBars(elementId, specUrl) {
       map.width = cardWidth - rightColumn - gap;
       map.height = Math.min(440, Math.round(map.width * 0.78));   // same height rule as Chart 8's map
       side.width = rightColumn - 95;                    // leaves room for state codes and value labels
-      side.height = map.height - 40;
+      side.height = Math.max(300, map.height - 120);   // shorter bars leave room for the note under them (16 bars need 300px)
       // the colour legend sits inside the map, in the empty sea south of Western Australia
       legend.orient = "none";
       legend.legendX = 0;
@@ -145,20 +162,20 @@ function embedMapWithBars(elementId, specUrl) {
       map.height = Math.max(340, Math.min(440, Math.round(map.width * 0.78)));   // Chart 8's height rule
       legend.orient = "bottom";
       // phones: shorter legend and a two-line "Showing" title so nothing is wider than the card
-      legend.title = "Darker = higher value";
       legend.gradientLength = Math.min(240, cardWidth - 100);
       map.title.text = {"expr": "Measure_selection == 'per100k' ? ['Showing: radio sites', 'per 100,000 people'] : " +
         "Measure_selection == 'retrans' ? ['Showing: FM relays', '(% of FM transmitters)'] : ['Showing: DAB+ sites', '(% of radio sites)']"};
       map.title.subtitle = ["Hover a state or its bars", "to highlight it in both views"];
-      side.title.subtitle = {"expr":
-        "['Grey: ' + (Measure_selection == 'per100k' ? 'share of people' : Measure_selection == 'retrans' ? 'share of all FM transmitters' : 'share of all radio sites'), " +
-        "'Navy: ' + (Measure_selection == 'per100k' ? 'share of radio sites' : Measure_selection == 'retrans' ? 'share of FM relays' : 'share of DAB+ sites')]"};
     }
+    // bars subtitle on two lines (Grey / Navy) so the longest one, for FM relays, is never cut off
+    side.title.subtitle = {"expr":
+      "['Grey: ' + (Measure_selection == 'per100k' ? 'share of people' : Measure_selection == 'retrans' ? 'share of all FM transmitters' : 'share of all radio sites'), " +
+      "'Navy: ' + (Measure_selection == 'per100k' ? 'share of radio sites' : Measure_selection == 'retrans' ? 'share of FM relays' : 'share of DAB+ sites')]"};
     return vegaEmbed(elementId, spec, embedOptions);
-  }).then(function (result) {
-    // keep the text finding in step with the drop-down
-    showMeasureNote(result.view.signal('Measure_selection'));
-    result.view.addSignalListener('Measure_selection', function (name, value) { showMeasureNote(value); });
+  }).then(function () {
+    placeBarsNote(elementId);
+    // place it again once the web fonts have loaded (text wraps differently)
+    if (document.fonts) document.fonts.ready.then(function () { placeBarsNote(elementId); });
   }).catch(console.error);
 }
 

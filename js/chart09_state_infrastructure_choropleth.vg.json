@@ -76,7 +76,7 @@
             "color": {
               "field": "shown_value",
               "type": "quantitative",
-              "title": "Darker = higher value of the chosen measure",
+              "title": "Darker = higher value",
               "scale": {"type": "sqrt", "range": ["#EEF3F9", "#1F4E79"], "zero": true},
               "legend": {
                 "orient": "bottom-left",
@@ -168,11 +168,73 @@
               "value": "#050A0D"
             }
           }
+        },
+        {
+          "description": "Notes for the chosen measure, in the sea beside the states they describe (text runs left from the anchor).",
+          "data": {
+            "values": [
+            {"measure": "per100k", "lon": 140.6, "lat": -39.2, "note": "Victoria: 26% of Australia's people\nbut under 12% of its radio sites"},
+            {"measure": "retrans", "lon": 140.6, "lat": -39.2, "note": "Victoria: 10% of FM transmitters\nbut about 1% of the relays"},
+            {"measure": "dab", "lon": 140.6, "lat": -39.2, "note": "Victoria: 11.5% of radio sites\nbut 21% of DAB+ sites"}
+            ]
+          },
+          "transform": [
+            {"filter": "datum.measure == Measure_selection"}
+          ],
+          "mark": {
+            "type": "text",
+            "align": "right",
+            "baseline": "top",
+            "lineBreak": "\n",
+            "lineHeight": 16,
+            "fontSize": 13,
+            "color": "#3E5263",
+            "stroke": "#FFFFFF",
+            "strokeWidth": 3,
+            "strokeOpacity": 0.9
+          },
+          "encoding": {
+            "longitude": {"field": "lon", "type": "quantitative"},
+            "latitude": {"field": "lat", "type": "quantitative"},
+            "text": {"field": "note"}
+          }
+        },
+        {
+          "description": "Notes for the chosen measure, in the sea beside the states they describe (text runs right from the anchor).",
+          "data": {
+            "values": [
+            {"measure": "retrans", "lon": 151.2, "lat": -37.6, "note": "ACT: no relays"},
+            {"measure": "dab", "lon": 151.2, "lat": -37.6, "note": "Highest DAB+\nshare"},
+            {"measure": "dab", "lon": 147.0, "lat": -11.8, "note": "Queensland: 25.5% of\nradio sites but under\n14% of DAB+ sites"},
+            {"measure": "per100k", "lon": 112.0, "lat": -13.0, "note": "WA: 11% of the people\nbut 20% of the sites"},
+            {"measure": "retrans", "lon": 111.0, "lat": -13.0, "note": "WA: 65% of FM\ntransmitters are relays,\n54% of all FM relays"}
+            ]
+          },
+          "transform": [
+            {"filter": "datum.measure == Measure_selection"}
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "top",
+            "lineBreak": "\n",
+            "lineHeight": 16,
+            "fontSize": 13,
+            "color": "#3E5263",
+            "stroke": "#FFFFFF",
+            "strokeWidth": 3,
+            "strokeOpacity": 0.9
+          },
+          "encoding": {
+            "longitude": {"field": "lon", "type": "quantitative"},
+            "latitude": {"field": "lat", "type": "quantitative"},
+            "text": {"field": "note"}
+          }
         }
       ],
       "title": {
         "text": {
-          "expr": "Measure_selection == 'per100k' ? 'Showing: radio transmitter sites per 100,000 people (number)' : Measure_selection == 'retrans' ? 'Showing: share of FM transmitters that relay another station (%)' : 'Showing: share of radio sites that broadcast DAB+ (%)'"
+          "expr": "Measure_selection == 'per100k' ? 'Showing: radio sites per 100,000 people' : Measure_selection == 'retrans' ? 'Showing: FM relays (% of FM transmitters)' : 'Showing: DAB+ sites (% of radio sites)'"
         },
         "anchor": "start",
         "fontSize": 15,
@@ -333,5 +395,6 @@
     "view": {"stroke": null},
     "concat": {"spacing": 24}
   },
-  "padding": {"left": 0, "right": 0, "top": 6, "bottom": 6}
+  "autosize": {"type": "pad", "resize": true},
+  "padding": {"left": 0, "right": 8, "top": 6, "bottom": 6}
 }
