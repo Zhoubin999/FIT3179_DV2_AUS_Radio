@@ -124,7 +124,7 @@
       },
       {
         "description": "Percentage label in the middle of each box.",
-        "mark": {"type": "text", "fontWeight": "bold", "fontSize": 16},
+        "mark": {"type": "text", "fontWeight": "bold", "fontSize": 14},
         "encoding": {
           "x": {
             "field": "xc",

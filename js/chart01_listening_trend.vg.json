@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "description": "Chapter 1 - multi-series line chart. Weekly reach (%) of streaming, any radio, commercial radio, podcasts and DAB+ radio, 2018-2026 (Infinite Dial). Shared encoding: x = year, y = % of people, colour = series, dashed line = DAB+. Interaction: dropdown (Australia / regional), legend highlight, hover rule tooltip.",
   "width": "container",
-  "height": 400,
+  "height": 300,
   "autosize": {"type": "fit-x", "contains": "padding"},
   "data": {
     "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
@@ -79,7 +79,7 @@
       "field": "value",
       "type": "quantitative",
       "title": "Listened in the past week (%)",
-      "scale": {"domain": [0, 100]}
+      "scale": {"domain": [0, 90]}
     },
     "color": {
       "field": "series",
@@ -223,7 +223,7 @@
       "encoding": {
         "color": {"value": "#8796A3"},
         "y": {"value": 0},
-        "y2": {"value": 400},
+        "y2": {"value": 300},
         "opacity": {
           "condition": {"param": "Year_hover", "value": 0.9, "empty": false},
           "value": 0
@@ -251,10 +251,10 @@
       }
     },
     {
-      "description": "Annotation under the 2025 crossing point, where streaming overtook radio (Australia view; appears when the replay reaches 2025).",
+      "description": "Annotation above the 2025 crossing point, in the empty space over the lines, where streaming overtook radio (Australia view; appears when the replay reaches 2025).",
       "data": {
         "values": [
-          {"year": 2025, "value": 70, "note": "2025: streaming overtakes radio ↑"}
+          {"year": 2025, "value": 90, "note": "2025: streaming overtakes radio ↓"}
         ]
       },
       "transform": [

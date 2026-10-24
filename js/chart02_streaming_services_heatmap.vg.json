@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "description": "Chapter 1 - heatmap. Weekly use (%) of each online audio service by year (Infinite Dial). Shared encoding: x = year, y = service; darker orange = more people.",
   "width": "container",
-  "height": 260,
+  "height": 200,
   "autosize": {"type": "fit-x", "contains": "padding"},
   "data": {
     "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
@@ -85,7 +85,7 @@
     },
     {
       "description": "Percentage printed in each cell; white text only on the darkest cells (Spotify), near-black otherwise.",
-      "mark": {"type": "text", "fontSize": 15, "fontWeight": "bold", "dy": -8},
+      "mark": {"type": "text", "fontSize": 14, "fontWeight": "bold", "dy": -8},
       "encoding": {
         "text": {"field": "pct_label"},
         "color": {

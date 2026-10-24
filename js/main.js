@@ -10,17 +10,18 @@ var chartConfig = {
     "labelFontSize": 13,
     "titleFontSize": 14,
     "titleFontWeight": 600,
-    "labelColor": "#3E5263",
-    "titleColor": "#3E5263",
+    "labelColor": "#4D6273",
+    "titleColor": "#4D6273",
     "domainColor": "#ACB9C3",
     "tickColor": "#ACB9C3",
     "gridColor": "#E8ECEF"
   },
   "legend": {
     "labelFontSize": 13,
-    "titleFontSize": 13,
-    "labelColor": "#3E5263",
-    "titleColor": "#3E5263",
+    "titleFontSize": 12,
+    "titleFontWeight": 700,
+    "labelColor": "#4D6273",
+    "titleColor": "#5C7182",
     "labelLimit": 260
   },
   "header": {"labelFontSize": 14, "labelColor": "#1F3545"},
@@ -181,13 +182,13 @@ function adaptChart01(spec, width) {
   }
   if (width < 600) {                                   // end labels show just the value; shorter note
     spec.layer[1].transform[1].calculate = "datum.value + '%'";
-    spec.layer[3].data.values[0].note = "Streaming passes radio \u2191";
-    spec.layer[3].mark.fontSize = 11;
+    spec.layer[3].data.values[0].note = "Streaming passes radio \u2193";
+    spec.layer[3].mark.fontSize = 12;
   }
 }
 
 function adaptChart02(spec, width) {
-  if (width < 600) spec.layer[0].encoding.color.legend.gradientLength = 140;
+  if (width < 440) spec.layer[0].encoding.color.legend.gradientLength = 140;   // phones only
 }
 
 function adaptChart05(spec, width) {
@@ -271,14 +272,37 @@ function addPlayButton(elementId, view, options) {
 
 
 // ---------- Chapter 1: the big shift ----------
-embedResponsive('#c01', "js/chart01_listening_trend.vg.json", adaptChart01).then(function (result) {
+var chart01 = embedResponsive('#c01', "js/chart01_listening_trend.vg.json", adaptChart01).then(function (result) {
   // replay the trend year by year (Year_shown filters the data; Replaying shows the big year)
   addPlayButton('#c01', result.view, {
     label: "\u25B6 Play 2017 \u2192 2026", signal: "Year_shown", flag: "Replaying", delay: 650,
     steps: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
   });
+  return result;
+});
+var chart02 = embedResponsive('#c02', "js/chart02_streaming_services_heatmap.vg.json", adaptChart02);
+
+// Charts 1 and 2 share a row: stretch the heatmap so its bottom lines up with Chart 1's drop-down and Play button.
+// When the cards stack (narrow screens) the heatmap keeps the spec's own height.
+function matchHeatmapHeight(heatmap) {
+  var sideBySide = document.querySelector('#card-c01').offsetTop === document.querySelector('#card-c02').offsetTop;
+  var plotHeight = 200;
+  if (sideBySide) {
+    var chart1Bottom = document.querySelector('#c01 .vega-bindings').getBoundingClientRect().bottom;
+    var heatmapSvg = document.querySelector('#c02 svg').getBoundingClientRect();
+    var heatmapTop = document.querySelector('#c02').getBoundingClientRect().top + 10;   // top padding of .chart-wrap
+    plotHeight = heatmap.height() + (chart1Bottom - heatmapTop) - heatmapSvg.height;
+  }
+  heatmap.height(Math.max(200, Math.round(plotHeight))).runAsync();
+}
+
+Promise.all([chart01, chart02]).then(function (results) {
+  var heatmap = results[1].view;
+  matchHeatmapHeight(heatmap);
+  window.addEventListener('resize', function () {
+    setTimeout(function () { matchHeatmapHeight(heatmap); }, 150);   // after Chart 1 has redrawn at the new width
+  });
 }).catch(console.error);
-embedResponsive('#c02', "js/chart02_streaming_services_heatmap.vg.json", adaptChart02).catch(console.error);
 
 // ---------- Chapter 2: who listens ----------
 vegaEmbed('#c03', "js/chart03_radio_age_dumbbell.vg.json", embedOptions).catch(console.error);

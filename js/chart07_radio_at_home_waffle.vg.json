@@ -129,8 +129,8 @@
           "y": 26,
           "align": "left",
           "baseline": "top",
-          "fontSize": 12,
-          "lineHeight": 15,
+          "fontSize": 13,
+          "lineHeight": 16,
           "color": "#3E5263"
         },
         "encoding": {

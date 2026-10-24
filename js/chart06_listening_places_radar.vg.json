@@ -173,7 +173,7 @@
               "y": {"signal": "-scale('radial', datum.pct)"},
               "text": {"signal": "datum.pct + '%'"},
               "fill": {"value": "#7A8992"},
-              "fontSize": {"value": 11},
+              "fontSize": {"value": 12},
               "baseline": {"value": "bottom"}
             }
           }

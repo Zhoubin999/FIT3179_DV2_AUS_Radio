@@ -27,8 +27,12 @@
   --font-body: "DM Sans", Arial, sans-serif;
   --font-head: Outfit, sans-serif;
 
+  /* text sizes follow one scale: 13px labels, 15px notes and controls,
+     17px body, 19px lead paragraphs; headings 20 / 34 / 60px */
+
   /* page colours */
   --ink: #182D42;        /* main text */
+  --text: #33485A;       /* reading text (card explanations) */
   --muted: #4D6273;      /* secondary text */
   --note: #5C7182;       /* small notes */
   --paper: #F5F7F7;      /* page background */
@@ -115,7 +119,7 @@ a {
 }
 
 .links a {
-  color: #3E5A6C;
+  color: var(--muted);
   text-decoration: none;
   font-size: 15px;
   font-weight: 600;
@@ -186,13 +190,13 @@ a {
 /* big number with its meaning right beside it */
 .stat {
   display: grid;
-  grid-template-columns: 125px minmax(0, 1fr);
+  grid-template-columns: 100px minmax(0, 1fr);
   align-items: center;
   gap: 14px;
 }
 
 .stat strong {
-  font: 700 58px/1 var(--font-head);
+  font: 700 46px/1 var(--font-head);
 }
 
 /* light versions of the data colours, readable on the dark hero */
@@ -211,7 +215,7 @@ a {
 .stat p {
   max-width: 30ch;
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   color: #CBDCE1;
   line-height: 1.4;
 }
@@ -228,13 +232,13 @@ a {
 }
 
 .guide-box h2 {
-  font: 700 22px var(--font-head);
+  font: 700 20px var(--font-head);
   margin: 0 0 6px;
 }
 
 .guide-lead {
   margin: 0 0 6px;
-  font-size: 16px;
+  font-size: 17px;
   color: var(--muted);
 }
 
@@ -286,20 +290,20 @@ a {
 }
 
 .chapter-no {
-  font: 800 52px/1 var(--font-head);
+  font: 800 40px/1 var(--font-head);
   color: #6E8496;   /* 3.6:1 on the page background */
 }
 
 .chapter-heading h2 {
   margin: 0 0 8px;
-  font: 700 clamp(26px, 3vw, 34px)/1.2 var(--font-head);
+  font: 700 clamp(30px, 3vw, 34px)/1.2 var(--font-head);
 }
 
 .chapter-heading p {
   margin: 0;
   max-width: 72ch;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 19px;
 }
 
 
@@ -316,7 +320,7 @@ a {
   background: var(--card);
   border: 1px solid var(--edge);
   border-radius: 16px;
-  padding: 24px 26px 18px;
+  padding: 22px 26px;
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
@@ -334,15 +338,15 @@ a {
 }
 
 .card-heading {
-  font: 700 23px/1.25 var(--font-head);
+  font: 700 20px/1.3 var(--font-head);
   margin: 0 0 8px;
 }
 
 .interpretation {
-  color: var(--muted);
+  color: var(--text);
   font-size: 17px;
   max-width: 70ch;
-  margin: 0 0 10px;
+  margin: 0 0 14px;
 }
 
 /* a whole-row card allows slightly longer lines, capped for comfortable reading */
@@ -390,6 +394,12 @@ a {
 
 
 /* ---------- 8. Vega drop-down menus, notes and mini legends ---------- */
+/* legend titles styled like the page's small headings (.glossary-group, .insight-tag) */
+.chart-wrap .role-legend-title text {
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
 /* drop-down menus and the slider created by "bind" parameters (Charts 1, 9 and 11) */
 .vega-bindings {
   display: flex;            /* keeps a Play button on the same row as its drop-down or slider */
@@ -414,7 +424,7 @@ a {
 /* Play buttons next to the Chart 1 drop-down and the Chart 11 slider (added by main.js) */
 .play-button {
   padding: 6px 14px;
-  font: 600 14px var(--font-body);
+  font: 600 15px var(--font-body);
   color: #FFFFFF;
   background: var(--accent);
   border: 1px solid var(--accent);
@@ -459,13 +469,13 @@ a {
   padding: 8px 12px;
   border-left: 3px solid var(--accent);
   background: var(--tint);
-  font-size: 16px;
+  font-size: 15px;
   color: var(--ink);
 }
 
 /* small print under a chart */
 .chart-note {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--note);
   margin: 8px 0 0;
 }
@@ -473,7 +483,7 @@ a {
 /* HTML legend under Chart 3 */
 .mini-legend {
   flex-wrap: wrap;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -560,7 +570,7 @@ a {
 }
 
 .zoom-back {
-  font: 600 14px var(--font-body);
+  font: 600 15px var(--font-body);
   padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid var(--accent);
@@ -592,13 +602,13 @@ a {
   margin-left: -12px;        /* divider sits in the middle of the gap, text starts on the column line */
   padding-left: 12px;
   border-left: 1px solid var(--edge);
-  font-size: 14px;
+  font-size: 15px;
   color: var(--ink);
 }
 
 .zoom-panel h4 {
   margin: 0 0 4px;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .zoom-panel h5 {
@@ -628,7 +638,7 @@ a {
   gap: 8px;
   width: 100%;
   padding: 6px 8px;
-  font: 14px var(--font-body);
+  font: 15px var(--font-body);
   color: var(--ink);
   text-align: left;
   background: none;
@@ -719,7 +729,7 @@ a {
 
 .picker-label {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .city-buttons {
@@ -774,7 +784,7 @@ a {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--muted);
 }
 
@@ -834,7 +844,7 @@ a {
 
 .takeaway p {
   margin: 10px 0 0;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--muted);
 }
 
@@ -845,7 +855,7 @@ a {
 .closing {
   max-width: 72ch;
   margin: 26px 0 0;
-  font-size: 18px;
+  font-size: 19px;
   color: var(--ink);
 }
 
@@ -873,13 +883,13 @@ a {
 .reference-list li {
   margin-bottom: 10px;
   font-size: 15px;
-  color: #3F5768;
+  color: var(--muted);
   overflow-wrap: anywhere;   /* long URLs wrap instead of widening the page */
 }
 
 .source-list {
   font-size: 15px;
-  color: #3F5768;
+  color: var(--muted);
   max-width: 100ch;
 }
 
@@ -887,8 +897,8 @@ a {
   padding: 16px 0;
   border-top: 1px solid var(--edge);
   background: #E9F0F0;
-  color: #4D6876;
-  font-size: 14px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .footer .shell {
@@ -976,8 +986,16 @@ a {
     padding: 18px 14px;
   }
 
+  .chapter-heading h2 {
+    font-size: 26px;
+  }
+
+  .chapter-no {
+    font-size: 32px;
+  }
+
   .card-heading {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .interpretation {

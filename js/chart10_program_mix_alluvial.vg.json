@@ -173,7 +173,7 @@
       "transform": [
         {"filter": "datum.type_share >= 2.5"}
       ],
-      "mark": {"type": "text", "fontSize": 12, "fontWeight": "bold"},
+      "mark": {"type": "text", "fontSize": 12, "fontWeight": 600},
       "encoding": {
         "x": {"field": "column", "type": "quantitative"},
         "y": {"field": "band_middle"},
