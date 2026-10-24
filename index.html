@@ -60,7 +60,7 @@
           Streaming and podcasts have grown fast. Has radio been replaced, or has it changed shape?
           This page follows who listens, how they listen, and what they choose to hear.
         </p>
-        <p class="byline">By <strong>Zhoubin Li</strong> &middot; Published 18 October 2026 &middot; Updated 20 October 2026</p>
+        <p class="byline">By <strong>Zhoubin Li</strong> &middot; Published 18 October 2026 &middot; Updated 24 October 2026</p>
       </div>
 
       <div class="hero-stats">
@@ -155,8 +155,8 @@
           <h3 class="card-heading">Streaming overtook radio in 2025, but radio is still heard by 3 in 4 people</h3>
           <p class="interpretation">
             Since 2017, weekly <span class="key stream">streaming</span> rose from 46% to 81% and <span class="key podcast">podcasts</span> from 10% to 45%,
-            while <span class="key radio">radio</span> slipped only from 85% to 77%. Streaming was added to radio rather than replacing it:
-            with 81% streaming and 77% listening to radio, at least 58% of Australians must now do both each week.
+            while <span class="key radio">radio</span> slipped only from 85% to 77%. The two overlap: with 81% streaming and 77% listening to radio in 2026,
+            at least about 58% of Australians must have used both in the same week. These are survey totals, so they do not show individual listeners switching.
           </p>
           <div id="c01" class="chart-wrap"></div>
         </article>
@@ -199,10 +199,11 @@
         <!-- Chart 4: mosaic chart - js/chart04_podcast_mosaic.vg.json -->
 
         <article class="chart-card">
-          <h3 class="card-heading">A third of Australians now listen to <em>and</em> watch podcasts</h3>
+          <h3 class="card-heading">A third of Australians aged 10+ listen to <em>and</em> watch podcasts</h3>
           <p class="interpretation">
-            Video is being added to podcast listening, not replacing it. Of the 55% of Australians who consume podcasts each month, most (35%) both
-            <span class="key podcast">listen and watch</span>, while only 5% just watch. Regional Australians are less likely to consume podcasts at all (47%).
+            Podcast audio and video audiences overlap. In 2026, 55% of Australians aged 10+ consumed podcasts each month:
+            35% of all Australians both <span class="key podcast">listened and watched</span>, while only 5% watched without listening.
+            Monthly podcast use is lower in regional Australia (47%).
           </p>
           <div id="c04" class="chart-wrap"></div>
         </article>
@@ -251,7 +252,7 @@
           <h3 class="card-heading">Regional homes are more likely to have a radio, but less likely to have a digital one</h3>
           <p class="interpretation">
             46 in 100 regional adults have a radio at home, compared with 42 in the capital cities, but only 22 in 100 have a DAB+ digital radio, compared with 28.
-            Regional homes keep the radio but have less reason to go digital: as the next map shows, DAB+ is broadcast only around the big cities.
+            The next map shows that the DAB+ sites in the ACMA records are concentrated in city regions, a possible contributor to this gap, though not proof of why households choose a receiver.
           </p>
           <div id="c07" class="chart-wrap"></div>
         </article>
@@ -281,15 +282,15 @@
         <!-- Chart 9: choropleth map with linked paired bars - js/chart09_state_infrastructure_choropleth.vg.json -->
 
         <article class="chart-card full" id="card-c09">
-          <h3 class="card-heading">Radio infrastructure is spread very unevenly: the NT has 12 times Victoria's sites per person</h3>
+          <h3 class="card-heading">Radio infrastructure is not spread in proportion to population</h3>
           <p class="interpretation">
-            Radio infrastructure follows distance, not population. Large, thinly settled states need many sites to reach scattered towns,
-            and many of those sites are small relays repeating a station from elsewhere. More sites per person means more ground to cover, not better reception.
+            The Northern Territory has 32.7 radio transmitter sites per 100,000 people, more than 12 times Victoria's 2.6.
+            Dispersed settlements may help explain the pattern, but site counts alone cannot measure coverage or reception quality.
           </p>
           <!-- Filled by main.js: the finding for the measure chosen in the drop-down -->
           <p class="measure-note" id="c09-note" aria-live="polite"></p>
           <div id="c09" class="chart-wrap"></div>
-          <p class="chart-note">Bars: a <span class="key radio">navy bar</span> longer than its <span class="key base">grey bar</span> means the state has more than its share of Australia's sites.</p>
+          <p class="chart-note">Bars: a <span class="key radio">navy bar</span> longer than its <span class="key base">grey bar</span> means the state has more than its share of the selected radio measure, compared with its base (people, FM transmitters or all radio sites).</p>
         </article>
       </div>
     </section>
@@ -325,9 +326,9 @@
         <h3>What stands out in <span class="market-name">Melbourne</span></h3>
         <p class="insight-lead" id="insight-lead"></p>
         <ul class="insight-list">
-          <li><span class="insight-tag">Listening mix &middot; Charts 10&ndash;11</span><span id="insight-mix"></span></li>
-          <li><span class="insight-tag">Stations &middot; Chart 12</span><span id="insight-stations"></span></li>
-          <li><span class="insight-tag">Top five &middot; Chart 13</span><span id="insight-top"></span></li>
+          <li><span class="insight-tag">Mix, Surveys 3&ndash;6 &middot; Charts 10&ndash;11</span><span id="insight-mix"></span></li>
+          <li><span class="insight-tag">Stations, Survey 6 &middot; Chart 12</span><span id="insight-stations"></span></li>
+          <li><span class="insight-tag">Top five, Surveys 3&ndash;6 &middot; Chart 13</span><span id="insight-top"></span></li>
         </ul>
       </section>
 
@@ -338,8 +339,8 @@
           <h3 class="card-heading">How <span class="market-name">Melbourne</span>'s listening mix moved across four surveys</h3>
           <p class="interpretation">
             Between Survey 3 and Survey 6, <span class="key music">commercial music</span> lost share in four of the five cities, most in Brisbane (&minus;4.8 points) and Melbourne (&minus;3.3); Perth went the other way (+4.0).
-            Meanwhile <span class="key swatch unrated">stations GfK does not rate separately</span> gained share in every city, up 4.0 points in Brisbane, so listening is spreading beyond the big commercial stations.
-            These are city totals, not individual listeners switching.
+            The share not accounted for by <span class="key swatch unrated">individually listed stations</span> also rose in every city, most in Brisbane (+4.0 points).
+            These are city totals, so they do not track individual listeners switching stations or formats.
           </p>
           <div id="c10" class="chart-wrap"></div>
         </article>
@@ -350,9 +351,9 @@
           <p class="linked-badge">&#128279; Linked &middot; <span class="market-name">Melbourne</span> outlined &middot; Survey <span class="survey-name">6</span> (slider)</p>
           <h3 class="card-heading">Each city has its own listening mix</h3>
           <p class="interpretation">
-            In Survey 6, music takes 57&ndash;59% of radio listening in four of the five cities, so what sets a city apart is talk:
-            <span class="key talk">talk and news</span> take 22% in Melbourne but only 13% in Brisbane and Perth.
-            Perth is the music city, at 64%.
+            Music is the largest share of radio listening in every city. <span class="key talk">Talk and news</span>, and the share going to unrated stations, are important sources of difference between cities.
+            <!-- Filled by main.js for the survey on the slider; this is the Survey 6 text -->
+            <span id="c11-finding">In Survey 6, music ranges from 57% in Sydney to 64% in Perth, talk and news from 13% in Brisbane to 22% in Melbourne, and unrated stations from 16% in Melbourne to 27% in Brisbane.</span>
           </p>
           <div id="c11" class="chart-wrap"></div>
         </article>
@@ -363,8 +364,8 @@
           <p class="linked-badge">&#128279; Linked &middot; showing <span class="market-name">Melbourne</span> &middot; Survey <span class="survey-name">6</span> (map slider)</p>
           <h3 class="card-heading">Which stations make up <span class="market-name">Melbourne</span>'s mix in Survey <span class="survey-name">6</span>?</h3>
           <p class="interpretation">
-            In every city, <span class="key talk">commercial talk</span> is a single station, while <span class="key music">commercial music</span> is split across five to eight.
-            That is how one talk station can top the ratings: in Survey 6, Melbourne's 3AW (13.4%) out-rates each of the city's eight music stations, which share 52.3% between them.
+            In every city, <span class="key music">commercial music</span> is split across five to eight individually rated stations, while <span class="key talk">commercial talk and news</span> is a single rated station,
+            so a city's leading station need not come from its largest program type. Box areas cover rated stations only; the &ldquo;Other / unrated&rdquo; share is left out.
           </p>
           <div id="c12" class="chart-wrap"></div>
         </article>
@@ -470,7 +471,7 @@
   <footer class="footer">
     <div class="shell">
       <span>Australian Radio in the Digital Age &middot; FIT3179 Data Visualisation 2</span>
-      <span>Created by Zhoubin Li &middot; Updated 20 October 2026</span>
+      <span>Created by Zhoubin Li &middot; Updated 24 October 2026</span>
     </div>
   </footer>
 

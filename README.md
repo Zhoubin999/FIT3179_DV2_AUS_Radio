@@ -1,6 +1,6 @@
 # Australian Radio in the Digital Age
 
-FIT3179 Data Visualisation 2 · Zhoubin Li · Updated 20 October 2026
+FIT3179 Data Visualisation 2 · Zhoubin Li · Updated 24 October 2026
 
 **Live page:** https://zhoubin999.github.io/FIT3179_DV2_AUS_Radio/
 
@@ -69,7 +69,7 @@ The page has five chapters: the big shift, who listens, technology, local statio
 | 9 | Radio infrastructure by state | Choropleth map + linked paired bars | The map shows one of three ratios (drop-down). The paired bars show the two counts behind it as shares of Australia on one linear axis; hover links both views. |
 | 10 | City listening mix over time | Alluvial (ribbon) diagram | Follow each program type's share through four surveys; an annotation names the selected city's biggest change. |
 | 11 | Listening mix by city | Donut-glyph map | Compare the five capitals' program mix where they are. A survey slider (with *Play*) steps through Surveys 3–6. |
-| 12 | Stations in a city | Treemap (Vega) | Part-to-whole within the city: each station is sized by share and grouped by program type. |
+| 12 | Stations in a city | Treemap (Vega) | Part-to-whole within the city: each rated station is sized by share and grouped by program type. Follows the city picker and the Chart 11 survey slider (Surveys 3–6). |
 | 13 | Top-five stations | Bump chart | Rank changes across four surveys; a note appears when a city's top five has no talk station. |
 
 Maps: three idioms (proportional symbol, choropleth, donut glyph).

@@ -101,9 +101,8 @@ function embedWaffleChart(elementId, specUrl) {
 
 // Chart 9: the finding for each measure (figures from the merged CSV; shares are of the Australian total)
 var MEASURE_NOTES = {
-  "per100k": "<b>Sites per 100,000 people:</b> the Northern Territory has 32.7 radio transmitter sites for every 100,000 people, " +
-    "compared with 2.6 in Victoria. Victoria has 26% of Australia's people but under 12% of its radio sites, while Western " +
-    "Australia has 11% of the people and 20% of the sites.",
+  "per100k": "<b>Sites per 100,000 people:</b> Victoria has 26% of Australia's people but under 12% of its radio sites, while " +
+    "Western Australia has 11% of the people and 20% of the sites.",
   "retrans": "<b>FM relays:</b> in Western Australia, 65% of FM transmitters are relays that repeat a station from elsewhere " +
     "for distant towns. WA has 26% of Australia's FM transmitters but 54% of its relays, while Victoria has 10% of the " +
     "transmitters and about 1% of the relays. The ACT has none.",
@@ -644,7 +643,7 @@ var CITY_INSIGHTS = {
       key('music', 'Commercial music') + " fell 3.3 points (55.6% to 52.3%) while " +
       key('swatch abc-talk', 'ABC talk &amp; news') + " rose from 7.4% to 8.8%.",
     stations: key('talk', 'Commercial talk') + " station 3AW leads with 13.4%. ABC Melbourne gained the most of any " +
-      "Melbourne station, up 1.6 points to 5.7%.",
+      "Melbourne station since Survey 3, up 1.6 points to 5.7%.",
     top: "3AW was No. 1 in all four surveys, although its share dipped from 14.0% to 13.4%."
   },
   "Brisbane": {
@@ -661,8 +660,8 @@ var CITY_INSIGHTS = {
     mix: key('swatch abc-talk', 'ABC talk &amp; news') + " has 10.3% of listening, the highest of any city; with " +
       "FIVEaa, talk and news reach 19%, level with Sydney and behind only Melbourne. " +
       key('music', 'Commercial music') + " fell 2.2 points (53.9% to 51.7%).",
-    stations: "5MMM (Triple M) leads with 14.0%, 3.2 points ahead of NOVA91.9. KIIS1023 lost the most share, " +
-      "down 1.6 points.",
+    stations: "5MMM (Triple M) leads with 14.0%, 3.2 points ahead of NOVA91.9. KIIS1023 lost the most share " +
+      "since Survey 3, down 1.6 points.",
     top: "5MMM was No. 1 in all four surveys. " + key('talk', 'Commercial talk') + " station FIVEaa rose from 8.2% " +
       "to 10.1% in Survey 4, then eased back to 8.7%."
   },
@@ -671,8 +670,8 @@ var CITY_INSIGHTS = {
     mix: key('music', 'Commercial music') + " rose 4.0 points (52.6% to 56.6%) while " +
       key('swatch abc-talk', 'ABC talk &amp; news') + " fell from 9.8% to 6.2%. These are city totals, so they " +
       "do not show individual listeners switching.",
-    stations: "NOVA93.7 has 18.3%, the largest share of any station in the five cities. ABC Perth halved, " +
-      "from 7.1% to 3.7%.",
+    stations: "NOVA93.7 has 18.3%, the largest share of any station in the five cities. ABC Perth halved " +
+      "since Survey 3, from 7.1% to 3.7%.",
     top: "NOVA93.7 grew in every survey (14.9%, 16.7%, 17.6%, 18.3%), and Triple M climbed from 8.3% to 11.0%, " +
       "close behind Mix 94.5 and Gold 96FM."
   }
@@ -722,11 +721,36 @@ function embedMarketChart(elementId, specUrl, adapt) {
 
 embedMarketChart('#c10', "js/chart10_program_mix_alluvial.vg.json", adaptChart10);
 var treemapView = embedMarketChart('#c12', "js/chart12_station_treemap.vg.json");
+
+// Chart 11: one sentence comparing the five cities in the survey on the slider (lowest and highest of each group)
+function describeSurvey(slices, survey) {
+  var cities = {};
+  slices.forEach(function (slice) {
+    var city = cities[slice.market] = cities[slice.market] || {market: slice.market, music: 0, talk: 0, other: 0};
+    var type = slice.program_format;
+    if (type.indexOf('music') >= 0) city.music += slice.type_share;
+    else if (type.indexOf('talk') >= 0) city.talk += slice.type_share;
+    else if (type === 'Other / unrated stations') city.other += slice.type_share;
+  });
+  var list = Object.keys(cities).map(function (name) { return cities[name]; });
+  function range(field) {
+    list.sort(function (a, b) { return a[field] - b[field]; });
+    var low = list[0], high = list[list.length - 1];
+    return Math.round(low[field]) + '% in ' + low.market + ' to ' + Math.round(high[field]) + '% in ' + high.market;
+  }
+  return 'In Survey ' + survey + ', music ranges from ' + range('music') + ', talk and news from ' + range('talk') +
+    ', and unrated stations from ' + range('other') + '.';
+}
+
 embedMarketChart('#c11', "js/chart11_program_mix_donut_map.vg.json").then(function (view) {
   // the survey slider drives the donuts and the treemap; the badges and treemap heading name the survey shown
   view.addSignalListener('Survey_pick', function (name, value) {
     document.querySelectorAll('.survey-name').forEach(function (span) { span.textContent = value; });
     treemapView.then(function (treemap) { treemap.signal('Survey_pick', value).runAsync(); });
+  });
+  // rewrite the comparison sentence once the donuts have the new survey's data
+  view.addDataListener('slices', function (name, slices) {
+    document.querySelector('#c11-finding').textContent = describeSurvey(slices, view.signal('Survey_pick'));
   });
   // step the survey slider from Survey 3 to Survey 6
   addPlayButton('#c11', view, {
