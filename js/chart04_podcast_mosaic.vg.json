@@ -108,7 +108,7 @@
               "domain": ["Both", "Listened only", "Watched only", "Neither"],
               "range": ["#6C5BB5", "#A194D6", "#D6D0F0", "#D8E0E6"]
             },
-            "legend": {"orient": "bottom", "columns": 2}
+            "legend": {"orient": "bottom", "direction": "horizontal", "titleOrient": "left", "title": "PODCAST BEHAVIOUR", "titlePadding": 18}
           },
           "tooltip": [
             {"field": "audience", "title": "Population"},

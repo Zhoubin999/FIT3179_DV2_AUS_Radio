@@ -35,9 +35,9 @@ var embedOptions = {"actions": false, "renderer": "svg", "config": chartConfig};
 // so these two helpers shrink them to fit their card before drawing.
 
 // Two panels side by side (podcast mosaic, radio waffles): heightRatio keeps their shape,
-// legendWidth leaves room for a legend placed to the right of the panels.
-function embedTwoPanelChart(elementId, specUrl, heightRatio, maxPanelWidth, legendWidth) {
-  fetch(specUrl).then(function (response) { return response.json(); }).then(function (spec) {
+// legendWidth leaves room for a legend placed to the right of the panels, extraHeight stretches the panels.
+function embedTwoPanelChart(elementId, specUrl, heightRatio, maxPanelWidth, legendWidth, extraHeight) {
+  return fetch(specUrl).then(function (response) { return response.json(); }).then(function (spec) {
     var cardWidth = document.querySelector(elementId).clientWidth;
     // not enough room for a legend on the right: move it under the panels
     if (legendWidth && (cardWidth - 60 - legendWidth) / 2 < 140) {
@@ -48,9 +48,9 @@ function embedTwoPanelChart(elementId, specUrl, heightRatio, maxPanelWidth, lege
     }
     var panelWidth = Math.min(maxPanelWidth || 255, Math.floor((cardWidth - 60 - (legendWidth || 0)) / 2));
     spec.spec.width = panelWidth;
-    spec.spec.height = Math.round(panelWidth * heightRatio);
+    spec.spec.height = Math.round(panelWidth * heightRatio) + (extraHeight || 0);
     return vegaEmbed(elementId, spec, embedOptions);
-  }).catch(console.error);
+  });
 }
 
 // Map + bar chart (DAB+ sites): scale every size and the map projection together.
@@ -299,8 +299,41 @@ Promise.all([chart01, chart02]).then(function (results) {
 }).catch(console.error);
 
 // ---------- Chapter 2: who listens ----------
-vegaEmbed('#c03', "js/chart03_radio_age_dumbbell.vg.json", embedOptions).catch(console.error);
-embedTwoPanelChart('#c04', "js/chart04_podcast_mosaic.vg.json", 1.2);
+var chart03 = vegaEmbed('#c03', "js/chart03_radio_age_dumbbell.vg.json", embedOptions);
+var chart04 = embedTwoPanelChart('#c04', "js/chart04_podcast_mosaic.vg.json", 1.2);
+
+// Charts 3 and 4 share a row: line Chart 3's legend (the dots row) up with the mosaic's "Podcast behaviour" legend.
+function alignChapter2Legends() {
+  var miniLegend = document.querySelector('#card-c03 .mini-legend');
+  miniLegend.style.position = 'relative';
+  miniLegend.style.top = '';
+  var sideBySide = document.querySelector('#card-c03').offsetTop === document.querySelector('#card-c04').offsetTop;
+  var title = document.querySelector('#c04 .role-legend-title text');
+  if (!sideBySide || !title) return;
+  var middle = function (box) { return (box.top + box.bottom) / 2; };
+  var dot = document.querySelector('#card-c03 .mini-legend .dot').getBoundingClientRect();
+  miniLegend.style.top = Math.round(middle(title.getBoundingClientRect()) - middle(dot)) + 'px';
+}
+
+// Charts 3 and 4 share a row: stretch the mosaic panels so their bottom edge lines up with Chart 3's x-axis
+// (both charts are top-aligned in their cards, so one redraw is enough). Stacked cards keep the mosaic's own shape.
+function matchMosaicToDumbbell() {
+  var sideBySide = document.querySelector('#card-c03').offsetTop === document.querySelector('#card-c04').offsetTop;
+  if (!sideBySide) return alignChapter2Legends();
+  var axis = Array.prototype.filter.call(document.querySelectorAll('#c03 .role-axis-domain line'), function (line) {
+    return line.getBoundingClientRect().height < 2;          // the horizontal (x) axis line
+  })[0];
+  var boxes = Array.prototype.map.call(document.querySelectorAll('#c04 .mark-rect path'), function (path) {
+    return path.getBoundingClientRect().bottom;
+  });
+  if (!axis || !boxes.length) return alignChapter2Legends();
+  var gap = Math.round(axis.getBoundingClientRect().top - Math.max.apply(null, boxes));
+  if (Math.abs(gap) < 2) return alignChapter2Legends();
+  embedTwoPanelChart('#c04', "js/chart04_podcast_mosaic.vg.json", 1.2, undefined, undefined, gap)
+    .then(alignChapter2Legends).catch(console.error);
+}
+
+Promise.all([chart03, chart04]).then(matchMosaicToDumbbell).catch(console.error);
 embedResponsive('#c05', "js/chart05_city_regional_diverging_bar.vg.json", adaptChart05).catch(console.error);
 
 // ---------- Chapter 3: how Australians reach radio, and where digital radio can operate ----------

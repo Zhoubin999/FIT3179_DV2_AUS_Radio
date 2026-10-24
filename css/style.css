@@ -401,6 +401,20 @@ a {
   justify-content: flex-end;
 }
 
+/* Charts 3-4: both charts start right under their text (not centred), so Chart 3's x-axis does not move
+   with the row height and main.js can stretch the mosaic until its bottom meets that axis */
+#card-c03 .chart-wrap,
+#card-c04 .chart-wrap {
+  justify-content: flex-start;
+}
+
+/* the mosaic's legend is the last thing in its card: drop the extra bottom padding so the space under it
+   matches the other cards */
+#card-c04 .chart-wrap {
+  padding-bottom: 0;
+  margin-bottom: -10px;
+}
+
 /* the waffles start at the card's left edge so their columns line up with the mosaic above */
 #c07 {
   align-items: flex-start;
