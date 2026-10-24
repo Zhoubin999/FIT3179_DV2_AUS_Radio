@@ -298,13 +298,38 @@ var chart01 = embedResponsive('#c01', "js/chart01_listening_trend.vg.json", adap
 });
 var chart02 = embedResponsive('#c02', "js/chart02_streaming_services_heatmap.vg.json", adaptChart02);
 
-// Charts 1 and 2 share a row: give the heatmap the same plot height as Chart 1 (300 in its spec); CSS sits the
-// heatmap at the bottom of its card, so its rows line up with Chart 1's y-axis. When the cards stack (narrow
-// screens) it keeps the spec's own height.
+// Charts 1 and 2 share a row: the heatmap starts level with Chart 1's "Click to highlight" legend and its cells end
+// on Chart 1's x-axis (the 0 line), so neither card has a gap under its text. The plot is never shorter than
+// Chart 1's (300). When the cards stack (narrow screens) it keeps the spec's own height.
 var HEATMAP_PLOT_HEIGHT = 300;
+function inkEdge(selector, edge) {
+  var boxes = Array.prototype.map.call(document.querySelectorAll(selector), function (el) { return el.getBoundingClientRect()[edge]; });
+  return edge === 'top' ? Math.min.apply(null, boxes) : Math.max.apply(null, boxes);
+}
 function matchHeatmapHeight(heatmap) {
+  var wrap = document.querySelector('#c02');
+  wrap.style.paddingTop = '';
   var sideBySide = document.querySelector('#card-c01').offsetTop === document.querySelector('#card-c02').offsetTop;
-  heatmap.height(sideBySide ? HEATMAP_PLOT_HEIGHT : 200).runAsync();
+  if (!sideBySide) return heatmap.height(200).runAsync();
+  return heatmap.height(HEATMAP_PLOT_HEIGHT).runAsync().then(function () {
+    // move the heatmap down until its year labels line up with Chart 1's legend title
+    var shift = inkEdge('#c01 .role-legend-title text', 'top') - inkEdge('#c02 svg text', 'top');
+    wrap.style.paddingTop = (10 + Math.max(0, Math.round(shift))) + 'px';   // 10 = the usual top padding
+    // then stretch the rows until the last one ends on Chart 1's x-axis line (measured twice: the rows are a
+    // band scale, so a taller plot does not move the last cell down by exactly the same amount)
+    return stretchHeatmapToAxis(heatmap).then(function () { return stretchHeatmapToAxis(heatmap); });
+  });
+}
+
+function stretchHeatmapToAxis(heatmap) {
+  var xAxis = Array.prototype.filter.call(document.querySelectorAll('#c01 .role-axis-domain line'), function (line) {
+    return line.getBoundingClientRect().height < 2;
+  })[0];
+  var cellsBottom = Math.max.apply(null, Array.prototype.map.call(document.querySelectorAll('#c02 .mark-rect.role-mark path'), function (cell) {   // the cells, not the legend gradient
+    return cell.getBoundingClientRect().bottom;
+  }));
+  var gap = xAxis.getBoundingClientRect().top - cellsBottom;
+  return heatmap.height(Math.max(HEATMAP_PLOT_HEIGHT, Math.round(heatmap.height() + gap))).runAsync();
 }
 
 Promise.all([chart01, chart02]).then(function (results) {

@@ -395,10 +395,11 @@ a {
   justify-content: flex-start;
 }
 
-/* Chart 2: the heatmap and its legend sit at the bottom of the card, so the shorter plot lines up
-   with Chart 1's plot instead of floating in the middle */
+/* Charts 1-2: both start at the top of their space (Chart 1's axis must not move when the row height changes);
+   main.js lines the heatmap up with Chart 1's legend and x-axis */
+#card-c01 .chart-wrap,
 #card-c02 .chart-wrap {
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 /* Charts 3-4: both charts start right under their text (not centred), so Chart 3's x-axis does not move

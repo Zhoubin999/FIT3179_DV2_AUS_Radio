@@ -2,7 +2,7 @@
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "description": "Chapter 1 - multi-series line chart. Weekly reach (%) of streaming, any radio, commercial radio, podcasts and DAB+ radio, 2018-2026 (Infinite Dial). Shared encoding: x = year, y = % of people, colour = series, dashed line = DAB+. Interaction: dropdown (Australia / regional), legend highlight, hover rule tooltip.",
   "width": "container",
-  "height": 300,
+  "height": 326,
   "autosize": {"type": "fit-x", "contains": "padding"},
   "data": {
     "description": "Load the merged CSV (data/australian_radio_data.csv), which holds every dataset used on the page.",
@@ -163,7 +163,7 @@
       }
     },
     {
-      "description": "End-of-line labels (series name and value in the latest year shown), nudged apart so they do not overlap.",
+      "description": "End-of-line labels (series name and value in the year shown). Labels closer than one label height (4.7 points = 17px at this chart height) are pushed apart: the higher one up, the lower one down, so they never overlap during the replay.",
       "transform": [
         {"filter": "datum.year == Year_shown"},
         {
@@ -171,7 +171,15 @@
           "as": "end_label"
         },
         {
-          "calculate": "datum.series == 'Streaming audio' || datum.series == 'Podcasts' ? datum.value + 2.5 : datum.series == 'Commercial radio' ? datum.value : datum.value - 2.5",
+          "description": "Neighbouring values (sorted from lowest to highest) for each label.",
+          "window": [
+            {"op": "lag", "field": "value", "as": "value_below"},
+            {"op": "lead", "field": "value", "as": "value_above"}
+          ],
+          "sort": [{"field": "value", "order": "ascending"}]
+        },
+        {
+          "calculate": "datum.value + (isValid(datum.value_below) && datum.value - datum.value_below < 4.7 ? (4.7 - (datum.value - datum.value_below)) / 2 : 0) - (isValid(datum.value_above) && datum.value_above - datum.value < 4.7 ? (4.7 - (datum.value_above - datum.value)) / 2 : 0)",
           "as": "label_y"
         }
       ],
@@ -223,7 +231,7 @@
       "encoding": {
         "color": {"value": "#8796A3"},
         "y": {"value": 0},
-        "y2": {"value": 300},
+        "y2": {"value": 326},
         "opacity": {
           "condition": {"param": "Year_hover", "value": 0.9, "empty": false},
           "value": 0

@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "Chapter 3 - radar chart (Vega). Where people listened to radio in the past week, Australia overall vs regional Australia (Infinite Dial 2026). Distance from the centre = % of people; places are ordered from most to least common.",
-  "height": 405,
+  "height": 375,
   "padding": 10,
   "autosize": "none",
   "signals": [
@@ -86,13 +86,12 @@
       ]
     },
     {
-      "description": "Values for the circular grid (20%, 40%, 60%, 80%).",
+      "description": "Values for the circular grid (25%, 50%, 75%).",
       "name": "rings",
       "values": [
-        {"pct": 20},
-        {"pct": 40},
-        {"pct": 60},
-        {"pct": 80}
+        {"pct": 25},
+        {"pct": 50},
+        {"pct": 75}
       ]
     }
   ],
@@ -113,7 +112,7 @@
       "description": "Percentage -> distance from the centre.",
       "name": "radial",
       "type": "linear",
-      "domain": [0, 80],
+      "domain": [0, 75],
       "range": {"signal": "[0, radius]"},
       "zero": true
     },
@@ -150,7 +149,7 @@
       "marks": [
         {
           "type": "arc",
-          "description": "grid rings at 20, 40, 60 and 80 per cent",
+          "description": "grid rings at 25, 50 and 75 per cent (the highest value is 67%, so 75 spreads the points out)",
           "from": {"data": "rings"},
           "encode": {
             "enter": {
@@ -264,6 +263,23 @@
           }
         }
       ]
+    },
+    {
+      "type": "text",
+      "description": "Reading note, right-aligned on the legend row so it is read before the radar.",
+      "encode": {
+        "update": {
+          "x": {"signal": "width"},
+          "y": {"value": 0},
+          "align": {"value": "right"},
+          "baseline": {"value": "top"},
+          "text": {"value": ["Places run from most to least common;", "the shape itself has no meaning."]},
+          "fontSize": {"value": 13},
+          "fontStyle": {"value": "italic"},
+          "lineHeight": {"value": 17},
+          "fill": {"value": "#5C7182"}
+        }
+      }
     }
   ]
 }
